@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "concurrently \"npm run dev -w server\" \"npm run dev -w client\"",
     "build": "npm run db:generate && npm run build -w server && npm run build -w client",
-    "build:vercel": "npm run db:generate && npm run build -w client",
+    "build:vercel": "npm run db:generate && npm run build -w server && npm run build -w client",
     "db:generate": "prisma generate --config prisma7.config.ts",
     "db:migrate": "prisma migrate dev --config prisma7.config.ts --name init",
     "db:deploy": "prisma migrate deploy --config prisma7.config.ts",
