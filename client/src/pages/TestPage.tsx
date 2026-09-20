@@ -4,6 +4,7 @@ import { Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 import ProgressBar from '../components/ProgressBar';
 import QuestionCard from '../components/QuestionCard';
 import { api, type Question } from '../services/api';
+import { saveResult } from '../services/resultStorage';
 import { useAppStore } from '../store/useAppStore';
 
 export default function TestPage() {
@@ -44,11 +45,12 @@ export default function TestPage() {
     try {
       setSubmitting(true);
       setError('');
-      await api.submitTest(
+      const result = await api.submitTest(
         token,
         attemptId,
         questions.map((question) => ({ questionId: question.id, selectedAnswer: answers[question.id] })),
       );
+      saveResult({ ...result, id: attemptId, attemptId });
       navigate(`/result/${attemptId}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Não foi possível finalizar o teste.');
