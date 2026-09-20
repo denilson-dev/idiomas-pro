@@ -16,6 +16,21 @@ type PublicQuestion = {
   mediaUrl: string | null;
 };
 
+const startSchema = z.object({
+  count: z.number().int().min(15).max(20).default(18),
+  studentName: z.string().trim().min(2).max(80),
+  studentEmail: z.union([z.string().email(), z.literal('')]).optional(),
+  teacherId: z.string().uuid(),
+  language: z.enum(['ES']).default('ES'),
+});
+
+const submitSchema = z.object({
+  answers: z.array(z.object({
+    questionId: z.string().uuid(),
+    selectedAnswer: z.string().min(1),
+  })).min(1),
+});
+
 function firstParam(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
 }
@@ -30,7 +45,7 @@ function shuffle<T>(items: T[]) {
 }
 
 function pickMixedQuestions<T extends { id: string; level: string; category: string }>(questions: T[], count: number) {
-  const wanted = Math.max(5, Math.min(30, count));
+  const wanted = Math.max(15, Math.min(20, count));
   const selected: T[] = [];
   const used = new Set<string>();
 
@@ -74,17 +89,35 @@ export async function startTest(req: Request, res: Response) {
   const session = await getSessionFromRequest(req);
   if (!session) return res.status(401).json({ message: 'Sessão inválida ou expirada.' });
 
-  const requestedCount = Number(req.query.count ?? 18);
-  const count = Number.isFinite(requestedCount) ? requestedCount : 18;
+  const parsed = startSchema.safeParse(req.body);
+  if (!parsed.success) {
+    return res.status(400).json({
+      message: 'Preencha seu nome e selecione um professor antes de iniciar.',
+      issues: parsed.error.flatten(),
+    });
+  }
+
+  const teacher = await prisma.teacher.findFirst({
+    where: { id: parsed.data.teacherId, isActive: true },
+    select: { id: true, name: true },
+  });
+
+  if (!teacher) return res.status(400).json({ message: 'Professor selecionado não está disponível.' });
 
   const questions = await prisma.question.findMany({ where: { isActive: true } });
-  if (questions.length < 5) return res.status(503).json({ message: 'Banco de questões insuficiente. Execute o seed.' });
+  if (questions.length < 15) {
+    return res.status(503).json({ message: 'Banco de questões insuficiente. Execute o seed.' });
+  }
 
-  const picked = pickMixedQuestions(questions, count);
+  const picked = pickMixedQuestions(questions, parsed.data.count);
   const attempt = await prisma.testAttempt.create({
     data: {
       sessionId: session.id,
       userId: session.userId,
+      teacherId: teacher.id,
+      studentName: parsed.data.studentName,
+      studentEmail: parsed.data.studentEmail?.trim().toLowerCase() || session.user?.email || null,
+      language: parsed.data.language,
       totalQuestions: picked.length,
       questionIds: picked.map((question) => question.id),
     },
@@ -102,16 +135,11 @@ export async function startTest(req: Request, res: Response) {
   return res.status(201).json({
     attemptId: attempt.id,
     totalQuestions: picked.length,
+    studentName: attempt.studentName,
+    teacher,
     questions: publicQuestions,
   });
 }
-
-const submitSchema = z.object({
-  answers: z.array(z.object({
-    questionId: z.string().uuid(),
-    selectedAnswer: z.string().min(1),
-  })).min(1),
-});
 
 export async function submitTest(req: Request, res: Response) {
   const session = await getSessionFromRequest(req);
@@ -184,6 +212,8 @@ export async function submitTest(req: Request, res: Response) {
 
   return res.json({
     attemptId: attempt.id,
+    studentName: attempt.studentName,
+    teacherId: attempt.teacherId,
     ...result,
     recommendations: getRecommendations(result.cefrLevel),
   });
