@@ -12,6 +12,7 @@ type Res = {
   status: (code: number) => Res;
   json: (body: unknown) => void;
   send: (body?: unknown) => void;
+  setHeader: (name: string, value: string) => void;
 };
 
 const levels: Level[] = ['A1','A2','B1','B2','C1','C2'];
@@ -83,9 +84,57 @@ function publicQuestion(q: PlacementQuestion) {
     options: q.options,
     category: q.category,
     mediaType: q.mediaType ?? null,
-    mediaUrl: q.mediaUrl ?? null,
-    speechText: q.speechText ?? null,
+    mediaUrl: q.speechText ? `/api/tts?questionId=${encodeURIComponent(q.id)}` : (q.mediaUrl ?? null),
   };
+}
+
+async function synthesizeWithGoogleCloud(text: string) {
+  const apiKey = process.env.GOOGLE_TTS_API_KEY;
+  if (!apiKey) return null;
+
+  const response = await fetch(
+    `https://texttospeech.googleapis.com/v1/text:synthesize?key=${encodeURIComponent(apiKey)}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json; charset=utf-8' },
+      body: JSON.stringify({
+        input: { text },
+        voice: {
+          languageCode: 'es-ES',
+          name: process.env.GOOGLE_TTS_VOICE || 'es-ES-Chirp3-HD-Zephyr',
+        },
+        audioConfig: {
+          audioEncoding: 'MP3',
+          speakingRate: 0.92,
+        },
+      }),
+    },
+  );
+
+  if (!response.ok) return null;
+  const body = await response.json() as { audioContent?: string };
+  return body.audioContent ? Buffer.from(body.audioContent, 'base64') : null;
+}
+
+async function synthesizeWithGoogleTranslate(text: string) {
+  const url = new URL('https://translate.google.com/translate_tts');
+  url.searchParams.set('ie', 'UTF-8');
+  url.searchParams.set('client', 'tw-ob');
+  url.searchParams.set('tl', 'es-ES');
+  url.searchParams.set('q', text);
+
+  const response = await fetch(url, {
+    headers: {
+      'Accept': 'audio/mpeg,audio/*;q=0.9,*/*;q=0.8',
+      'User-Agent': 'Mozilla/5.0 (compatible; IdiomasPro/1.0)',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Falha ao sintetizar áudio: HTTP ${response.status}`);
+  }
+
+  return Buffer.from(await response.arrayBuffer());
 }
 
 function encodeAttempt(ids: string[]) {
@@ -143,6 +192,30 @@ function recommendations(level: Level) {
 export default async function handler(req: Req, res: Res) {
   const path = pathOf(req);
   const method = (req.method ?? 'GET').toUpperCase();
+
+  if (path === 'tts' && method === 'GET') {
+    const rawQuestionId = req.query?.questionId;
+    const questionId = Array.isArray(rawQuestionId) ? rawQuestionId[0] : rawQuestionId;
+    const question = questions.find((item) => item.id === questionId && item.category === 'LISTENING');
+
+    if (!question?.speechText) {
+      return respond(res, 404, { message: 'Áudio de listening não encontrado.' });
+    }
+
+    try {
+      const audio =
+        await synthesizeWithGoogleCloud(question.speechText) ??
+        await synthesizeWithGoogleTranslate(question.speechText);
+
+      res.setHeader('Content-Type', 'audio/mpeg');
+      res.setHeader('Cache-Control', 'public, max-age=86400, s-maxage=604800, stale-while-revalidate=2592000');
+      res.setHeader('Content-Length', String(audio.length));
+      return res.status(200).send(audio);
+    } catch (error) {
+      console.error('TTS error', error);
+      return respond(res, 502, { message: 'Não foi possível gerar o áudio agora.' });
+    }
+  }
 
   if ((path === 'health' || path === '') && method === 'GET') {
     return respond(res, 200, {
