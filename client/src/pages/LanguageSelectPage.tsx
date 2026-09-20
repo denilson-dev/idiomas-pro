@@ -70,7 +70,7 @@ export default function LanguageSelectPage() {
           </div>
         </section>
 
-        <button onClick={() => navigate('/test?count=18')} className="primary-cta mt-5 flex min-h-14 w-full items-center justify-center gap-3 rounded-2xl px-5 text-lg font-black">
+        <button onClick={() => navigate('/setup')} className="primary-cta mt-5 flex min-h-14 w-full items-center justify-center gap-3 rounded-2xl px-5 text-lg font-black">
           Continuar <ArrowRight size={22}/>
         </button>
 
