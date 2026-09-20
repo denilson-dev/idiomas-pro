@@ -12,7 +12,6 @@ export type Question = {
   category: 'GRAMMAR' | 'VOCABULARY' | 'LISTENING';
   mediaType: 'AUDIO' | 'VIDEO' | null;
   mediaUrl: string | null;
-  speechText: string | null;
 };
 
 export type BreakdownItem = {
@@ -68,14 +67,12 @@ async function request<T>(path: string, options: RequestInit = {}, token?: strin
     }
 
     throw new Error(
-      `API indisponível no deployment do Vercel (HTTP ${response.status}). Verifique se o Root Directory está na raiz do repositório e se a Function /api foi publicada.`
+      `API indisponível no deployment do Vercel (HTTP ${response.status}). Verifique se a Function /api foi publicada.`
     );
   }
 
   if (body && typeof body === 'object' && '__nonJson' in body) {
-    throw new Error(
-      'O Vercel retornou uma página HTML no lugar da API. O deployment está publicando apenas o frontend; configure o Root Directory para a raiz do repositório.'
-    );
+    throw new Error('O Vercel retornou uma página HTML no lugar da API.');
   }
 
   return body as T;
