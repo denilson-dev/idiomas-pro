@@ -10,8 +10,13 @@ const teacher = JSON.parse(readFileSync('.e2e-teacher.json', 'utf8')) as {
 test('aluno conclui o nivelamento e professor visualiza o resultado', async ({ page }) => {
   await page.goto('/');
 
+  const anonymousResponsePromise = page.waitForResponse(
+    (response) => response.url().endsWith('/api/auth/anonymous'),
+  );
   await page.getByRole('button', { name: /começar avaliação/i }).click();
-  await expect(page).toHaveURL(/\/language$/);
+  const anonymousResponse = await anonymousResponsePromise;
+  expect(anonymousResponse.status()).toBe(201);
+  await expect(page).toHaveURL(/\/language$/, { timeout: 10000 });
 
   await page.getByRole('button', { name: /continuar/i }).click();
   await expect(page).toHaveURL(/\/setup$/);
