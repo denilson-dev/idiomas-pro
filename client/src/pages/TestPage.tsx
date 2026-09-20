@@ -12,7 +12,6 @@ import { useAppStore } from '../store/useAppStore';
 export default function TestPage() {
   const token = useAppStore((state) => state.token);
   const testProfile = useAppStore((state) => state.testProfile);
-  const clearTestProfile = useAppStore((state) => state.clearTestProfile);
   const navigate = useNavigate();
   const started = useRef(false);
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -72,7 +71,6 @@ export default function TestPage() {
         questions.map((question) => ({ questionId: question.id, selectedAnswer: answers[question.id] })),
       );
       saveResult({ ...result, id: attemptId, attemptId });
-      clearTestProfile();
       navigate(`/result/${attemptId}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Não foi possível finalizar o teste.');
