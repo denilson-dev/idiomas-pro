@@ -19,6 +19,8 @@ async function synthesizeWithGoogleCloud(text: string) {
   const apiKey = process.env.GOOGLE_TTS_API_KEY;
   if (!apiKey) return null;
 
+  const voiceName = process.env.GOOGLE_TTS_VOICE || 'es-ES-Chirp3-HD-Zephyr';
+
   const response = await fetch(
     `https://texttospeech.googleapis.com/v1/text:synthesize?key=${encodeURIComponent(apiKey)}`,
     {
@@ -28,18 +30,22 @@ async function synthesizeWithGoogleCloud(text: string) {
         input: { text },
         voice: {
           languageCode: 'es-ES',
-          name: process.env.GOOGLE_TTS_VOICE || 'es-ES-Neural2-A',
+          name: voiceName,
         },
         audioConfig: {
           audioEncoding: 'MP3',
-          speakingRate: 0.92,
-          pitch: 0,
+          speakingRate: 0.90,
         },
       }),
     },
   );
 
-  if (!response.ok) return null;
+  if (!response.ok) {
+    const details = await response.text().catch(() => '');
+    console.error(`Google Cloud TTS falhou: HTTP ${response.status}`, details.slice(0, 300));
+    return null;
+  }
+
   const body = await response.json() as { audioContent?: string };
   return body.audioContent ? Buffer.from(body.audioContent, 'base64') : null;
 }
@@ -81,14 +87,14 @@ export async function getListeningAudio(req: Request, res: Response) {
   }
 
   try {
-    const audio =
-      await synthesizeWithGoogleCloud(script) ??
-      await synthesizeWithGoogleTranslate(script);
+    const googleCloudAudio = await synthesizeWithGoogleCloud(script);
+    const audio = googleCloudAudio ?? await synthesizeWithGoogleTranslate(script);
 
     if (audio?.length) {
       res.setHeader('Content-Type', 'audio/mpeg');
       res.setHeader('Cache-Control', 'public, max-age=86400, s-maxage=604800, stale-while-revalidate=2592000');
       res.setHeader('Content-Length', String(audio.length));
+      res.setHeader('X-TTS-Provider', googleCloudAudio ? 'google-cloud' : 'google-translate-fallback');
       return res.status(200).send(audio);
     }
   } catch (error) {
@@ -99,5 +105,6 @@ export async function getListeningAudio(req: Request, res: Response) {
     new URL(`../../../client/dist${question.mediaUrl}`, import.meta.url),
   );
   res.setHeader('Cache-Control', 'public, max-age=3600');
+  res.setHeader('X-TTS-Provider', 'local-mp3-fallback');
   return res.sendFile(fallback);
 }
