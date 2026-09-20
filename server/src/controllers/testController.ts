@@ -96,7 +96,7 @@ export async function startTest(req: Request, res: Response) {
     options: question.options as string[],
     category: question.category,
     mediaType: question.mediaType,
-    mediaUrl: question.mediaUrl,
+    mediaUrl: question.category === 'LISTENING' ? `/api/tts/${question.id}` : question.mediaUrl,
   }));
 
   return res.status(201).json({
