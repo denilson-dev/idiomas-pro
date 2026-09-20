@@ -7,7 +7,10 @@ const teacher = JSON.parse(readFileSync('.e2e-teacher.json', 'utf8')) as {
   secret: string;
 };
 
-test('aluno conclui o nivelamento e professor visualiza o resultado', async ({ page }) => {
+test('aluno conclui o nivelamento e professor visualiza o resultado', async ({ page }, testInfo) => {
+  const studentName = `Aluno ${testInfo.project.name}`;
+  const studentEmail = `aluno.${testInfo.project.name.replace(/[^a-z0-9]/gi, '.')}@example.com`;
+
   page.on('console', (message) => console.log('[browser-console]', message.type(), message.text()));
   page.on('pageerror', (error) => console.log('[browser-pageerror]', error.message));
   page.on('request', (request) => {
@@ -30,8 +33,8 @@ test('aluno conclui o nivelamento e professor visualiza o resultado', async ({ p
   await page.getByRole('button', { name: /continuar/i }).click();
   await expect(page).toHaveURL(/\/setup$/);
 
-  await page.getByPlaceholder('Digite seu nome completo').fill('Aluno E2E');
-  await page.getByPlaceholder('seuemail@exemplo.com').fill('aluno.e2e@example.com');
+  await page.getByPlaceholder('Digite seu nome completo').fill(studentName);
+  await page.getByPlaceholder('seuemail@exemplo.com').fill(studentEmail);
   await page.getByRole('combobox').selectOption({ label: teacher.name });
   await page.getByRole('button', { name: /começar teste/i }).click();
 
@@ -63,9 +66,9 @@ test('aluno conclui o nivelamento e professor visualiza o resultado', async ({ p
 
   await expect(page).toHaveURL(/\/professor\/painel$/);
   await expect(page.getByText('Resultados dos alunos')).toBeVisible();
-  await expect(page.getByText('Aluno E2E')).toBeVisible();
+  await expect(page.getByText(studentName).first()).toBeVisible();
 
-  await page.getByRole('button', { name: /Aluno E2E/i }).click();
+  await page.getByRole('button', { name: new RegExp(studentName, 'i') }).first().click();
   await expect(page).toHaveURL(/\/professor\/aluno\//);
   await expect(page.getByText('Respostas da avaliação')).toBeVisible();
 });
