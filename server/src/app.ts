@@ -11,7 +11,14 @@ const allowedOrigin = process.env.CLIENT_ORIGIN;
 const clientDist = fileURLToPath(new URL('../../client/dist', import.meta.url));
 const clientIndex = fileURLToPath(new URL('../../client/dist/index.html', import.meta.url));
 
-app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
+  contentSecurityPolicy: {
+    directives: {
+      upgradeInsecureRequests: process.env.NODE_ENV === 'production' ? [] : null,
+    },
+  },
+}));
 app.use(cors({
   origin: allowedOrigin ? allowedOrigin.split(',').map((value) => value.trim()) : true,
   credentials: false,
