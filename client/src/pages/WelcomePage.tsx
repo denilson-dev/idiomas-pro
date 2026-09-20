@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowRight, BookOpen, Headphones, LogIn, PlayCircle, ShieldCheck } from 'lucide-react';
+import { ArrowRight, BookOpen, Headphones, LogIn, School, ShieldCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import BrandHeader from '../components/BrandHeader';
 import MascotOwl from '../components/MascotOwl';
@@ -100,6 +100,14 @@ export default function WelcomePage() {
             <button type="button" onClick={() => setForm({name:'',email:'aluno@idiomaspro.com',password:'Teste123!'})} className="mt-3 w-full text-center text-xs font-bold text-[#7656a7]">Usar conta de demonstração</button>
           </section>
         )}
+
+        <button
+          type="button"
+          onClick={() => navigate('/professor')}
+          className="mt-5 flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl border border-[#ded5ef] bg-white/80 px-4 text-sm font-black text-[#4c2187] transition hover:bg-white"
+        >
+          <School size={18}/> Área exclusiva do professor
+        </button>
 
         <section className="mint-card relative mt-6 overflow-hidden rounded-[1.8rem] p-5 sm:p-6">
           <div className="grid gap-4 sm:grid-cols-[auto_1fr] sm:items-center">
