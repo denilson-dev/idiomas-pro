@@ -14,6 +14,11 @@ const bootstrapSchema = credentialsSchema.extend({
   name: z.string().trim().min(2).max(80),
 });
 
+const updateAttemptSchema = z.object({
+  studentName: z.string().trim().min(2).max(80),
+  studentEmail: z.union([z.string().email(), z.literal('')]).optional(),
+});
+
 function expiry(days = 30) {
   const date = new Date();
   date.setDate(date.getDate() + days);
@@ -206,5 +211,84 @@ export async function teacherAttemptDetail(req: Request, res: Response) {
       correctAnswer: answer.question.correctAnswer,
       isCorrect: answer.isCorrect,
     })),
+  });
+}
+
+
+export async function updateTeacherAttempt(req: Request, res: Response) {
+  const session = await getTeacherSessionFromRequest(req);
+  if (!session) return res.status(401).json({ message: 'Sessão de professor inválida ou expirada.' });
+
+  const attemptId = firstParam(req.params.attemptId);
+  if (!attemptId) return res.status(400).json({ message: 'Identificador inválido.' });
+
+  const parsed = updateAttemptSchema.safeParse(req.body);
+  if (!parsed.success) {
+    return res.status(400).json({ message: 'Dados do aluno inválidos.', issues: parsed.error.flatten() });
+  }
+
+  const attempt = await prisma.testAttempt.findFirst({
+    where: { id: attemptId, teacherId: session.teacherId, status: 'COMPLETED' },
+    select: { id: true },
+  });
+
+  if (!attempt) return res.status(404).json({ message: 'Prova não encontrada.' });
+
+  const updated = await prisma.testAttempt.update({
+    where: { id: attempt.id },
+    data: {
+      studentName: parsed.data.studentName,
+      studentEmail: parsed.data.studentEmail?.trim().toLowerCase() || null,
+    },
+    select: {
+      id: true,
+      studentName: true,
+      studentEmail: true,
+      language: true,
+      score: true,
+      cefrLevel: true,
+      breakdown: true,
+      totalQuestions: true,
+      completedAt: true,
+    },
+  });
+
+  return res.json({ attempt: updated });
+}
+
+export async function deleteTeacherAttempt(req: Request, res: Response) {
+  const session = await getTeacherSessionFromRequest(req);
+  if (!session) return res.status(401).json({ message: 'Sessão de professor inválida ou expirada.' });
+
+  const attemptId = firstParam(req.params.attemptId);
+  if (!attemptId) return res.status(400).json({ message: 'Identificador inválido.' });
+
+  const attempt = await prisma.testAttempt.findFirst({
+    where: { id: attemptId, teacherId: session.teacherId, status: 'COMPLETED' },
+    select: { id: true },
+  });
+
+  if (!attempt) return res.status(404).json({ message: 'Prova não encontrada.' });
+
+  await prisma.testAttempt.delete({ where: { id: attempt.id } });
+  return res.status(204).send();
+}
+
+export async function clearTeacherAttempts(req: Request, res: Response) {
+  const session = await getTeacherSessionFromRequest(req);
+  if (!session) return res.status(401).json({ message: 'Sessão de professor inválida ou expirada.' });
+
+  const result = await prisma.testAttempt.deleteMany({
+    where: {
+      teacherId: session.teacherId,
+      status: 'COMPLETED',
+    },
+  });
+
+  return res.json({
+    deleted: result.count,
+    message: result.count === 1
+      ? '1 prova foi removida.'
+      : `${result.count} provas foram removidas.`,
   });
 }
