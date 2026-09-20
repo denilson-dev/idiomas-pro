@@ -429,3 +429,20 @@ a:focus-visible {
     transform: none !important;
   }
 }
+
+
+/* iOS/WebKit: keep the glass navigation dock in document flow so it never
+   covers answer choices or competes with Safari's bottom browser chrome. */
+@supports (-webkit-touch-callout: none) {
+  @media (max-width: 640px) {
+    html {
+      scroll-padding-bottom: 1.5rem;
+    }
+
+    .mobile-nav-dock {
+      position: static !important;
+      bottom: auto !important;
+      margin-top: .85rem !important;
+    }
+  }
+}
