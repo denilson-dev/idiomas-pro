@@ -4,7 +4,6 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import BrandHeader from '../components/BrandHeader';
 import MascotOwl from '../components/MascotOwl';
 import { api, type TestResult } from '../services/api';
-import { getStoredHistory } from '../services/resultStorage';
 import { useAppStore } from '../store/useAppStore';
 
 export default function DashboardPage() {
@@ -14,7 +13,12 @@ export default function DashboardPage() {
   const navigate = useNavigate();
   const [attempts, setAttempts] = useState<TestResult[]>([]);
 
-  useEffect(() => { if (token) setAttempts(getStoredHistory()); }, [token]);
+  useEffect(() => {
+    if (!token) return;
+    api.getHistory(token)
+      .then(({ attempts }) => setAttempts(attempts))
+      .catch(() => setAttempts([]));
+  }, [token]);
   if (!token) return <Navigate to="/" replace />;
 
   async function logout() {
