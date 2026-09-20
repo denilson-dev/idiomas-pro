@@ -21,10 +21,15 @@ const categoryTheme = {
 
 export default function ResultPage() {
   const token = useAppStore((state) => state.token);
+  const clearTestProfile = useAppStore((state) => state.clearTestProfile);
   const navigate = useNavigate();
   const { attemptId } = useParams();
   const [result, setResult] = useState<TestResult | null>(null);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    clearTestProfile();
+  }, [clearTestProfile]);
 
   useEffect(() => {
     if (!token || !attemptId) return;
