@@ -6,3 +6,7 @@ client/dist
 server/dist
 server/src/generated
 .vercel
+coverage
+playwright-report
+test-results
+.e2e-teacher.json

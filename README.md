@@ -308,6 +308,52 @@ GET /api/tts/:questionId
 
 ---
 
+## 🧪 Testes automatizados
+
+O projeto possui testes em camadas para validar regras de negócio, componentes, API e o fluxo completo da aplicação.
+
+| Camada | Ferramenta | Validação |
+|---|---|---|
+| Unitários | Vitest | Faixas CEFR, cálculo de nota e breakdown |
+| Componentes | Testing Library + Vitest | Questões, interação e ocultação do nível |
+| API | Supertest + Vitest | Sessões, professor, teste, resultado e isolamento de acesso |
+| E2E | Playwright | Jornada real aluno → resultado → painel do professor |
+
+### Comandos
+
+```bash
+npm run test:unit
+npm run test:api
+npm run test:e2e
+npm run test:all
+```
+
+Os testes de API e E2E usam um PostgreSQL separado do ambiente de produção.
+
+No GitHub Actions, um banco PostgreSQL descartável é criado automaticamente para cada execução. A pipeline aplica migrations, executa o seed, roda os testes, compila frontend/backend e finaliza com o cenário E2E. Pipeline automatizada validada em ambiente isolado.
+
+O fluxo automatizado principal é:
+
+```text
+Visitante
+   ↓
+Seleciona espanhol
+   ↓
+Informa nome + professor
+   ↓
+Responde 18 questões
+   ↓
+Revisa e finaliza
+   ↓
+Recebe nível CEFR
+   ↓
+Professor entra no painel
+   ↓
+Visualiza o resultado do aluno
+```
+
+---
+
 ## 🔐 Segurança e boas práticas estudadas
 
 - senhas armazenadas com hash;
