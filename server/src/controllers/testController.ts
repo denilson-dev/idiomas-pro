@@ -1,5 +1,6 @@
 import type { Request, Response } from 'express';
 import { z } from 'zod';
+import type { Prisma } from '../generated/prisma/client.js';
 import { prisma } from '../lib/prisma.js';
 import { getSessionFromRequest } from '../lib/session.js';
 import { calculatePlacement, getRecommendations } from '../services/placementEngine.js';
@@ -15,6 +16,10 @@ type PublicQuestion = {
   mediaType: string | null;
   mediaUrl: string | null;
 };
+
+function firstParam(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] : value;
+}
 
 function shuffle<T>(items: T[]) {
   const result = [...items];
@@ -114,11 +119,14 @@ export async function submitTest(req: Request, res: Response) {
   const session = await getSessionFromRequest(req);
   if (!session) return res.status(401).json({ message: 'Sessão inválida ou expirada.' });
 
+  const attemptId = firstParam(req.params.attemptId);
+  if (!attemptId) return res.status(400).json({ message: 'Identificador da tentativa inválido.' });
+
   const parsed = submitSchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ message: 'Respostas inválidas.', issues: parsed.error.flatten() });
 
   const attempt = await prisma.testAttempt.findFirst({
-    where: { id: req.params.attemptId, sessionId: session.id },
+    where: { id: attemptId, sessionId: session.id },
   });
 
   if (!attempt) return res.status(404).json({ message: 'Tentativa não encontrada.' });
@@ -170,7 +178,7 @@ export async function submitTest(req: Request, res: Response) {
         status: 'COMPLETED',
         score: result.score,
         cefrLevel: result.cefrLevel,
-        breakdown: result.breakdown,
+        breakdown: result.breakdown as unknown as Prisma.InputJsonValue,
         completedAt: new Date(),
       },
     }),
