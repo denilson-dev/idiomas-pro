@@ -8,6 +8,15 @@ const teacher = JSON.parse(readFileSync('.e2e-teacher.json', 'utf8')) as {
 };
 
 test('aluno conclui o nivelamento e professor visualiza o resultado', async ({ page }) => {
+  page.on('console', (message) => console.log('[browser-console]', message.type(), message.text()));
+  page.on('pageerror', (error) => console.log('[browser-pageerror]', error.message));
+  page.on('request', (request) => {
+    if (request.url().includes('/api/')) {
+      console.log('[browser-request]', request.method(), request.url());
+    }
+  });
+  page.on('requestfailed', (request) => console.log('[browser-requestfailed]', request.url(), request.failure()?.errorText));
+
   await page.goto('/');
 
   const anonymousResponsePromise = page.waitForResponse(
