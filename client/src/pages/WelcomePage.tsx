@@ -1,12 +1,15 @@
 import { useState } from 'react';
-import { ArrowRight, BookOpen, Headphones, LogIn, ShieldCheck, Sparkles } from 'lucide-react';
+import { ArrowRight, BookOpen, Headphones, LogIn, PlayCircle, ShieldCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import BrandHeader from '../components/BrandHeader';
+import MascotOwl from '../components/MascotOwl';
 import { api } from '../services/api';
 import { useAppStore } from '../store/useAppStore';
 
 export default function WelcomePage() {
   const navigate = useNavigate();
   const setSession = useAppStore((state) => state.setSession);
+  const [showAuth, setShowAuth] = useState(false);
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [form, setForm] = useState({ name: '', email: '', password: '' });
   const [loading, setLoading] = useState(false);
@@ -14,23 +17,19 @@ export default function WelcomePage() {
 
   async function anonymousStart() {
     try {
-      setLoading(true);
-      setError('');
+      setLoading(true); setError('');
       const session = await api.createAnonymousSession();
       setSession(session.token, session.user);
       navigate('/language');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Não foi possível iniciar o teste.');
-    } finally {
-      setLoading(false);
-    }
+    } finally { setLoading(false); }
   }
 
   async function submitAuth(event: React.FormEvent) {
     event.preventDefault();
     try {
-      setLoading(true);
-      setError('');
+      setLoading(true); setError('');
       const session = mode === 'login'
         ? await api.login({ email: form.email, password: form.password })
         : await api.register(form);
@@ -38,175 +37,80 @@ export default function WelcomePage() {
       navigate('/language');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Falha na autenticação.');
-    } finally {
-      setLoading(false);
-    }
+    } finally { setLoading(false); }
   }
-
-  function fillDemo() {
-    setMode('login');
-    setError('');
-    setForm((current) => ({
-      ...current,
-      email: 'aluno@idiomaspro.com',
-      password: 'Teste123!',
-    }));
-  }
-
-  const features = [
-    { icon: BookOpen, title: 'A1 → C2', subtitle: 'Dificuldade mista' },
-    { icon: Headphones, title: 'Listening', subtitle: 'Áudios reais' },
-    { icon: ShieldCheck, title: 'Resultado', subtitle: 'Histórico salvo' },
-  ];
 
   return (
-    <main className="safe-page relative overflow-hidden bg-[#06111f] text-white">
-      <div className="pointer-events-none absolute -left-32 top-8 h-80 w-80 rounded-full bg-cyan-500/15 blur-3xl animate-pulse-glow" />
-      <div className="pointer-events-none absolute -right-24 bottom-0 h-[28rem] w-[28rem] rounded-full bg-violet-600/15 blur-3xl animate-pulse-glow" />
+    <main className="safe-page relative overflow-hidden px-4 sm:px-6">
+      <div className="app-shell relative">
+        <BrandHeader subtitle="Idiomas • A1 a C2" />
 
-      <div className="relative mx-auto grid w-full max-w-7xl gap-6 px-4 sm:px-6 lg:min-h-[calc(100dvh-2rem)] lg:grid-cols-[1.12fr_.88fr] lg:grid-rows-[auto_auto] lg:items-center lg:gap-x-12 lg:px-10">
-        <section className="pt-1 lg:col-start-1 lg:row-start-1 lg:pt-0">
-          <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-[11px] font-semibold text-cyan-100 backdrop-blur-xl sm:text-sm">
-            <Sparkles size={15} /> Avaliação inteligente · CEFR A1–C2
+        <section className="mt-5 grid items-center gap-3 lg:grid-cols-[1.05fr_.95fr] lg:gap-8">
+          <div>
+            <div className="category-pill text-[10px] sm:text-xs"><BookOpen size={15}/> Teste de nivelamento</div>
+            <h1 className="hero-title mt-5 max-w-2xl text-[3.3rem] sm:text-[4.6rem] lg:text-[5.3rem]">
+              <span className="hero-pink">Descubra seu próximo</span><br/>
+              <span className="hero-teal">nível</span>
+            </h1>
+            <p className="mt-5 max-w-xl text-[15px] leading-6 text-[#7656a7] sm:text-lg sm:leading-8">
+              Avalie seus conhecimentos de gramática, vocabulário e compreensão auditiva e descubra a etapa ideal para continuar aprendendo com confiança.
+            </p>
+
+            <div className="mt-6 space-y-3">
+              {[
+                [ShieldCheck,'Resultado na hora','Saiba seu nível imediatamente.'],
+                [Headphones,'Listening profissional','Ouça e responda no seu ritmo.'],
+                [BookOpen,'Do A1 ao C2','Avaliação completa para todos os níveis.'],
+              ].map(([Icon,title,desc]) => {
+                const I = Icon as typeof ShieldCheck;
+                return <div key={title as string} className="flex items-center gap-3">
+                  <span className="grid h-11 w-11 place-items-center rounded-full bg-[#fff0f4]"><I size={20} className="text-[#ff2d5f]"/></span>
+                  <div><div className="font-black text-[#2b0d71]">{title}</div><div className="text-sm text-[#7656a7]">{desc}</div></div>
+                </div>
+              })}
+            </div>
           </div>
 
-          <h1 className="max-w-3xl text-[clamp(2.65rem,12vw,4.6rem)] font-black leading-[.98] tracking-[-0.045em]">
-            Descubra seu nível de{' '}
-            <span className="bg-gradient-to-r from-cyan-300 via-sky-300 to-violet-300 bg-clip-text text-transparent">
-              espanhol
-            </span>{' '}
-            com precisão.
-          </h1>
-
-          <p className="mt-4 max-w-2xl text-[15px] leading-6 text-slate-300 sm:mt-6 sm:text-lg sm:leading-8">
-            Gramática, vocabulário e compreensão auditiva em uma experiência rápida para estimar seu nível no padrão CEFR.
-          </p>
+          <div className="relative mx-auto w-full max-w-[470px]">
+            <div className="hand-note absolute right-2 top-1 z-10 text-xl sm:text-2xl">Vamos descobrir juntos? ♡</div>
+            <MascotOwl className="animate-float mx-auto h-[320px] w-[320px] sm:h-[420px] sm:w-[420px]" />
+          </div>
         </section>
 
-        <section className="glass-panel rounded-[1.75rem] p-4 sm:p-6 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:p-7">
-          <div className="mb-4 flex items-center justify-between gap-4 sm:mb-6">
-            <div className="min-w-0">
-              <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-cyan-300 sm:text-xs">Idiomas Pro</div>
-              <h2 className="mt-1 text-xl font-black leading-tight sm:text-2xl">Seu nivelamento começa aqui</h2>
-            </div>
-            <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-cyan-300 to-violet-500 text-sm font-black text-slate-950 sm:h-12 sm:w-12">IP</div>
-          </div>
-
-          <button
-            type="button"
-            onClick={anonymousStart}
-            disabled={loading}
-            className="touch-no-hover flex min-h-13 w-full items-center justify-between rounded-2xl bg-white px-4 py-3.5 font-bold text-slate-950 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50 sm:px-5 sm:py-4"
-          >
-            <span>Fazer teste como visitante</span>
-            <ArrowRight size={19} />
-          </button>
-
-          <div className="my-4 flex items-center gap-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500 sm:my-6 sm:text-xs">
-            <div className="h-px flex-1 bg-white/10" />
-            <span>ou entre na sua conta</span>
-            <div className="h-px flex-1 bg-white/10" />
-          </div>
-
-          <div className="mb-3 grid grid-cols-2 rounded-xl bg-black/20 p-1">
-            {(['login', 'register'] as const).map((item) => (
-              <button
-                key={item}
-                type="button"
-                onClick={() => {
-                  setMode(item);
-                  setError('');
-                }}
-                className={`min-h-10 rounded-lg px-3 py-2 text-sm font-semibold transition ${
-                  mode === item ? 'bg-white/10 text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                {item === 'login' ? 'Entrar' : 'Criar conta'}
-              </button>
-            ))}
-          </div>
-
-          <form onSubmit={submitAuth} className="space-y-2.5">
-            {mode === 'register' && (
-              <label className="block">
-                <span className="sr-only">Seu nome</span>
-                <input
-                  required
-                  autoComplete="name"
-                  value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  placeholder="Seu nome"
-                  className="min-h-12 w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 outline-none placeholder:text-slate-500 focus:border-cyan-300/50"
-                />
-              </label>
-            )}
-
-            <label className="block">
-              <span className="sr-only">E-mail</span>
-              <input
-                required
-                type="email"
-                inputMode="email"
-                autoComplete="email"
-                value={form.email}
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
-                placeholder="E-mail"
-                className="min-h-12 w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 outline-none placeholder:text-slate-500 focus:border-cyan-300/50"
-              />
-            </label>
-
-            <label className="block">
-              <span className="sr-only">Senha</span>
-              <input
-                required
-                minLength={6}
-                type="password"
-                autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
-                value={form.password}
-                onChange={(e) => setForm({ ...form, password: e.target.value })}
-                placeholder="Senha"
-                className="min-h-12 w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 outline-none placeholder:text-slate-500 focus:border-cyan-300/50"
-              />
-            </label>
-
-            <div aria-live="polite">
-              {error && (
-                <p className="rounded-xl border border-rose-400/20 bg-rose-400/10 px-3 py-2.5 text-sm leading-5 text-rose-200">
-                  {error}
-                </p>
-              )}
-            </div>
-
-            <button
-              disabled={loading}
-              className="touch-no-hover flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-400 to-sky-500 px-4 py-3 font-black text-slate-950 transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              <LogIn size={18} />
-              {loading ? 'Aguarde...' : mode === 'login' ? 'Entrar e continuar' : 'Criar conta'}
+        {!showAuth ? (
+          <section className="mt-3 grid gap-3 sm:grid-cols-2">
+            <button onClick={anonymousStart} disabled={loading} className="primary-cta flex min-h-14 items-center justify-center gap-3 rounded-2xl px-5 py-4 text-lg font-black disabled:opacity-50">
+              {loading ? 'Preparando...' : 'Começar avaliação'} <ArrowRight size={22}/>
             </button>
-          </form>
+            <button onClick={() => setShowAuth(true)} className="secondary-cta flex min-h-14 items-center justify-center gap-3 rounded-2xl px-5 py-4 text-lg font-black">
+              <LogIn size={21}/> Entrar na conta
+            </button>
+          </section>
+        ) : (
+          <section className="paper-card mt-5 rounded-[1.8rem] p-4 sm:p-6">
+            <div className="mb-4 grid grid-cols-2 rounded-2xl bg-[#f6f0ff] p-1">
+              {(['login','register'] as const).map(item => <button key={item} onClick={() => setMode(item)} className={`rounded-xl px-3 py-3 text-sm font-black ${mode===item?'bg-white text-[#2b0d71] shadow-sm':'text-[#8d78b7]'}`}>{item==='login'?'Entrar':'Criar conta'}</button>)}
+            </div>
+            <form onSubmit={submitAuth} className="space-y-3">
+              {mode==='register' && <input required placeholder="Seu nome" value={form.name} onChange={e=>setForm({...form,name:e.target.value})} className="min-h-12 w-full rounded-2xl border border-[#ddd2ef] bg-white px-4 text-[#2b0d71] outline-none"/>}
+              <input required type="email" placeholder="E-mail" value={form.email} onChange={e=>setForm({...form,email:e.target.value})} className="min-h-12 w-full rounded-2xl border border-[#ddd2ef] bg-white px-4 text-[#2b0d71] outline-none"/>
+              <input required minLength={6} type="password" placeholder="Senha" value={form.password} onChange={e=>setForm({...form,password:e.target.value})} className="min-h-12 w-full rounded-2xl border border-[#ddd2ef] bg-white px-4 text-[#2b0d71] outline-none"/>
+              {error && <p className="rounded-xl bg-[#fff0f4] px-3 py-2 text-sm text-[#c81f49]">{error}</p>}
+              <button disabled={loading} className="primary-cta flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl font-black"><LogIn size={18}/>{loading?'Aguarde...':mode==='login'?'Entrar e continuar':'Criar conta'}</button>
+            </form>
+            <button type="button" onClick={() => setForm({name:'',email:'aluno@idiomaspro.com',password:'Teste123!'})} className="mt-3 w-full text-center text-xs font-bold text-[#7656a7]">Usar conta de demonstração</button>
+          </section>
+        )}
 
-          <button
-            type="button"
-            onClick={fillDemo}
-            className="mt-3 w-full rounded-xl px-2 py-2 text-center text-[11px] leading-4 text-slate-500 transition hover:bg-white/[0.035] hover:text-slate-300 sm:mt-4 sm:text-xs"
-          >
-            Usar conta demo · aluno@idiomaspro.com · Teste123!
-          </button>
+        <section className="mint-card relative mt-6 overflow-hidden rounded-[1.8rem] p-5 sm:p-6">
+          <div className="grid gap-4 sm:grid-cols-[auto_1fr] sm:items-center">
+            <div className="flex gap-2"><span className="rounded-2xl bg-[#ffe4eb] px-4 py-5 font-black text-[#ff2d5f]">A1</span><span className="rounded-2xl border-2 border-[#008f81] bg-white px-4 py-5 font-black text-[#08786f]">B1</span><span className="rounded-2xl bg-[#efe4ff] px-4 py-5 font-black text-[#6c2cb0]">C2</span></div>
+            <div><h2 className="text-xl font-black text-[#2b0d71]">Do seu jeito. Para o seu próximo passo.</h2><p className="mt-1 text-sm leading-6 text-[#7656a7]">Mais conhecimento, mais oportunidades. Um você cada vez mais no topo!</p></div>
+          </div>
+          <div className="rainbow-corner"/>
         </section>
 
-        <section className="grid grid-cols-3 gap-2 pb-1 sm:gap-3 lg:col-start-1 lg:row-start-2 lg:max-w-2xl lg:self-start lg:pt-2">
-          {features.map(({ icon: Icon, title, subtitle }) => (
-            <article
-              key={title}
-              className="rounded-2xl border border-white/10 bg-white/[0.045] p-3 backdrop-blur-xl sm:p-4"
-            >
-              <Icon className="mb-3 text-cyan-300" size={19} />
-              <div className="text-[13px] font-bold sm:text-base">{title}</div>
-              <div className="mt-1 text-[10px] leading-4 text-slate-500 sm:text-xs">{subtitle}</div>
-            </article>
-          ))}
-        </section>
+        <div className="my-7 flex items-center justify-center gap-3 text-sm text-[#4d2588]"><span className="h-px w-20 bg-[#d9cff0]"/><span className="hand-note">Aprender te leva mais longe ♡</span><span className="h-px w-20 bg-[#d9cff0]"/></div>
       </div>
     </main>
   );
