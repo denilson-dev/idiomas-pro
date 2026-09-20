@@ -2,6 +2,7 @@ import { CalendarDays, History, LogOut, Plus, Trophy } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { api, type TestResult } from '../services/api';
+import { getStoredHistory } from '../services/resultStorage';
 import { useAppStore } from '../store/useAppStore';
 
 export default function DashboardPage() {
@@ -10,13 +11,10 @@ export default function DashboardPage() {
   const clearSession = useAppStore((state) => state.clearSession);
   const navigate = useNavigate();
   const [attempts, setAttempts] = useState<TestResult[]>([]);
-  const [error, setError] = useState('');
 
   useEffect(() => {
     if (!token) return;
-    api.getHistory(token)
-      .then((data) => setAttempts(data.attempts))
-      .catch((err) => setError(err instanceof Error ? err.message : 'Não foi possível carregar o histórico.'));
+    setAttempts(getStoredHistory());
   }, [token]);
 
   if (!token) return <Navigate to="/" replace />;
@@ -46,7 +44,7 @@ export default function DashboardPage() {
           <div className="rounded-[2rem] border border-white/10 bg-gradient-to-br from-cyan-300/10 to-violet-400/10 p-7">
             <p className="text-sm font-bold uppercase tracking-[0.22em] text-cyan-300">Visão geral</p>
             <h1 className="mt-3 text-3xl font-black">{user ? user.name : 'Visitante'}</h1>
-            <p className="mt-2 text-slate-400">{user?.email ?? 'Histórico disponível durante esta sessão anônima.'}</p>
+            <p className="mt-2 text-slate-400">{user?.email ?? 'Histórico salvo neste navegador.'}</p>
 
             <div className="mt-8 rounded-3xl border border-white/10 bg-black/15 p-5">
               <div className="flex items-center justify-between"><History className="text-violet-300" /><span className="text-3xl font-black">{attempts.length}</span></div>
@@ -60,27 +58,28 @@ export default function DashboardPage() {
               <Trophy className="text-amber-300" />
             </div>
 
-            {error && <div className="mt-5 rounded-xl bg-rose-400/10 p-3 text-sm text-rose-200">{error}</div>}
-
             <div className="mt-6 space-y-3">
-              {attempts.length === 0 && !error && (
+              {attempts.length === 0 && (
                 <div className="rounded-2xl border border-dashed border-white/10 p-8 text-center text-slate-500">Ainda não há resultados salvos.</div>
               )}
-              {attempts.map((attempt) => (
-                <button
-                  type="button"
-                  key={attempt.id}
-                  onClick={() => navigate(`/result/${attempt.id}`)}
-                  className="flex w-full items-center gap-4 rounded-2xl border border-white/10 bg-black/10 p-4 text-left transition hover:border-white/20 hover:bg-white/[0.04]"
-                >
-                  <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-cyan-300 to-violet-400 text-xl font-black text-slate-950">{attempt.cefrLevel}</div>
-                  <div className="min-w-0 flex-1">
-                    <div className="font-bold">{attempt.score}% de aproveitamento</div>
-                    <div className="mt-1 flex items-center gap-1 text-xs text-slate-500"><CalendarDays size={13} /> {attempt.completedAt ? new Date(attempt.completedAt).toLocaleString('pt-BR') : 'Data indisponível'}</div>
-                  </div>
-                  <div className="text-sm font-bold text-cyan-300">Ver</div>
-                </button>
-              ))}
+              {attempts.map((attempt) => {
+                const id = attempt.id ?? attempt.attemptId;
+                return (
+                  <button
+                    type="button"
+                    key={id}
+                    onClick={() => id && navigate(`/result/${id}`)}
+                    className="flex w-full items-center gap-4 rounded-2xl border border-white/10 bg-black/10 p-4 text-left transition hover:border-white/20 hover:bg-white/[0.04]"
+                  >
+                    <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-cyan-300 to-violet-400 text-xl font-black text-slate-950">{attempt.cefrLevel}</div>
+                    <div className="min-w-0 flex-1">
+                      <div className="font-bold">{attempt.score}% de aproveitamento</div>
+                      <div className="mt-1 flex items-center gap-1 text-xs text-slate-500"><CalendarDays size={13} /> {attempt.completedAt ? new Date(attempt.completedAt).toLocaleString('pt-BR') : 'Data indisponível'}</div>
+                    </div>
+                    <div className="text-sm font-bold text-cyan-300">Ver</div>
+                  </button>
+                );
+              })}
             </div>
           </div>
         </section>
