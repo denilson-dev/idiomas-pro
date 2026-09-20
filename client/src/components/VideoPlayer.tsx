@@ -10,7 +10,42 @@ export default function VideoPlayer({ type, src }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  useEffect(() => () => { audioRef.current?.pause(); audioRef.current = null; }, [src]);
+  useEffect(() => {
+    setPlaying(false);
+    setPlayed(false);
+    setLoading(false);
+    setError('');
+
+    if (type !== 'AUDIO') return;
+
+    const audio = new Audio(src);
+    audio.preload = 'auto';
+
+    audio.onplaying = () => {
+      setLoading(false);
+      setPlaying(true);
+    };
+    audio.onended = () => {
+      setPlaying(false);
+      setPlayed(true);
+      setLoading(false);
+    };
+    audio.onerror = () => {
+      setPlaying(false);
+      setLoading(false);
+      setError('Não foi possível carregar o áudio. Tente novamente.');
+    };
+
+    audioRef.current = audio;
+    audio.load();
+
+    return () => {
+      audio.pause();
+      audio.removeAttribute('src');
+      audio.load();
+      if (audioRef.current === audio) audioRef.current = null;
+    };
+  }, [src, type]);
 
   if (type === 'VIDEO') {
     return <div className="overflow-hidden rounded-2xl border border-[#e2d8f3] bg-white p-3">
@@ -22,27 +57,28 @@ export default function VideoPlayer({ type, src }: Props) {
   function stop() {
     const audio = audioRef.current;
     if (!audio) return;
-    audio.pause(); audio.currentTime = 0;
-    setPlaying(false); setLoading(false);
+    audio.pause();
+    audio.currentTime = 0;
+    setPlaying(false);
+    setLoading(false);
   }
 
   async function play() {
+    const audio = audioRef.current;
+    if (!audio) {
+      setError('O áudio ainda está sendo preparado. Tente novamente em alguns segundos.');
+      return;
+    }
+
     try {
-      setError(''); setLoading(true);
-      if (!audioRef.current) {
-        const audio = new Audio(src);
-        audio.preload = 'auto';
-        audioRef.current = audio;
-        audio.onplaying = () => { setLoading(false); setPlaying(true); };
-        audio.onended = () => { setPlaying(false); setPlayed(true); setLoading(false); };
-        audio.onerror = () => { setPlaying(false); setLoading(false); setError('Não foi possível carregar o áudio. Tente novamente.'); };
-      }
-      const audio = audioRef.current;
+      setError('');
+      setLoading(true);
       audio.currentTime = 0;
       await audio.play();
     } catch {
-      setPlaying(false); setLoading(false);
-      setError('Toque novamente em “Ouvir áudio”.');
+      setPlaying(false);
+      setLoading(false);
+      setError('O navegador não iniciou o áudio. Toque novamente em “Ouvir áudio”.');
     }
   }
 
