@@ -45,12 +45,12 @@ export default function TestPage() {
 
   useEffect(() => {
     if (loading || reviewing) return;
-    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
   }, [index, loading, reviewing]);
 
   useEffect(() => {
     if (reviewing) {
-      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
     }
   }, [reviewing]);
 
