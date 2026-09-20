@@ -14,10 +14,22 @@ app.use(cors({
 app.use(express.json({ limit: '1mb' }));
 
 app.get(['/health', '/api/health'], (_req, res) => {
-  res.json({ status: 'ok', service: 'idiomas-pro-api' });
+  res.json({
+    status: 'ok',
+    service: 'idiomas-pro-api',
+    database: process.env.DATABASE_URL ? 'configured' : 'missing',
+  });
 });
 
-app.use('/api', api);
+app.use('/api', (req, res, next) => {
+  if (!process.env.DATABASE_URL) {
+    return res.status(503).json({
+      message: 'Banco de dados não configurado no Vercel. Defina a variável DATABASE_URL.',
+      code: 'DATABASE_URL_MISSING',
+    });
+  }
+  return next();
+}, api);
 
 app.use((err: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   console.error(err);
