@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { createAnonymousSession, login, logout, me, register } from '../controllers/authController.js';
 import { startTest, submitTest } from '../controllers/testController.js';
 import { getHistory, getResult } from '../controllers/resultController.js';
+import { getListeningAudio } from '../controllers/ttsController.js';
 
 const router = Router();
 
@@ -13,6 +14,7 @@ router.post('/auth/logout', logout);
 
 router.get('/test/start', startTest);
 router.post('/test/:attemptId/submit', submitTest);
+router.get('/tts/:questionId', getListeningAudio);
 
 router.get('/results/history', getHistory);
 router.get('/results/:attemptId', getResult);
