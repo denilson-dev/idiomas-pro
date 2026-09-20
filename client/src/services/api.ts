@@ -38,6 +38,16 @@ export type TestResult = {
   recommendations: Recommendation[];
 };
 
+async function readResponseBody(response: Response) {
+  const contentType = response.headers.get('content-type') ?? '';
+  if (contentType.includes('application/json')) {
+    return response.json().catch(() => null);
+  }
+
+  const text = await response.text().catch(() => '');
+  return { __nonJson: true, text };
+}
+
 async function request<T>(path: string, options: RequestInit = {}, token?: string | null): Promise<T> {
   const response = await fetch(`${API_URL}${path}`, {
     ...options,
@@ -48,13 +58,27 @@ async function request<T>(path: string, options: RequestInit = {}, token?: strin
     },
   });
 
+  if (response.status === 204) return undefined as T;
+
+  const body = await readResponseBody(response);
+
   if (!response.ok) {
-    const body = await response.json().catch(() => ({ message: 'Falha na comunicação com o servidor.' }));
-    throw new Error(body.message ?? 'Falha na comunicação com o servidor.');
+    if (body && typeof body === 'object' && 'message' in body && typeof body.message === 'string') {
+      throw new Error(body.message);
+    }
+
+    throw new Error(
+      `API indisponível no deployment do Vercel (HTTP ${response.status}). Verifique se o Root Directory está na raiz do repositório e se a Function /api foi publicada.`
+    );
   }
 
-  if (response.status === 204) return undefined as T;
-  return response.json() as Promise<T>;
+  if (body && typeof body === 'object' && '__nonJson' in body) {
+    throw new Error(
+      'O Vercel retornou uma página HTML no lugar da API. O deployment está publicando apenas o frontend; configure o Root Directory para a raiz do repositório.'
+    );
+  }
+
+  return body as T;
 }
 
 export const api = {
