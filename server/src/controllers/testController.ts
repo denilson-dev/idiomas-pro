@@ -12,7 +12,6 @@ type PublicQuestion = {
   prompt: string;
   options: string[];
   category: string;
-  level: string;
   mediaType: string | null;
   mediaUrl: string | null;
 };
@@ -96,7 +95,6 @@ export async function startTest(req: Request, res: Response) {
     prompt: question.prompt,
     options: question.options as string[],
     category: question.category,
-    level: question.level,
     mediaType: question.mediaType,
     mediaUrl: question.mediaUrl,
   }));
