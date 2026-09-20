@@ -14,8 +14,16 @@ export default defineConfig({
   },
   projects: [
     {
-      name: 'chromium',
+      name: 'desktop-chromium',
       use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'android-chrome',
+      use: { ...devices['Pixel 7'] },
+    },
+    {
+      name: 'iphone-webkit',
+      use: { ...devices['iPhone 13'] },
     },
   ],
   webServer: {
