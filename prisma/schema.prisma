@@ -1,0 +1,112 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../server/src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum CEFRLevel {
+  A1
+  A2
+  B1
+  B2
+  C1
+  C2
+}
+
+enum QuestionCategory {
+  GRAMMAR
+  VOCABULARY
+  LISTENING
+}
+
+enum MediaType {
+  AUDIO
+  VIDEO
+}
+
+enum AttemptStatus {
+  IN_PROGRESS
+  COMPLETED
+}
+
+model User {
+  id           String        @id @default(uuid())
+  name         String
+  email        String        @unique
+  passwordHash String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  sessions     Session[]
+  attempts     TestAttempt[]
+}
+
+model Session {
+  id          String        @id @default(uuid())
+  token       String        @unique
+  userId      String?
+  isAnonymous Boolean       @default(true)
+  expiresAt   DateTime
+  createdAt   DateTime      @default(now())
+  user        User?         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  attempts    TestAttempt[]
+
+  @@index([token])
+  @@index([userId])
+}
+
+model Question {
+  id            String            @id @default(uuid())
+  prompt        String
+  options       Json
+  correctAnswer String
+  explanation   String?
+  category      QuestionCategory
+  level         CEFRLevel
+  mediaType     MediaType?
+  mediaUrl      String?
+  isActive      Boolean           @default(true)
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  answers       AttemptAnswer[]
+
+  @@index([level, category])
+}
+
+model TestAttempt {
+  id             String         @id @default(uuid())
+  sessionId      String
+  userId         String?
+  status         AttemptStatus  @default(IN_PROGRESS)
+  totalQuestions Int
+  questionIds    Json
+  score          Int?
+  cefrLevel      CEFRLevel?
+  breakdown      Json?
+  createdAt      DateTime       @default(now())
+  completedAt    DateTime?
+  session        Session        @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  user           User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
+  answers        AttemptAnswer[]
+
+  @@index([sessionId])
+  @@index([userId, createdAt])
+}
+
+model AttemptAnswer {
+  id             String           @id @default(uuid())
+  attemptId      String
+  questionId     String
+  selectedAnswer String
+  isCorrect      Boolean
+  category       QuestionCategory
+  questionLevel  CEFRLevel
+  createdAt      DateTime         @default(now())
+  attempt        TestAttempt      @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  question       Question         @relation(fields: [questionId], references: [id], onDelete: Restrict)
+
+  @@unique([attemptId, questionId])
+  @@index([attemptId])
+}
