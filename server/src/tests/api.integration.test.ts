@@ -156,7 +156,29 @@ describe.sequential('API integration', () => {
     );
   });
 
-  it('isola resultados entre professores', async () => {
+  it('permite editar apenas os dados administrativos da prova', async () => {
+    const response = await request(app)
+      .patch(`/api/teacher/attempts/${attemptId}`)
+      .set('x-teacher-token', teacherToken)
+      .send({
+        studentName: 'Aluno Atualizado',
+        studentEmail: 'aluno.atualizado@example.com',
+      });
+
+    expect(response.status).toBe(200);
+    expect(response.body.attempt).toEqual(
+      expect.objectContaining({
+        id: attemptId,
+        studentName: 'Aluno Atualizado',
+        studentEmail: 'aluno.atualizado@example.com',
+      }),
+    );
+
+    const persisted = await prisma.testAttempt.findUnique({ where: { id: attemptId } });
+    expect(persisted?.studentName).toBe('Aluno Atualizado');
+  });
+
+  it('isola leitura, edição e exclusão entre professores', async () => {
     const otherTeacher = await prisma.teacher.create({
       data: {
         name: 'Prof. Isolado',
@@ -173,10 +195,83 @@ describe.sequential('API integration', () => {
       },
     });
 
-    const response = await request(app)
+    const detail = await request(app)
       .get(`/api/teacher/attempts/${attemptId}`)
       .set('x-teacher-token', otherSession.token);
 
-    expect(response.status).toBe(404);
+    expect(detail.status).toBe(404);
+
+    const update = await request(app)
+      .patch(`/api/teacher/attempts/${attemptId}`)
+      .set('x-teacher-token', otherSession.token)
+      .send({
+        studentName: 'Tentativa indevida',
+        studentEmail: '',
+      });
+
+    expect(update.status).toBe(404);
+
+    const removal = await request(app)
+      .delete(`/api/teacher/attempts/${attemptId}`)
+      .set('x-teacher-token', otherSession.token);
+
+    expect(removal.status).toBe(404);
+  });
+
+  it('permite excluir uma prova individual', async () => {
+    const response = await request(app)
+      .delete(`/api/teacher/attempts/${attemptId}`)
+      .set('x-teacher-token', teacherToken);
+
+    expect(response.status).toBe(204);
+    expect(await prisma.testAttempt.findUnique({ where: { id: attemptId } })).toBeNull();
+  });
+
+  it('permite limpar todas as provas listadas do professor', async () => {
+    const studentSession = await prisma.session.findUnique({ where: { token: studentToken } });
+    expect(studentSession).not.toBeNull();
+
+    await prisma.testAttempt.createMany({
+      data: [
+        {
+          sessionId: studentSession!.id,
+          teacherId,
+          studentName: 'Aluno Limpeza 1',
+          studentEmail: 'limpeza1@example.com',
+          status: 'COMPLETED',
+          totalQuestions: 0,
+          questionIds: [],
+          score: 0,
+          cefrLevel: 'A1',
+          breakdown: [],
+          completedAt: new Date(),
+        },
+        {
+          sessionId: studentSession!.id,
+          teacherId,
+          studentName: 'Aluno Limpeza 2',
+          studentEmail: 'limpeza2@example.com',
+          status: 'COMPLETED',
+          totalQuestions: 0,
+          questionIds: [],
+          score: 100,
+          cefrLevel: 'C2',
+          breakdown: [],
+          completedAt: new Date(),
+        },
+      ],
+    });
+
+    const response = await request(app)
+      .delete('/api/teacher/attempts')
+      .set('x-teacher-token', teacherToken);
+
+    expect(response.status).toBe(200);
+    expect(response.body.deleted).toBe(2);
+
+    const remaining = await prisma.testAttempt.count({
+      where: { teacherId, status: 'COMPLETED' },
+    });
+    expect(remaining).toBe(0);
   });
 });
