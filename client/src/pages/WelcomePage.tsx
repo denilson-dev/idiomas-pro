@@ -81,7 +81,7 @@ export default function WelcomePage() {
             <button onClick={anonymousStart} disabled={loading} className="primary-cta flex min-h-14 items-center justify-center gap-3 rounded-2xl px-5 py-4 text-lg font-black disabled:opacity-50">
               {loading ? 'Preparando...' : 'Começar avaliação'} <ArrowRight size={22}/>
             </button>
-            <button onClick={() => setShowAuth(true)} className="secondary-cta flex min-h-14 items-center justify-center gap-3 rounded-2xl px-5 py-4 text-lg font-black">
+            <button onClick={() => navigate('/login')} className="secondary-cta flex min-h-14 items-center justify-center gap-3 rounded-2xl px-5 py-4 text-lg font-black">
               <LogIn size={21}/> Entrar na conta
             </button>
           </section>
