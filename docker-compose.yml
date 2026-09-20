@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: idiomas-pro-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: idiomas_pro
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - idiomas_pro_pgdata:/var/lib/postgresql/data
+
+volumes:
+  idiomas_pro_pgdata:
