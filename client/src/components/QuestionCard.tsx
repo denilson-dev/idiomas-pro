@@ -21,15 +21,16 @@ export default function QuestionCard({ question, selected, onSelect }: Props) {
         <span className="rounded-full bg-cyan-400/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-cyan-200 sm:px-3 sm:text-xs">
           {categoryLabel[question.category]}
         </span>
-        <span className="rounded-full border border-white/10 px-2.5 py-1 text-[10px] font-bold text-slate-300 sm:px-3 sm:text-xs">
-          {question.level}
-        </span>
         {question.category === 'LISTENING' && <Headphones size={15} className="text-violet-300" />}
       </div>
 
       {question.mediaUrl && question.mediaType && (
         <div className="mb-4 sm:mb-6">
-          <VideoPlayer type={question.mediaType} src={question.mediaUrl} />
+          <VideoPlayer
+            type={question.mediaType}
+            src={question.mediaUrl}
+            speechText={question.speechText}
+          />
         </div>
       )}
 
