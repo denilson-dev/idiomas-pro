@@ -58,16 +58,15 @@ export default function WelcomePage() {
 
             <div className="mt-6 space-y-3">
               {[
-                [ShieldCheck,'Resultado na hora','Saiba seu nível imediatamente.'],
-                [Headphones,'Listening profissional','Ouça e responda no seu ritmo.'],
-                [BookOpen,'Do A1 ao C2','Avaliação completa para todos os níveis.'],
-              ].map(([Icon,title,desc]) => {
-                const I = Icon as typeof ShieldCheck;
-                return <div key={title as string} className="flex items-center gap-3">
-                  <span className="grid h-11 w-11 place-items-center rounded-full bg-[#fff0f4]"><I size={20} className="text-[#ff2d5f]"/></span>
+                { Icon: ShieldCheck, title: 'Resultado na hora', desc: 'Saiba seu nível imediatamente.' },
+                { Icon: Headphones, title: 'Listening profissional', desc: 'Ouça e responda no seu ritmo.' },
+                { Icon: BookOpen, title: 'Do A1 ao C2', desc: 'Avaliação completa para todos os níveis.' },
+              ].map(({ Icon, title, desc }) => (
+                <div key={title} className="flex items-center gap-3">
+                  <span className="grid h-11 w-11 place-items-center rounded-full bg-[#fff0f4]"><Icon size={20} className="text-[#ff2d5f]"/></span>
                   <div><div className="font-black text-[#2b0d71]">{title}</div><div className="text-sm text-[#7656a7]">{desc}</div></div>
                 </div>
-              })}
+              ))}
             </div>
           </div>
 
