@@ -330,7 +330,7 @@ npm run test:all
 
 Os testes de API e E2E usam um PostgreSQL separado do ambiente de produção.
 
-No GitHub Actions, um banco PostgreSQL descartável é criado automaticamente para cada execução. A pipeline aplica migrations, executa o seed, roda os testes, compila frontend/backend e finaliza com o cenário E2E.
+No GitHub Actions, um banco PostgreSQL descartável é criado automaticamente para cada execução. A pipeline aplica migrations, executa o seed, roda os testes, compila frontend/backend e finaliza com o cenário E2E. Pipeline automatizada validada em ambiente isolado.
 
 O fluxo automatizado principal é:
 
