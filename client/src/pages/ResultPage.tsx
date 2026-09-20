@@ -2,6 +2,7 @@ import { ArrowRight, BarChart3, BookOpen, CheckCircle2, Headphones, Trophy } fro
 import { useEffect, useState } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import { api, type TestResult } from '../services/api';
+import { getStoredResult, saveResult } from '../services/resultStorage';
 import { useAppStore } from '../store/useAppStore';
 
 const categoryIcons = {
@@ -19,8 +20,18 @@ export default function ResultPage() {
 
   useEffect(() => {
     if (!token || !attemptId) return;
+
+    const stored = getStoredResult(attemptId);
+    if (stored) {
+      setResult(stored);
+      return;
+    }
+
     api.getResult(token, attemptId)
-      .then(setResult)
+      .then((data) => {
+        saveResult(data);
+        setResult(data);
+      })
       .catch((err) => setError(err instanceof Error ? err.message : 'Resultado indisponível.'));
   }, [token, attemptId]);
 
