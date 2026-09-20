@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import DashboardPage from './pages/DashboardPage';
 import LanguageSelectPage from './pages/LanguageSelectPage';
+import LoginPage from './pages/LoginPage';
 import ResultPage from './pages/ResultPage';
 import StudentSetupPage from './pages/StudentSetupPage';
 import TeacherDashboardPage from './pages/TeacherDashboardPage';
@@ -26,6 +27,7 @@ export default function App() {
       <ScrollToTop />
       <Routes>
         <Route path="/" element={<WelcomePage />} />
+        <Route path="/login" element={<LoginPage />} />
         <Route path="/language" element={<LanguageSelectPage />} />
         <Route path="/setup" element={<StudentSetupPage />} />
         <Route path="/test" element={<TestPage />} />
