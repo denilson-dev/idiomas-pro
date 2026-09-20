@@ -17,64 +17,92 @@ export default function LanguageSelectPage() {
   ];
 
   return (
-    <main className="safe-page relative overflow-hidden px-4 sm:px-6">
+    <main className="safe-page relative overflow-hidden px-3.5 sm:px-6">
       <div className="app-shell relative">
         <BrandHeader subtitle="Idiomas • A1 a C2" />
 
-        <button onClick={() => navigate('/')} aria-label="Voltar" className="secondary-cta mt-4 grid h-11 w-11 place-items-center rounded-2xl">
-          <ArrowLeft size={20}/>
-        </button>
+        <div className="mt-3 flex items-center justify-between">
+          <button
+            onClick={() => navigate('/')}
+            aria-label="Voltar"
+            className="secondary-cta grid h-11 w-11 place-items-center rounded-2xl"
+          >
+            <ArrowLeft size={20}/>
+          </button>
+          <span className="os-pill rounded-full px-3 py-2 text-[11px] font-black text-[#7656a7]">1 de 3</span>
+        </div>
 
-        <section className="mt-3 grid items-center gap-3 lg:grid-cols-[1.05fr_.95fr]">
+        <section className="mt-3 grid grid-cols-[1fr_126px] items-center gap-2 sm:mt-5 sm:grid-cols-[1.05fr_.95fr] sm:gap-5">
           <div>
-            <div className="category-pill text-[10px] sm:text-xs"><Globe2 size={15}/> Teste de nivelamento</div>
-            <h1 className="hero-title mt-5 text-[3.1rem] sm:text-[4.8rem]">
-              <span className="text-[#2b0d71]">Escolha o</span><br/>
-              <span className="hero-pink">idioma para</span><br/>
-              <span className="hero-teal">nivelar</span>
+            <div className="category-pill text-[10px] sm:text-xs"><Globe2 size={14}/> Idioma</div>
+            <h1 className="hero-title mt-3.5 text-[2.8rem] sm:mt-5 sm:text-[4.8rem]">
+              <span className="text-[#2b0d71]">Escolha seu</span><br/>
+              <span className="hero-pink">idioma</span>
             </h1>
-            <p className="mt-4 max-w-xl text-[15px] leading-6 text-[#7656a7] sm:text-lg sm:leading-8">
-              Descubra seu nível de conhecimento, do A1 ao C2, e receba uma jornada de aprendizado personalizada.
+            <p className="mt-3 max-w-xl text-[13px] leading-5.5 text-[#7656a7] sm:mt-4 sm:text-lg sm:leading-8">
+              Selecione o idioma da avaliação. Seu resultado será apresentado de A1 a C2.
             </p>
           </div>
-          <div className="relative mx-auto w-full max-w-[390px]">
-            <div className="hand-note absolute right-0 top-0 z-10 text-lg sm:text-xl">Qual idioma vamos descobrir juntos? ♡</div>
-            <MascotOwl className="animate-float mx-auto h-[290px] w-[290px] sm:h-[360px] sm:w-[360px]" />
+
+          <div className="relative mx-auto">
+            <div className="hand-note absolute -right-1 -top-2 z-10 hidden text-base sm:block">Qual será a próxima conquista? ♡</div>
+            <MascotOwl className="animate-float h-[122px] w-[122px] sm:h-[340px] sm:w-[340px]" />
           </div>
         </section>
 
-        <section className="mt-4 space-y-3">
+        <section className="mt-4 space-y-2.5 sm:mt-5 sm:space-y-3">
           {languages.map((lang) => (
             <button
               key={lang.code}
               type="button"
               disabled={!lang.active}
-              className={`flex min-h-[86px] w-full items-center gap-4 rounded-[1.5rem] border-2 px-4 py-4 text-left transition sm:px-5 ${
-                lang.active ? 'border-[#ff2d5f] bg-[#fff8fa] shadow-[0_12px_30px_rgba(255,45,95,.08)]' : 'border-[#e2d8f3] bg-white opacity-65'
+              className={`pressable flex min-h-[76px] w-full items-center gap-3 rounded-[1.25rem] border px-3.5 py-3.5 text-left sm:min-h-[86px] sm:gap-4 sm:rounded-[1.5rem] sm:px-5 sm:py-4 ${
+                lang.active
+                  ? 'border-[#ff2d5f] bg-[linear-gradient(145deg,#fffafd,#fff2f6)] shadow-[0_12px_30px_rgba(255,45,95,.08)]'
+                  : 'border-[#e2d8f3] bg-white/68 opacity-58'
               }`}
             >
-              <span className="text-4xl">{lang.flag}</span>
+              <span className="text-3xl sm:text-4xl">{lang.flag}</span>
               <span className="min-w-0 flex-1">
-                <span className="block text-xl font-black text-[#2b0d71]">{lang.name}</span>
-                <span className="mt-1 block text-sm text-[#7656a7]">{lang.native} • A1 a C2 {lang.active ? '' : '• Em breve'}</span>
+                <span className="block text-lg font-black text-[#2b0d71] sm:text-xl">{lang.name}</span>
+                <span className="mt-0.5 block text-xs text-[#7656a7] sm:mt-1 sm:text-sm">
+                  {lang.native} • A1 a C2 {lang.active ? '' : '• Em breve'}
+                </span>
               </span>
-              {lang.active ? <span className="grid h-11 w-11 place-items-center rounded-full bg-[#ff2d5f] text-white"><Check size={21}/></span> : <span className="h-9 w-9 rounded-full border-2 border-[#d8cdec]"/>}
+
+              {lang.active
+                ? <span className="grid h-10 w-10 place-items-center rounded-full bg-gradient-to-b from-[#ff4b75] to-[#f31f55] text-white shadow-[0_7px_16px_rgba(255,45,95,.22)] sm:h-11 sm:w-11"><Check size={20}/></span>
+                : <span className="h-9 w-9 rounded-full border-2 border-[#d8cdec] bg-white/60"/>}
             </button>
           ))}
         </section>
 
-        <section className="mint-card mt-5 rounded-[1.6rem] p-5">
-          <div className="flex items-start gap-4">
-            <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-[#ddf7f2] text-[#008f81]"><BarChart3 size={26}/></span>
-            <div><h2 className="text-lg font-black text-[#2b0d71]">Uma avaliação completa</h2><p className="mt-1 text-sm leading-6 text-[#7656a7]">Gramática, vocabulário e compreensão auditiva para identificar seu nível com resultado imediato.</p></div>
+        <section className="mint-card mt-4 rounded-[1.4rem] p-4 sm:mt-5 sm:p-5">
+          <div className="flex items-start gap-3 sm:gap-4">
+            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-[#ddf7f2] text-[#008f81] sm:h-12 sm:w-12">
+              <BarChart3 size={23}/>
+            </span>
+            <div>
+              <h2 className="text-base font-black text-[#2b0d71] sm:text-lg">Uma avaliação completa</h2>
+              <p className="mt-1 text-xs leading-5 text-[#7656a7] sm:text-sm sm:leading-6">
+                Gramática, vocabulário e compreensão auditiva para identificar seu nível com resultado imediato.
+              </p>
+            </div>
           </div>
         </section>
 
-        <button onClick={() => navigate('/setup')} className="primary-cta mt-5 flex min-h-14 w-full items-center justify-center gap-3 rounded-2xl px-5 text-lg font-black">
-          Continuar <ArrowRight size={22}/>
+        <button
+          onClick={() => navigate('/setup')}
+          className="primary-cta mt-4 flex min-h-14 w-full items-center justify-center gap-3 rounded-2xl px-5 text-base font-black sm:mt-5 sm:text-lg"
+        >
+          Continuar <ArrowRight size={21}/>
         </button>
 
-        <div className="my-7 flex items-center justify-center gap-3 text-sm text-[#4d2588]"><span className="h-px w-20 bg-[#d9cff0]"/><span className="hand-note">Aprender te leva mais longe ♡</span><span className="h-px w-20 bg-[#d9cff0]"/></div>
+        <div className="my-6 flex items-center justify-center gap-3 text-sm text-[#4d2588] sm:my-7">
+          <span className="h-px w-14 bg-[#d9cff0] sm:w-20"/>
+          <span className="hand-note">Aprender te leva mais longe ♡</span>
+          <span className="h-px w-14 bg-[#d9cff0] sm:w-20"/>
+        </div>
         <div className="rainbow-corner"/>
       </div>
     </main>
