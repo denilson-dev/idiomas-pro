@@ -22,6 +22,7 @@ export default function DashboardPage() {
   if (!token) return <Navigate to="/" replace />;
 
   async function logout() {
+    if (!token) return;
     try { await api.logout(token); } catch { /* sessão local também será encerrada */ }
     clearSession();
     navigate('/');
