@@ -17,6 +17,10 @@ services:
         fromDatabase:
           name: idiomas-pro-db
           property: connectionString
+      - key: GOOGLE_TTS_API_KEY
+        sync: false
+      - key: GOOGLE_TTS_VOICE
+        value: es-ES-Chirp3-HD-Zephyr
 
 databases:
   - name: idiomas-pro-db
