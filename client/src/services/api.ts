@@ -177,4 +177,29 @@ export const api = {
     request<TeacherDashboard>('/teacher/dashboard', {}, token, 'x-teacher-token'),
   getTeacherAttempt: (token: string, attemptId: string) =>
     request<TeacherAttemptDetail>(`/teacher/attempts/${attemptId}`, {}, token, 'x-teacher-token'),
+  updateTeacherAttempt: (
+    token: string,
+    attemptId: string,
+    payload: { studentName: string; studentEmail?: string },
+  ) =>
+    request<{ attempt: TeacherAttempt }>(
+      `/teacher/attempts/${attemptId}`,
+      { method: 'PATCH', body: JSON.stringify(payload) },
+      token,
+      'x-teacher-token',
+    ),
+  deleteTeacherAttempt: (token: string, attemptId: string) =>
+    request<void>(
+      `/teacher/attempts/${attemptId}`,
+      { method: 'DELETE' },
+      token,
+      'x-teacher-token',
+    ),
+  clearTeacherAttempts: (token: string) =>
+    request<{ deleted: number; message: string }>(
+      '/teacher/attempts',
+      { method: 'DELETE' },
+      token,
+      'x-teacher-token',
+    ),
 };
