@@ -67,12 +67,12 @@ async function request<T>(path: string, options: RequestInit = {}, token?: strin
     }
 
     throw new Error(
-      `API indisponível no deployment do Vercel (HTTP ${response.status}). Verifique se a Function /api foi publicada.`
+      `API indisponível (HTTP ${response.status}). Verifique se o backend foi publicado e se a rota /api está acessível.`
     );
   }
 
   if (body && typeof body === 'object' && '__nonJson' in body) {
-    throw new Error('O Vercel retornou uma página HTML no lugar da API.');
+    throw new Error('O servidor retornou uma página HTML no lugar da API.');
   }
 
   return body as T;
