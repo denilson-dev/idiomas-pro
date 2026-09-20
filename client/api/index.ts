@@ -82,9 +82,9 @@ function publicQuestion(q: PlacementQuestion) {
     prompt: q.prompt,
     options: q.options,
     category: q.category,
-    level: q.level,
     mediaType: q.mediaType ?? null,
     mediaUrl: q.mediaUrl ?? null,
+    speechText: q.speechText ?? null,
   };
 }
 
