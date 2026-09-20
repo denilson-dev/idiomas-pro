@@ -10,9 +10,9 @@ export type Question = {
   prompt: string;
   options: string[];
   category: 'GRAMMAR' | 'VOCABULARY' | 'LISTENING';
-  level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
   mediaType: 'AUDIO' | 'VIDEO' | null;
   mediaUrl: string | null;
+  speechText: string | null;
 };
 
 export type BreakdownItem = {
