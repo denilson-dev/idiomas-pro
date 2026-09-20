@@ -3,6 +3,8 @@ import { createAnonymousSession, login, logout, me, register } from '../controll
 import { getHistory, getResult } from '../controllers/resultController.js';
 import {
   bootstrapTeacher,
+  clearTeacherAttempts,
+  deleteTeacherAttempt,
   listTeachers,
   teacherAttemptDetail,
   teacherBootstrapStatus,
@@ -10,6 +12,7 @@ import {
   teacherLogin,
   teacherLogout,
   teacherMe,
+  updateTeacherAttempt,
 } from '../controllers/teacherController.js';
 import { startTest, submitTest } from '../controllers/testController.js';
 import { getListeningAudio } from '../controllers/ttsController.js';
@@ -30,7 +33,10 @@ router.post('/teacher/auth/login', teacherLogin);
 router.get('/teacher/auth/me', teacherMe);
 router.post('/teacher/auth/logout', teacherLogout);
 router.get('/teacher/dashboard', teacherDashboard);
+router.delete('/teacher/attempts', clearTeacherAttempts);
 router.get('/teacher/attempts/:attemptId', teacherAttemptDetail);
+router.patch('/teacher/attempts/:attemptId', updateTeacherAttempt);
+router.delete('/teacher/attempts/:attemptId', deleteTeacherAttempt);
 
 router.post('/test/start', startTest);
 router.post('/test/:attemptId/submit', submitTest);
