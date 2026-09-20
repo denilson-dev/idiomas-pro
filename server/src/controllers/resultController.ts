@@ -22,11 +22,15 @@ export async function getResult(req: Request, res: Response) {
     },
     select: {
       id: true,
+      studentName: true,
+      studentEmail: true,
+      language: true,
       score: true,
       cefrLevel: true,
       breakdown: true,
       totalQuestions: true,
       completedAt: true,
+      teacher: { select: { id: true, name: true } },
     },
   });
 
@@ -50,11 +54,14 @@ export async function getHistory(req: Request, res: Response) {
     orderBy: { completedAt: 'desc' },
     select: {
       id: true,
+      studentName: true,
+      language: true,
       score: true,
       cefrLevel: true,
       breakdown: true,
       totalQuestions: true,
       completedAt: true,
+      teacher: { select: { id: true, name: true } },
     },
   });
 
