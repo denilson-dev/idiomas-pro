@@ -1,0 +1,27 @@
+{
+  "name": "idiomas-pro-placement",
+  "private": true,
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev -w server\" \"npm run dev -w client\"",
+    "build": "npm run db:generate && npm run build -w server && npm run build -w client",
+    "db:generate": "prisma generate --config prisma7.config.ts",
+    "db:migrate": "prisma migrate dev --config prisma7.config.ts --name init",
+    "db:seed": "tsx prisma/seed.ts",
+    "db:studio": "prisma studio --config prisma7.config.ts"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "dotenv": "^17.2.2",
+    "prisma": "^7.10.0",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.2",
+    "@prisma/adapter-pg": "^7.10.0",
+    "@prisma/client": "^7.10.0",
+    "bcryptjs": "^3.0.2",
+    "pg": "^8.16.3"
+  }
+}
