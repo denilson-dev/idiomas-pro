@@ -21,5 +21,11 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build for Vercel
-        run: npm run build:vercel
+      - name: Generate Prisma Client
+        run: npm run db:generate
+
+      - name: Build backend
+        run: npm run build -w server
+
+      - name: Build frontend
+        run: npm run build -w client
