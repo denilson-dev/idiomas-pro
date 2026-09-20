@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowRight, BookOpen, Headphones, LogIn, School, ShieldCheck } from 'lucide-react';
+import { ArrowRight, BookOpen, Headphones, LogIn, School, ShieldCheck, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import BrandHeader from '../components/BrandHeader';
 import MascotOwl from '../components/MascotOwl';
@@ -9,115 +9,125 @@ import { useAppStore } from '../store/useAppStore';
 export default function WelcomePage() {
   const navigate = useNavigate();
   const setSession = useAppStore((state) => state.setSession);
-  const [showAuth, setShowAuth] = useState(false);
-  const [mode, setMode] = useState<'login' | 'register'>('login');
-  const [form, setForm] = useState({ name: '', email: '', password: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   async function anonymousStart() {
     try {
-      setLoading(true); setError('');
+      setLoading(true);
+      setError('');
       const session = await api.createAnonymousSession();
       setSession(session.token, session.user);
       navigate('/language');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Não foi possível iniciar o teste.');
-    } finally { setLoading(false); }
-  }
-
-  async function submitAuth(event: React.FormEvent) {
-    event.preventDefault();
-    try {
-      setLoading(true); setError('');
-      const session = mode === 'login'
-        ? await api.login({ email: form.email, password: form.password })
-        : await api.register(form);
-      setSession(session.token, session.user);
-      navigate('/language');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Falha na autenticação.');
-    } finally { setLoading(false); }
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
-    <main className="safe-page relative overflow-hidden px-4 sm:px-6">
+    <main className="safe-page relative overflow-hidden px-3.5 sm:px-6">
       <div className="app-shell relative">
         <BrandHeader subtitle="Idiomas • A1 a C2" />
 
-        <section className="mt-5 grid items-center gap-3 lg:grid-cols-[1.05fr_.95fr] lg:gap-8">
+        <section className="mt-4 grid gap-4 lg:mt-6 lg:grid-cols-[1.05fr_.95fr] lg:items-center lg:gap-8">
           <div>
-            <div className="category-pill text-[10px] sm:text-xs"><BookOpen size={15}/> Teste de nivelamento</div>
-            <h1 className="hero-title mt-5 max-w-2xl text-[3.3rem] sm:text-[4.6rem] lg:text-[5.3rem]">
-              <span className="hero-pink">Descubra seu próximo</span><br/>
+            <div className="category-pill text-[10px] sm:text-xs">
+              <BookOpen size={14}/> Teste de nivelamento
+            </div>
+
+            <h1 className="hero-title mt-4 max-w-2xl text-[3.15rem] sm:mt-5 sm:text-[4.6rem] lg:text-[5.3rem]">
+              <span className="hero-pink">Descubra seu</span>
+              <br/>
+              <span className="hero-pink">próximo </span>
               <span className="hero-teal">nível</span>
             </h1>
-            <p className="mt-5 max-w-xl text-[15px] leading-6 text-[#7656a7] sm:text-lg sm:leading-8">
-              Avalie seus conhecimentos de gramática, vocabulário e compreensão auditiva e descubra a etapa ideal para continuar aprendendo com confiança.
+
+            <p className="mt-4 max-w-xl text-[14px] leading-6 text-[#7656a7] sm:mt-5 sm:text-lg sm:leading-8">
+              Uma avaliação rápida, leve e completa para descobrir seu nível e orientar seus próximos passos.
             </p>
 
-            <div className="mt-6 space-y-3">
+            <div className="mt-5 grid gap-2.5 sm:grid-cols-3 sm:gap-3">
               {[
-                { Icon: ShieldCheck, title: 'Resultado na hora', desc: 'Saiba seu nível imediatamente.' },
-                { Icon: Headphones, title: 'Listening profissional', desc: 'Ouça e responda no seu ritmo.' },
-                { Icon: BookOpen, title: 'Do A1 ao C2', desc: 'Avaliação completa para todos os níveis.' },
+                { Icon: ShieldCheck, title: 'Resultado na hora', desc: 'Seu nível ao finalizar.' },
+                { Icon: Headphones, title: 'Listening', desc: 'Ouça no seu ritmo.' },
+                { Icon: BookOpen, title: 'A1 até C2', desc: 'Avaliação completa.' },
               ].map(({ Icon, title, desc }) => (
-                <div key={title} className="flex items-center gap-3">
-                  <span className="grid h-11 w-11 place-items-center rounded-full bg-[#fff0f4]"><Icon size={20} className="text-[#ff2d5f]"/></span>
-                  <div><div className="font-black text-[#2b0d71]">{title}</div><div className="text-sm text-[#7656a7]">{desc}</div></div>
+                <div key={title} className="soft-card flex items-center gap-3 rounded-[1.2rem] p-3 sm:block sm:p-4">
+                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#fff0f4] text-[#ff2d5f]">
+                    <Icon size={18}/>
+                  </span>
+                  <div className="min-w-0 sm:mt-3">
+                    <div className="text-sm font-black text-[#2b0d71]">{title}</div>
+                    <div className="mt-0.5 text-[11px] leading-4 text-[#7656a7] sm:text-xs">{desc}</div>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="relative mx-auto w-full max-w-[470px]">
-            <div className="hand-note absolute right-2 top-1 z-10 text-xl sm:text-2xl">Vamos descobrir juntos? ♡</div>
-            <MascotOwl className="animate-float mx-auto h-[320px] w-[320px] sm:h-[420px] sm:w-[420px]" />
+          <div className="relative mx-auto w-full max-w-[360px]">
+            <div className="paper-card relative overflow-hidden rounded-[1.7rem] px-4 pt-3 sm:bg-transparent sm:p-0 sm:shadow-none sm:backdrop-blur-none">
+              <div className="hand-note absolute right-4 top-3 z-10 text-base sm:right-2 sm:top-1 sm:text-2xl">Vamos descobrir juntos? ♡</div>
+              <MascotOwl className="animate-float mx-auto h-[210px] w-[210px] sm:h-[390px] sm:w-[390px]" />
+              <div className="absolute inset-x-8 bottom-3 h-10 rounded-full bg-[#5d238e]/8 blur-2xl sm:bottom-0" />
+            </div>
           </div>
         </section>
 
-        {!showAuth ? (
-          <section className="mt-3 grid gap-3 sm:grid-cols-2">
-            <button onClick={anonymousStart} disabled={loading} className="primary-cta flex min-h-14 items-center justify-center gap-3 rounded-2xl px-5 py-4 text-lg font-black disabled:opacity-50">
-              {loading ? 'Preparando...' : 'Começar avaliação'} <ArrowRight size={22}/>
-            </button>
-            <button onClick={() => navigate('/login')} className="secondary-cta flex min-h-14 items-center justify-center gap-3 rounded-2xl px-5 py-4 text-lg font-black">
-              <LogIn size={21}/> Entrar na conta
-            </button>
-          </section>
-        ) : (
-          <section className="paper-card mt-5 rounded-[1.8rem] p-4 sm:p-6">
-            <div className="mb-4 grid grid-cols-2 rounded-2xl bg-[#f6f0ff] p-1">
-              {(['login','register'] as const).map(item => <button key={item} onClick={() => setMode(item)} className={`rounded-xl px-3 py-3 text-sm font-black ${mode===item?'bg-white text-[#2b0d71] shadow-sm':'text-[#8d78b7]'}`}>{item==='login'?'Entrar':'Criar conta'}</button>)}
-            </div>
-            <form onSubmit={submitAuth} className="space-y-3">
-              {mode==='register' && <input required placeholder="Seu nome" value={form.name} onChange={e=>setForm({...form,name:e.target.value})} className="min-h-12 w-full rounded-2xl border border-[#ddd2ef] bg-white px-4 text-[#2b0d71] outline-none"/>}
-              <input required type="email" placeholder="E-mail" value={form.email} onChange={e=>setForm({...form,email:e.target.value})} className="min-h-12 w-full rounded-2xl border border-[#ddd2ef] bg-white px-4 text-[#2b0d71] outline-none"/>
-              <input required minLength={6} type="password" placeholder="Senha" value={form.password} onChange={e=>setForm({...form,password:e.target.value})} className="min-h-12 w-full rounded-2xl border border-[#ddd2ef] bg-white px-4 text-[#2b0d71] outline-none"/>
-              {error && <p className="rounded-xl bg-[#fff0f4] px-3 py-2 text-sm text-[#c81f49]">{error}</p>}
-              <button disabled={loading} className="primary-cta flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl font-black"><LogIn size={18}/>{loading?'Aguarde...':mode==='login'?'Entrar e continuar':'Criar conta'}</button>
-            </form>
-            <button type="button" onClick={() => setForm({name:'',email:'aluno@idiomaspro.com',password:'Teste123!'})} className="mt-3 w-full text-center text-xs font-bold text-[#7656a7]">Usar conta de demonstração</button>
-          </section>
-        )}
+        <section className="mt-4 grid gap-2.5 sm:mt-5 sm:grid-cols-2 sm:gap-3">
+          <button
+            onClick={anonymousStart}
+            disabled={loading}
+            className="primary-cta flex min-h-14 items-center justify-center gap-3 rounded-2xl px-5 py-4 text-base font-black disabled:opacity-50 sm:text-lg"
+          >
+            {loading ? 'Preparando...' : 'Começar avaliação'} <ArrowRight size={21}/>
+          </button>
+
+          <button
+            onClick={() => navigate('/login')}
+            className="secondary-cta flex min-h-14 items-center justify-center gap-3 rounded-2xl px-5 py-4 text-base font-black sm:text-lg"
+          >
+            <LogIn size={20}/> Entrar na conta
+          </button>
+        </section>
+
+        {error && <p className="mt-3 rounded-xl bg-[#fff0f4] px-3 py-2 text-sm font-bold text-[#c81f49]">{error}</p>}
 
         <button
           type="button"
           onClick={() => navigate('/professor')}
-          className="mt-5 flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl border border-[#ded5ef] bg-white/80 px-4 text-sm font-black text-[#4c2187] transition hover:bg-white"
+          className="secondary-cta mt-3.5 flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl px-4 text-sm font-black"
         >
           <School size={18}/> Área exclusiva do professor
         </button>
 
-        <section className="mint-card relative mt-6 overflow-hidden rounded-[1.8rem] p-5 sm:p-6">
+        <section className="mint-card relative mt-5 overflow-hidden rounded-[1.6rem] p-4 sm:mt-6 sm:p-6">
           <div className="grid gap-4 sm:grid-cols-[auto_1fr] sm:items-center">
-            <div className="flex gap-2"><span className="rounded-2xl bg-[#ffe4eb] px-4 py-5 font-black text-[#ff2d5f]">A1</span><span className="rounded-2xl border-2 border-[#008f81] bg-white px-4 py-5 font-black text-[#08786f]">B1</span><span className="rounded-2xl bg-[#efe4ff] px-4 py-5 font-black text-[#6c2cb0]">C2</span></div>
-            <div><h2 className="text-xl font-black text-[#2b0d71]">Do seu jeito. Para o seu próximo passo.</h2><p className="mt-1 text-sm leading-6 text-[#7656a7]">Mais conhecimento, mais oportunidades. Um você cada vez mais no topo!</p></div>
+            <div className="flex gap-2">
+              <span className="rounded-2xl bg-[#ffe4eb] px-3.5 py-4 font-black text-[#ff2d5f]">A1</span>
+              <span className="rounded-2xl border border-[#8fd8cb] bg-white px-3.5 py-4 font-black text-[#08786f]">B1</span>
+              <span className="rounded-2xl bg-[#efe4ff] px-3.5 py-4 font-black text-[#6c2cb0]">C2</span>
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <Sparkles size={18} className="text-[#f6a000]"/>
+                <h2 className="text-lg font-black text-[#2b0d71] sm:text-xl">Seu próximo passo começa aqui.</h2>
+              </div>
+              <p className="mt-1 text-xs leading-5 text-[#7656a7] sm:text-sm sm:leading-6">
+                Mais conhecimento, mais possibilidades e um acompanhamento pensado para sua evolução.
+              </p>
+            </div>
           </div>
           <div className="rainbow-corner"/>
         </section>
 
-        <div className="my-7 flex items-center justify-center gap-3 text-sm text-[#4d2588]"><span className="h-px w-20 bg-[#d9cff0]"/><span className="hand-note">Aprender te leva mais longe ♡</span><span className="h-px w-20 bg-[#d9cff0]"/></div>
+        <div className="my-6 flex items-center justify-center gap-3 text-sm text-[#4d2588] sm:my-7">
+          <span className="h-px w-14 bg-[#d9cff0] sm:w-20"/>
+          <span className="hand-note">Aprender te leva mais longe ♡</span>
+          <span className="h-px w-14 bg-[#d9cff0] sm:w-20"/>
+        </div>
       </div>
     </main>
   );
