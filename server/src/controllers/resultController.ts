@@ -3,13 +3,20 @@ import { prisma } from '../lib/prisma.js';
 import { getSessionFromRequest } from '../lib/session.js';
 import { getRecommendations, type CefrLevel } from '../services/placementEngine.js';
 
+function firstParam(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] : value;
+}
+
 export async function getResult(req: Request, res: Response) {
   const session = await getSessionFromRequest(req);
   if (!session) return res.status(401).json({ message: 'Sessão inválida ou expirada.' });
 
+  const attemptId = firstParam(req.params.attemptId);
+  if (!attemptId) return res.status(400).json({ message: 'Identificador da tentativa inválido.' });
+
   const attempt = await prisma.testAttempt.findFirst({
     where: {
-      id: req.params.attemptId,
+      id: attemptId,
       ...(session.userId ? { userId: session.userId } : { sessionId: session.id }),
       status: 'COMPLETED',
     },
