@@ -57,6 +57,32 @@ model Session {
   @@index([userId])
 }
 
+model Teacher {
+  id           String           @id @default(uuid())
+  name         String
+  email        String           @unique
+  passwordHash String
+  isActive     Boolean          @default(true)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  sessions     TeacherSession[]
+  attempts     TestAttempt[]
+
+  @@index([name])
+}
+
+model TeacherSession {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  teacherId String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  teacher   Teacher  @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([teacherId])
+}
+
 model Question {
   id            String            @id @default(uuid())
   prompt        String
@@ -79,6 +105,10 @@ model TestAttempt {
   id             String         @id @default(uuid())
   sessionId      String
   userId         String?
+  teacherId      String?
+  studentName    String?
+  studentEmail   String?
+  language       String         @default("ES")
   status         AttemptStatus  @default(IN_PROGRESS)
   totalQuestions Int
   questionIds    Json
@@ -89,10 +119,12 @@ model TestAttempt {
   completedAt    DateTime?
   session        Session        @relation(fields: [sessionId], references: [id], onDelete: Cascade)
   user           User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
+  teacher        Teacher?       @relation(fields: [teacherId], references: [id], onDelete: SetNull)
   answers        AttemptAnswer[]
 
   @@index([sessionId])
   @@index([userId, createdAt])
+  @@index([teacherId, completedAt])
 }
 
 model AttemptAnswer {
