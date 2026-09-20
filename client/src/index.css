@@ -6,13 +6,61 @@
   background: #06111f;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
 }
 
 * { box-sizing: border-box; }
-html { min-width: 320px; background: #06111f; }
-body { margin: 0; min-width: 320px; min-height: 100vh; }
+
+html {
+  min-width: 320px;
+  min-height: 100%;
+  background: #06111f;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  overscroll-behavior-y: none;
+}
+
 button, input { font: inherit; }
-button { cursor: pointer; }
+button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+button, a, input { touch-action: manipulation; }
+
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid rgba(103, 232, 249, .8);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: rgba(103, 232, 249, .25);
+  color: white;
+}
+
+.safe-page {
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding-top: max(1rem, env(safe-area-inset-top));
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+.safe-bottom {
+  padding-bottom: max(.75rem, env(safe-area-inset-bottom));
+}
+
+.glass-panel {
+  background: linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.04));
+  border: 1px solid rgba(255,255,255,.1);
+  box-shadow: 0 24px 80px rgba(0,0,0,.28);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+}
 
 @keyframes float {
   0%, 100% { transform: translateY(0); }
@@ -26,3 +74,18 @@ button { cursor: pointer; }
 
 .animate-float { animation: float 5s ease-in-out infinite; }
 .animate-pulse-glow { animation: pulseGlow 7s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .touch-no-hover:hover {
+    transform: none !important;
+  }
+}
