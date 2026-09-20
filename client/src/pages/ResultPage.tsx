@@ -1,4 +1,4 @@
-import { ArrowRight, BarChart3, BookOpen, CalendarCheck2, Headphones, RotateCcw, Sparkles } from 'lucide-react';
+import { ArrowRight, BarChart3, BookOpen, Headphones, RotateCcw, Sparkles } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import BrandHeader from '../components/BrandHeader';
@@ -33,100 +33,174 @@ export default function ResultPage() {
 
   useEffect(() => {
     if (!token || !attemptId) return;
+
     const stored = getStoredResult(attemptId);
-    if (stored) { setResult(stored); return; }
+    if (stored) {
+      setResult(stored);
+      return;
+    }
+
     api.getResult(token, attemptId)
-      .then((data) => { saveResult(data); setResult(data); })
+      .then((data) => {
+        saveResult(data);
+        setResult(data);
+      })
       .catch((err) => setError(err instanceof Error ? err.message : 'Resultado indisponível.'));
   }, [token, attemptId]);
 
   if (!token) return <Navigate to="/" replace />;
 
   if (!result) {
-    return <div className="safe-page grid place-items-center px-6 text-center font-bold text-[#7656a7]">{error || 'Calculando seu resultado...'}</div>;
+    return (
+      <div className="safe-page grid place-items-center px-6 text-center font-bold text-[#7656a7]">
+        {error || 'Calculando seu resultado...'}
+      </div>
+    );
   }
 
+  const levelLabel =
+    result.cefrLevel === 'A1' || result.cefrLevel === 'A2'
+      ? 'Nível básico'
+      : result.cefrLevel === 'B1' || result.cefrLevel === 'B2'
+        ? 'Nível intermediário'
+        : 'Nível avançado';
+
   return (
-    <main className="safe-page relative overflow-hidden px-4 sm:px-6">
+    <main className="safe-page relative overflow-hidden px-3.5 sm:px-6">
       <div className="app-shell relative">
         <BrandHeader subtitle="Idiomas • Espanhol" />
 
-        <section className="mt-6 grid items-center gap-3 lg:grid-cols-[1.05fr_.95fr]">
-          <div>
-            <div className="category-pill text-[10px] sm:text-xs"><Sparkles size={15}/> Resultado do seu teste</div>
-            <h1 className="hero-title mt-5 text-[3.25rem] sm:text-[4.8rem]">
-              <span className="hero-pink">Parabéns!</span><br/>
-              <span className="text-[#2b0d71]">Seu nível é</span>
-            </h1>
+        <section className="mt-4 sm:mt-6">
+          <div className="category-pill text-[10px] sm:text-xs">
+            <Sparkles size={14}/> Resultado do seu teste
+          </div>
 
-            <div className="mt-5 inline-flex min-w-[210px] flex-col items-center rounded-[1.7rem] border border-[#ccece6] bg-[#f1fbf8] px-8 py-5">
-              <span className="text-[4.5rem] font-black leading-none text-[#08786f] sm:text-[6rem]">{result.cefrLevel}</span>
-              <span className="mt-2 text-sm font-black uppercase tracking-[.12em] text-[#08786f]">
-                {result.cefrLevel === 'A1' || result.cefrLevel === 'A2' ? 'Nível básico' :
-                 result.cefrLevel === 'B1' || result.cefrLevel === 'B2' ? 'Nível intermediário' : 'Nível avançado'}
+          <h1 className="hero-title mt-3.5 text-[2.8rem] sm:mt-5 sm:text-[4.8rem]">
+            <span className="hero-pink">Parabéns!</span>
+            <br/>
+            <span className="text-[#2b0d71]">Seu nível é</span>
+          </h1>
+
+          <div className="mt-4 grid grid-cols-[1fr_128px] items-center gap-3 sm:mt-5 sm:grid-cols-[1fr_300px] sm:gap-6">
+            <div className="paper-card flex min-h-[150px] flex-col items-center justify-center rounded-[1.45rem] border-[#ccece6] bg-[#f1fbf8]/90 px-4 py-4 text-center sm:min-h-[220px] sm:rounded-[1.8rem] sm:px-8 sm:py-5">
+              <span className="text-[4.2rem] font-black leading-none text-[#08786f] sm:text-[6rem]">{result.cefrLevel}</span>
+              <span className="mt-2 text-[10px] font-black uppercase tracking-[.12em] text-[#08786f] sm:text-sm">
+                {levelLabel}
+              </span>
+              <span className="mt-3 rounded-full bg-white/85 px-3 py-1.5 text-[11px] font-black text-[#2b0d71] shadow-sm sm:text-sm">
+                {result.score}% de aproveitamento
               </span>
             </div>
 
-            <p className="mt-5 max-w-xl text-[15px] leading-6 text-[#7656a7] sm:text-lg sm:leading-8">
-              Você concluiu a avaliação com <strong className="text-[#2b0d71]">{result.score}% de aproveitamento</strong>. Continue praticando para avançar ainda mais.
-            </p>
+            <div className="relative mx-auto">
+              <div className="hand-note absolute -right-1 -top-2 z-10 hidden text-base sm:block">Você conseguiu! ♡</div>
+              <MascotOwl variant="celebrate" className="animate-float h-[126px] w-[126px] sm:h-[285px] sm:w-[285px]" />
+            </div>
           </div>
 
-          <div className="relative mx-auto max-w-[420px]">
-            <div className="hand-note absolute right-0 top-0 z-10 text-xl sm:text-2xl">Você conseguiu! ♡</div>
-            <MascotOwl variant="celebrate" className="animate-float h-[330px] w-[330px] sm:h-[420px] sm:w-[420px]" />
-          </div>
+          <p className="mt-4 max-w-2xl text-[13px] leading-5.5 text-[#7656a7] sm:mt-5 sm:text-lg sm:leading-8">
+            Você concluiu a avaliação com <strong className="text-[#2b0d71]">{result.score}% de aproveitamento</strong>. Continue praticando para avançar ainda mais.
+          </p>
         </section>
 
-        <section className="paper-card mt-5 rounded-[1.8rem] p-4 sm:p-6">
-          <div className="mb-4 flex items-center gap-2"><BarChart3 className="text-[#5d238e]"/><h2 className="text-xl font-black text-[#2b0d71] sm:text-2xl">Seu desempenho por habilidade</h2></div>
-          <div className="grid grid-cols-3 gap-2 sm:gap-4">
+        <section className="paper-card mt-5 rounded-[1.55rem] p-3.5 sm:rounded-[1.8rem] sm:p-6">
+          <div className="mb-3 flex items-center gap-2 sm:mb-4">
+            <BarChart3 className="text-[#5d238e]" size={20}/>
+            <h2 className="text-lg font-black text-[#2b0d71] sm:text-2xl">Seu desempenho por habilidade</h2>
+          </div>
+
+          <div className="grid gap-2.5 sm:grid-cols-3 sm:gap-4">
             {result.breakdown.map((item) => {
               const Icon = categoryIcons[item.category];
               const theme = categoryTheme[item.category];
+
               return (
-                <article key={item.category} className="rounded-2xl p-3 sm:p-5" style={{background:theme.bg}}>
-                  <div className="flex items-center justify-between gap-1">
-                    <span className="grid h-9 w-9 place-items-center rounded-full bg-white"><Icon size={18} style={{color:theme.accent}}/></span>
-                    <span className="text-xl font-black sm:text-3xl" style={{color:theme.accent}}>{item.percentage}%</span>
+                <article
+                  key={item.category}
+                  className="flex items-center gap-3 rounded-[1.15rem] p-3.5 sm:block sm:rounded-2xl sm:p-5"
+                  style={{ background: theme.bg }}
+                >
+                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-white/90 shadow-sm sm:h-9 sm:w-9">
+                    <Icon size={18} style={{ color: theme.accent }}/>
+                  </span>
+
+                  <div className="min-w-0 flex-1 sm:mt-3">
+                    <div className="flex items-center justify-between gap-3">
+                      <h3 className="truncate text-sm font-black text-[#2b0d71] sm:text-base">{item.label}</h3>
+                      <span className="text-xl font-black sm:text-3xl" style={{ color: theme.accent }}>{item.percentage}%</span>
+                    </div>
+                    <div className="mt-2 h-2 overflow-hidden rounded-full bg-white/80">
+                      <div className="h-full rounded-full transition-[width] duration-700" style={{ width:`${item.percentage}%`, background:theme.accent }}/>
+                    </div>
+                    <p className="mt-1.5 text-[10px] font-bold text-[#7656a7] sm:text-xs">{item.correct}/{item.total} acertos</p>
                   </div>
-                  <h3 className="mt-3 truncate text-xs font-black text-[#2b0d71] sm:text-base">{item.label}</h3>
-                  <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/80"><div className="h-full rounded-full" style={{width:`${item.percentage}%`,background:theme.accent}}/></div>
-                  <p className="mt-2 text-[10px] font-bold text-[#7656a7] sm:text-xs">{item.correct}/{item.total} acertos</p>
                 </article>
               );
             })}
           </div>
         </section>
 
-        <section className="mt-6">
-          <div className="mb-4 flex items-center gap-2"><Sparkles className="text-[#f6a000]"/><h2 className="text-2xl font-black text-[#2b0d71]">Nossas recomendações para você</h2></div>
-          <div className="space-y-3">
-            {result.recommendations.map((course, i) => (
-              <article key={course.title} className={`soft-card flex items-center gap-4 rounded-[1.5rem] p-4 sm:p-5 ${i===0?'border-[#cdeee7]':i===1?'border-[#ffd4df]':'border-[#dfd0f6]'}`}>
-                <span className={`grid h-14 w-14 shrink-0 place-items-center rounded-2xl ${i===0?'bg-[#e4f8f3] text-[#008f81]':i===1?'bg-[#fff0f4] text-[#ff2d5f]':'bg-[#f1e9ff] text-[#6c2db7]'}`}>
-                  {i===0?<BarChart3/>:i===1?<BookOpen/>:<Headphones/>}
+        <section className="mt-5 sm:mt-6">
+          <div className="mb-3 flex items-center gap-2 sm:mb-4">
+            <Sparkles className="text-[#f6a000]" size={20}/>
+            <h2 className="text-xl font-black text-[#2b0d71] sm:text-2xl">Próximos passos</h2>
+          </div>
+
+          <div className="space-y-2.5 sm:space-y-3">
+            {result.recommendations.map((course, index) => (
+              <article
+                key={course.title}
+                className={`soft-card flex items-center gap-3 rounded-[1.3rem] p-3.5 sm:gap-4 sm:rounded-[1.5rem] sm:p-5 ${
+                  index === 0 ? 'border-[#cdeee7]' : index === 1 ? 'border-[#ffd4df]' : 'border-[#dfd0f6]'
+                }`}
+              >
+                <span className={`grid h-11 w-11 shrink-0 place-items-center rounded-xl sm:h-14 sm:w-14 sm:rounded-2xl ${
+                  index === 0
+                    ? 'bg-[#e4f8f3] text-[#008f81]'
+                    : index === 1
+                      ? 'bg-[#fff0f4] text-[#ff2d5f]'
+                      : 'bg-[#f1e9ff] text-[#6c2db7]'
+                }`}>
+                  {index === 0 ? <BarChart3 size={20}/> : index === 1 ? <BookOpen size={20}/> : <Headphones size={20}/>}
                 </span>
+
                 <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-2"><h3 className="text-lg font-black text-[#2b0d71]">{course.title}</h3><span className="rounded-full bg-[#e8faf6] px-2.5 py-1 text-[10px] font-black uppercase tracking-[.08em] text-[#008f81]">{course.tag}</span></div>
-                  <p className="mt-1 text-sm leading-5 text-[#7656a7]">{course.description}</p>
+                  <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                    <h3 className="text-sm font-black text-[#2b0d71] sm:text-lg">{course.title}</h3>
+                    <span className="rounded-full bg-[#e8faf6] px-2 py-1 text-[9px] font-black uppercase tracking-[.06em] text-[#008f81] sm:px-2.5 sm:text-[10px]">
+                      {course.tag}
+                    </span>
+                  </div>
+                  <p className="mt-1 line-clamp-2 text-[11px] leading-4.5 text-[#7656a7] sm:text-sm sm:leading-5">{course.description}</p>
                 </div>
-                <ArrowRight className="shrink-0 text-[#3e147e]" />
+
+                <ArrowRight size={18} className="shrink-0 text-[#3e147e]"/>
               </article>
             ))}
           </div>
         </section>
 
-        <div className="mt-6 grid gap-3 sm:grid-cols-2">
-          <button onClick={() => navigate('/dashboard')} className="primary-cta flex min-h-14 items-center justify-center gap-3 rounded-2xl text-lg font-black">
-            Ver próximos passos <ArrowRight size={21}/>
+        <div className="mt-5 grid gap-2.5 sm:mt-6 sm:grid-cols-2 sm:gap-3">
+          <button
+            onClick={() => navigate('/dashboard')}
+            className="primary-cta flex min-h-14 items-center justify-center gap-3 rounded-2xl px-4 text-base font-black sm:text-lg"
+          >
+            Ver próximos passos <ArrowRight size={20}/>
           </button>
-          <button onClick={() => navigate('/language')} className="secondary-cta flex min-h-14 items-center justify-center gap-3 rounded-2xl text-lg font-black">
-            <RotateCcw size={20}/> Fazer novo teste
+
+          <button
+            onClick={() => navigate('/language')}
+            className="secondary-cta flex min-h-14 items-center justify-center gap-3 rounded-2xl px-4 text-base font-black sm:text-lg"
+          >
+            <RotateCcw size={19}/> Fazer novo teste
           </button>
         </div>
 
-        <div className="my-7 flex items-center justify-center gap-3"><span className="h-px w-20 bg-[#d9cff0]"/><span className="hand-note">Grandes conversas começam aqui ♡</span><span className="h-px w-20 bg-[#d9cff0]"/></div>
+        <div className="my-6 flex items-center justify-center gap-3 sm:my-7">
+          <span className="h-px w-14 bg-[#d9cff0] sm:w-20"/>
+          <span className="hand-note">Grandes conversas começam aqui ♡</span>
+          <span className="h-px w-14 bg-[#d9cff0] sm:w-20"/>
+        </div>
         <div className="rainbow-corner"/>
       </div>
     </main>
