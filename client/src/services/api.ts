@@ -1,4 +1,6 @@
-const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3333/api';
+const API_URL = import.meta.env.PROD
+  ? '/api'
+  : (import.meta.env.VITE_API_URL ?? 'http://localhost:3333/api');
 
 export type User = { id: string; name: string; email: string };
 export type SessionResponse = { token: string; expiresAt: string; user: User | null };
