@@ -1,54 +1,171 @@
-# Idiomas Pro — Sistema de Nivelamento de Espanhol
+# 🌍 Idiomas Pro — Projeto de Estudos de Nivelamento de Idiomas
 
-Aplicação full-stack para avaliação de espanhol com classificação CEFR de A1 a C2.
+<div align="center">
 
-## Stack
+**Aplicação full-stack de estudos para avaliação de nível de idiomas com classificação CEFR (A1–C2).**
 
-- Frontend: React 19 + Vite 8 + TypeScript + Tailwind CSS 4 + Lucide Icons
-- Estado: Zustand com persistência local da sessão
-- Backend: Node.js + Express 5 + TypeScript
-- Banco: PostgreSQL + Prisma ORM 7
-- Autenticação: sessão persistida no PostgreSQL por `session_token`
-- Listening: arquivos MP3 locais de demonstração incluídos em `client/public/media`
+Projeto desenvolvido a partir de uma necessidade real apresentada por uma **professora de idiomas** e posteriormente **avaliado e aprovado por ela como proposta de estudo e evolução da experiência de nivelamento**.
 
-## Funcionalidades implementadas
+![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-22-339933?logo=nodedotjs&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-4169E1?logo=postgresql&logoColor=white)
+![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748?logo=prisma&logoColor=white)
 
-- Teste anônimo com sessão temporária de 24 horas
-- Cadastro e login de alunos
-- Conta de demonstração criada pelo seed
-- Testes configuráveis com 15, 18 ou 20 questões
-- Sorteio aleatório com distribuição entre A1, A2, B1, B2, C1 e C2
-- Garantia de pelo menos uma questão de Listening
-- Correção exclusivamente no backend; a resposta correta nunca é enviada ao cliente
-- Cálculo de nota de 0 a 100%
-- Conversão para CEFR:
-  - 0–20: A1
-  - 21–40: A2
-  - 41–60: B1
-  - 61–80: B2
-  - 81–95: C1
-  - 96–100: C2
-- Breakdown de Gramática, Vocabulário e Listening
-- Recomendações de próximos cursos
-- Histórico para alunos autenticados e para a sessão anônima atual
-- Proteção contra envio de questões que não pertencem à tentativa criada
+</div>
 
-## Estrutura
+---
+
+## 📌 Sobre o projeto
+
+O **Idiomas Pro** nasceu como um projeto de estudos aplicado: a ideia foi transformar conhecimentos de desenvolvimento web, banco de dados, APIs, UX/UI e deploy em uma solução funcional para um cenário real de ensino de idiomas.
+
+A proposta foi apresentada a uma professora, que aprovou o conceito e o fluxo do projeto. A partir desse feedback, a aplicação passou a incluir também uma área pedagógica para acompanhamento dos resultados dos alunos.
+
+> **Importante:** este repositório representa um projeto de estudo e prática técnica. Não é apresentado como sistema oficial de uma escola, produto comercial finalizado ou experiência profissional anterior.
+
+---
+
+## 🎯 Objetivos de aprendizagem
+
+Durante o desenvolvimento, o projeto foi utilizado para praticar:
+
+- arquitetura full-stack;
+- React e componentização;
+- TypeScript;
+- criação de APIs REST com Express;
+- modelagem de dados com PostgreSQL;
+- Prisma ORM e migrations;
+- autenticação baseada em sessão;
+- estados globais com Zustand;
+- responsividade e UX/UI mobile-first;
+- integração de áudio/TTS;
+- deploy e configuração de ambiente;
+- CI com GitHub Actions;
+- separação entre regras de negócio, interface e persistência.
+
+---
+
+## ✨ Funcionalidades atuais
+
+### 👨‍🎓 Experiência do aluno
+
+- acesso como visitante;
+- cadastro e login;
+- seleção do idioma;
+- identificação do aluno antes da avaliação;
+- seleção obrigatória do professor responsável;
+- teste de nivelamento com 15 a 20 questões;
+- questões distribuídas entre diferentes níveis CEFR;
+- Gramática, Vocabulário e Listening;
+- nível da questão oculto durante a avaliação;
+- revisão das respostas antes da finalização;
+- cálculo de nota;
+- resultado CEFR de A1 a C2;
+- desempenho separado por habilidade;
+- histórico de avaliações;
+- recomendações de próximos passos.
+
+### 👩‍🏫 Área do professor
+
+- acesso exclusivo para professores;
+- criação segura do primeiro acesso pedagógico;
+- autenticação independente do aluno;
+- painel de resultados;
+- quantidade de avaliações realizadas;
+- quantidade de alunos acompanhados;
+- média de desempenho;
+- distribuição por nível CEFR;
+- busca por aluno;
+- acesso ao resultado individual;
+- visualização das respostas corretas e incorretas;
+- vínculo automático entre aluno, professor e avaliação.
+
+### 🎧 Listening
+
+O projeto possui suporte a áudio de compreensão auditiva com:
+
+- endpoint próprio no backend;
+- integração opcional com Google Cloud Text-to-Speech;
+- voz espanhola configurável;
+- cache de áudio;
+- fallback para outras fontes de áudio;
+- player responsivo para dispositivos móveis.
+
+---
+
+## 🧠 Regra de classificação CEFR
+
+| Aproveitamento | Nível |
+|---:|:---:|
+| 0–20% | A1 |
+| 21–40% | A2 |
+| 41–60% | B1 |
+| 61–80% | B2 |
+| 81–95% | C1 |
+| 96–100% | C2 |
+
+A correção ocorre no backend. As respostas corretas não são enviadas previamente ao frontend durante o teste.
+
+---
+
+## 🛠️ Tecnologias utilizadas
+
+| Camada | Tecnologias |
+|---|---|
+| Frontend | React 19, Vite, TypeScript |
+| Estilização | Tailwind CSS 4 |
+| Ícones | Lucide React |
+| Estado | Zustand |
+| Backend | Node.js, Express 5, TypeScript |
+| Validação | Zod |
+| Banco de dados | PostgreSQL |
+| ORM | Prisma 7 |
+| Autenticação | Sessões persistidas no banco |
+| Áudio | Google Cloud TTS / fallback |
+| CI | GitHub Actions |
+| Deploy | Estrutura preparada para Render e Vercel |
+
+---
+
+## 🏗️ Arquitetura
+
+```text
+                        ┌─────────────────────┐
+                        │      Usuário        │
+                        │  Aluno / Professor  │
+                        └──────────┬──────────┘
+                                   │
+                                   ▼
+                        ┌─────────────────────┐
+                        │   React + Vite      │
+                        │      Frontend       │
+                        └──────────┬──────────┘
+                                   │
+                                 /api
+                                   │
+                                   ▼
+                        ┌─────────────────────┐
+                        │ Node.js + Express   │
+                        │       Backend       │
+                        └──────────┬──────────┘
+                                   │
+                  ┌────────────────┼────────────────┐
+                  ▼                ▼                ▼
+          ┌──────────────┐  ┌──────────────┐  ┌─────────────┐
+          │ PostgreSQL   │  │ Prisma ORM   │  │ Google TTS  │
+          │ Dados        │  │ Persistência │  │ Listening   │
+          └──────────────┘  └──────────────┘  └─────────────┘
+```
+
+---
+
+## 📂 Estrutura do repositório
 
 ```text
 /
-├── prisma/
-│   ├── schema.prisma
-│   └── seed.ts
-├── server/
-│   └── src/
-│       ├── controllers/
-│       ├── lib/
-│       ├── routes/
-│       ├── services/
-│       └── index.ts
 ├── client/
-│   ├── public/media/
+│   ├── public/
 │   └── src/
 │       ├── components/
 │       ├── pages/
@@ -56,34 +173,53 @@ Aplicação full-stack para avaliação de espanhol com classificação CEFR de 
 │       ├── store/
 │       ├── App.tsx
 │       └── main.tsx
+│
+├── server/
+│   └── src/
+│       ├── controllers/
+│       ├── generated/
+│       ├── lib/
+│       ├── routes/
+│       ├── services/
+│       └── index.ts
+│
+├── prisma/
+│   ├── migrations/
+│   ├── schema.prisma
+│   └── seed.ts
+│
+├── .github/workflows/
 ├── docker-compose.yml
 ├── prisma7.config.ts
+├── render.yaml
+├── vercel.json
 └── package.json
 ```
 
-## Como executar
+---
 
-### 1. Pré-requisitos
+## 🚀 Executando localmente
+
+### Pré-requisitos
 
 - Node.js 22+
 - npm 10+
-- Docker, ou um PostgreSQL já disponível
+- Docker **ou** PostgreSQL disponível
 
-### 2. Configure o ambiente
+### 1. Clone o repositório
 
-Na raiz do projeto:
+```bash
+git clone https://github.com/denilson-dev/idiomas-pro.git
+cd idiomas-pro
+```
+
+### 2. Configure as variáveis de ambiente
 
 ```bash
 cp .env.example .env
 ```
 
-Se o frontend for apontar para outra API, opcionalmente:
-
-```bash
-cp client/.env.example client/.env
-```
-
-### 3. Suba o PostgreSQL
+### 3. Suba o PostgreSQL com Docker
 
 ```bash
 docker compose up -d
@@ -101,36 +237,35 @@ npm install
 npm run db:generate
 ```
 
-### 6. Crie as tabelas
+### 6. Execute as migrations
 
 ```bash
 npm run db:migrate
 ```
 
-### 7. Popule o banco
+### 7. Popule o banco com os dados de demonstração
 
 ```bash
 npm run db:seed
 ```
 
-Conta de demonstração:
-
-```text
-E-mail: aluno@idiomaspro.com
-Senha: Teste123!
-```
-
-### 8. Rode frontend e backend
+### 8. Inicie frontend e backend
 
 ```bash
 npm run dev
 ```
 
-- Frontend: http://localhost:5173
-- Backend: http://localhost:3333
-- Healthcheck: http://localhost:3333/health
+Por padrão:
 
-## Endpoints principais
+- Frontend: `http://localhost:5173`
+- Backend: `http://localhost:3333`
+- Healthcheck: `http://localhost:3333/api/health`
+
+---
+
+## 🔌 Principais rotas da API
+
+### Alunos e sessões
 
 ```text
 POST /api/auth/anonymous
@@ -138,20 +273,95 @@ POST /api/auth/register
 POST /api/auth/login
 GET  /api/auth/me
 POST /api/auth/logout
+```
 
-GET  /api/test/start?count=18
+### Professores
+
+```text
+GET  /api/teachers
+
+GET  /api/teacher/auth/bootstrap-status
+POST /api/teacher/auth/bootstrap
+POST /api/teacher/auth/login
+GET  /api/teacher/auth/me
+POST /api/teacher/auth/logout
+
+GET  /api/teacher/dashboard
+GET  /api/teacher/attempts/:attemptId
+```
+
+### Avaliações
+
+```text
+POST /api/test/start
 POST /api/test/:attemptId/submit
 
 GET  /api/results/history
 GET  /api/results/:attemptId
 ```
 
-As rotas de teste e resultado usam o header:
+### Listening
 
 ```text
-x-session-token: <token>
+GET /api/tts/:questionId
 ```
 
-## Observação de produção
+---
 
-Para produção, configure `DATABASE_URL`, `CLIENT_ORIGIN` e `VITE_API_URL` no provedor de hospedagem. Os arquivos de Listening incluídos são adequados para demonstração; em produção, você pode substituir `mediaUrl` por URLs do S3, Cloudinary ou outro CDN sem alterar a lógica do player.
+## 🔐 Segurança e boas práticas estudadas
+
+- senhas armazenadas com hash;
+- tokens de sessão persistidos no banco;
+- rotas separadas para aluno e professor;
+- credenciais externas mantidas em variáveis de ambiente;
+- respostas corretas mantidas no backend;
+- validação de payloads com Zod;
+- migrations versionadas;
+- arquivo `.env` fora do versionamento;
+- CI para validar os builds de frontend e backend.
+
+---
+
+## 📈 Evoluções estudadas no projeto
+
+Alguns pontos pensados para continuidade dos estudos:
+
+- múltiplas escolas;
+- cadastro administrativo de professores;
+- turmas;
+- relatórios pedagógicos;
+- exportação de resultados em PDF;
+- envio de resultado por e-mail;
+- outros idiomas;
+- reconhecimento de voz;
+- avaliação de pronúncia;
+- banco maior de questões;
+- criação de testes personalizados por professor;
+- gamificação;
+- dashboards analíticos.
+
+---
+
+## ✅ Validação da ideia
+
+A proposta foi apresentada a uma **professora de idiomas**, que avaliou e aprovou o projeto como uma solução interessante para o contexto de nivelamento e acompanhamento dos alunos.
+
+O feedback serviu como referência para evoluir funcionalidades e experiência de uso, mantendo o projeto com foco principal em **aprendizado, prática e desenvolvimento técnico**.
+
+---
+
+## 👨‍💻 Sobre este repositório
+
+Este projeto faz parte dos meus estudos práticos em desenvolvimento de software.
+
+A intenção aqui não é afirmar experiência profissional que ainda não possuo, mas registrar o processo de aprendizagem através da construção de uma aplicação real, incluindo frontend, backend, banco de dados, APIs, autenticação, UX/UI, deploy e integração entre serviços.
+
+---
+
+<div align="center">
+
+### 📚 Projeto de estudos aplicado a um cenário real
+
+**Teoria → prática → feedback → evolução**
+
+</div>
