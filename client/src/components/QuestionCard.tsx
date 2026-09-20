@@ -26,11 +26,7 @@ export default function QuestionCard({ question, selected, onSelect }: Props) {
 
       {question.mediaUrl && question.mediaType && (
         <div className="mb-4 sm:mb-6">
-          <VideoPlayer
-            type={question.mediaType}
-            src={question.mediaUrl}
-            speechText={question.speechText}
-          />
+          <VideoPlayer type={question.mediaType} src={question.mediaUrl} />
         </div>
       )}
 
