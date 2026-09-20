@@ -59,18 +59,33 @@ export default function TestPage() {
   }
 
   if (loading) {
-    return <div className="grid min-h-screen place-items-center bg-[#06111f] text-slate-300">Preparando uma avaliação única para você...</div>;
+    return (
+      <div className="safe-page grid place-items-center bg-[#06111f] px-6 text-center text-slate-300">
+        <div>
+          <div className="mx-auto h-10 w-10 animate-spin rounded-full border-2 border-white/10 border-t-cyan-300" />
+          <p className="mt-4 text-sm">Preparando uma avaliação única para você...</p>
+        </div>
+      </div>
+    );
   }
 
   if (error && !current) {
-    return <div className="grid min-h-screen place-items-center bg-[#06111f] px-5 text-center text-rose-200"><div>{error}</div></div>;
+    return (
+      <div className="safe-page grid place-items-center bg-[#06111f] px-6 text-center text-rose-200">
+        <div className="max-w-md rounded-2xl border border-rose-400/20 bg-rose-400/10 p-4">{error}</div>
+      </div>
+    );
   }
 
   return (
-    <main className="min-h-screen bg-[#06111f] px-4 py-5 text-white sm:px-6 sm:py-8">
+    <main className="safe-page bg-[#06111f] px-4 text-white sm:px-6">
       <div className="mx-auto max-w-4xl">
-        <div className="mb-6 rounded-2xl border border-white/10 bg-white/[0.035] p-4">
+        <div className="sticky top-0 z-20 -mx-4 mb-3 border-b border-white/[0.06] bg-[#06111f]/90 px-4 pb-3 pt-1 backdrop-blur-xl sm:static sm:mx-0 sm:mb-6 sm:rounded-2xl sm:border sm:border-white/10 sm:bg-white/[0.035] sm:p-4">
           <ProgressBar current={answeredCount} total={questions.length} />
+          <div className="mt-2 flex items-center justify-between text-[10px] font-medium text-slate-500 sm:text-xs">
+            <span>Questão {index + 1} de {questions.length}</span>
+            <span>{answeredCount} respondidas</span>
+          </div>
         </div>
 
         {current && (
@@ -81,40 +96,49 @@ export default function TestPage() {
           />
         )}
 
-        {error && <div className="mt-4 rounded-xl border border-rose-400/20 bg-rose-400/10 p-3 text-sm text-rose-200">{error}</div>}
+        {error && (
+          <div aria-live="polite" className="mt-3 rounded-xl border border-rose-400/20 bg-rose-400/10 p-3 text-sm leading-5 text-rose-200">
+            {error}
+          </div>
+        )}
 
-        <div className="mt-5 flex items-center justify-between gap-3">
-          <button
-            type="button"
-            disabled={index === 0}
-            onClick={() => setIndex((value) => Math.max(0, value - 1))}
-            className="flex items-center gap-2 rounded-xl border border-white/10 px-4 py-3 font-semibold text-slate-300 transition hover:bg-white/5 disabled:cursor-not-allowed disabled:opacity-30"
-          >
-            <ArrowLeft size={18} /> Voltar
-          </button>
-
-          {!isLast ? (
+        <div className="safe-bottom sticky bottom-0 z-20 -mx-4 mt-4 border-t border-white/[0.07] bg-[#06111f]/92 px-4 pt-3 backdrop-blur-xl sm:static sm:mx-0 sm:mt-5 sm:border-0 sm:bg-transparent sm:px-0 sm:pt-0 sm:backdrop-blur-none">
+          <div className="flex items-center justify-between gap-3">
             <button
               type="button"
-              disabled={!answers[current?.id]}
-              onClick={() => setIndex((value) => Math.min(questions.length - 1, value + 1))}
-              className="flex items-center gap-2 rounded-xl bg-white px-5 py-3 font-black text-slate-950 disabled:cursor-not-allowed disabled:opacity-40"
+              disabled={index === 0}
+              onClick={() => setIndex((value) => Math.max(0, value - 1))}
+              className="flex min-h-12 items-center gap-2 rounded-xl border border-white/10 px-4 py-3 text-sm font-semibold text-slate-300 transition hover:bg-white/5 disabled:cursor-not-allowed disabled:opacity-30 sm:text-base"
             >
-              Próxima <ArrowRight size={18} />
+              <ArrowLeft size={18} />
+              <span className="hidden min-[360px]:inline">Voltar</span>
             </button>
-          ) : (
-            <button
-              type="button"
-              disabled={answeredCount !== questions.length || submitting}
-              onClick={finish}
-              className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-cyan-300 to-violet-400 px-5 py-3 font-black text-slate-950 disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              {submitting ? 'Calculando...' : 'Finalizar'} <Send size={18} />
-            </button>
-          )}
+
+            {!isLast ? (
+              <button
+                type="button"
+                disabled={!answers[current?.id]}
+                onClick={() => setIndex((value) => Math.min(questions.length - 1, value + 1))}
+                className="flex min-h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-black text-slate-950 transition active:scale-[.99] disabled:cursor-not-allowed disabled:opacity-40 sm:flex-none sm:text-base"
+              >
+                Próxima <ArrowRight size={18} />
+              </button>
+            ) : (
+              <button
+                type="button"
+                disabled={answeredCount !== questions.length || submitting}
+                onClick={finish}
+                className="flex min-h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-300 to-violet-400 px-5 py-3 text-sm font-black text-slate-950 transition active:scale-[.99] disabled:cursor-not-allowed disabled:opacity-40 sm:flex-none sm:text-base"
+              >
+                {submitting ? 'Calculando...' : 'Finalizar'} <Send size={18} />
+              </button>
+            )}
+          </div>
+
+          <p className="mt-2 text-center text-[10px] leading-4 text-slate-500 sm:mt-4 sm:text-xs">
+            Você pode voltar e revisar suas respostas antes de finalizar.
+          </p>
         </div>
-
-        <div className="mt-4 text-center text-xs text-slate-500">Questão {index + 1} de {questions.length} · Você pode voltar e revisar antes de finalizar.</div>
       </div>
     </main>
   );
