@@ -1,6 +1,6 @@
 import { ArrowLeft, ArrowRight, CheckCircle2, Headphones, Send } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Navigate, useNavigate, useSearchParams } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import BrandHeader from '../components/BrandHeader';
 import MascotOwl from '../components/MascotOwl';
 import ProgressBar from '../components/ProgressBar';
@@ -11,11 +11,10 @@ import { useAppStore } from '../store/useAppStore';
 
 export default function TestPage() {
   const token = useAppStore((state) => state.token);
+  const testProfile = useAppStore((state) => state.testProfile);
+  const clearTestProfile = useAppStore((state) => state.clearTestProfile);
   const navigate = useNavigate();
-  const [params] = useSearchParams();
   const started = useRef(false);
-  const parsedCount = Number(params.get('count') ?? 18);
-  const count = Number.isFinite(parsedCount) ? Math.min(20, Math.max(15, parsedCount)) : 18;
   const [questions, setQuestions] = useState<Question[]>([]);
   const [attemptId, setAttemptId] = useState('');
   const [index, setIndex] = useState(0);
@@ -26,16 +25,22 @@ export default function TestPage() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    if (!token || started.current) return;
+    if (!token || !testProfile || started.current) return;
     started.current = true;
-    api.startTest(token, count)
+    api.startTest(token, {
+      count: testProfile.count,
+      studentName: testProfile.studentName,
+      studentEmail: testProfile.studentEmail,
+      teacherId: testProfile.teacherId,
+      language: testProfile.language,
+    })
       .then((data) => {
         setQuestions(data.questions);
         setAttemptId(data.attemptId);
       })
       .catch((err) => setError(err instanceof Error ? err.message : 'Falha ao iniciar o teste.'))
       .finally(() => setLoading(false));
-  }, [token, count]);
+  }, [token, testProfile]);
 
   const current = questions[index];
   const answeredCount = useMemo(() => Object.keys(answers).length, [answers]);
@@ -55,6 +60,7 @@ export default function TestPage() {
   }, [questions, answers]);
 
   if (!token) return <Navigate to="/" replace />;
+  if (!testProfile) return <Navigate to="/setup" replace />;
 
   async function finish() {
     if (!token || !attemptId || answeredCount !== questions.length) return;
@@ -66,6 +72,7 @@ export default function TestPage() {
         questions.map((question) => ({ questionId: question.id, selectedAnswer: answers[question.id] })),
       );
       saveResult({ ...result, id: attemptId, attemptId });
+      clearTestProfile();
       navigate(`/result/${attemptId}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Não foi possível finalizar o teste.');
@@ -87,7 +94,7 @@ export default function TestPage() {
     return (
       <main className="safe-page relative overflow-hidden px-4 sm:px-6">
         <div className="app-shell relative">
-          <BrandHeader subtitle="Idiomas • Espanhol" />
+          <BrandHeader subtitle={`Espanhol • Prof. ${testProfile.teacherName.replace(/^Prof\.?\s*/i, '')}`} />
           <section className="mt-6 grid gap-4 lg:grid-cols-[1.15fr_.85fr] lg:items-center">
             <div>
               <div className="category-pill text-[10px] sm:text-xs"><CheckCircle2 size={16}/> Teste de nivelamento</div>
@@ -139,7 +146,7 @@ export default function TestPage() {
   return (
     <main className="safe-page px-4 sm:px-6">
       <div className="app-shell">
-        <BrandHeader subtitle="Idiomas • Espanhol" compact />
+        <BrandHeader subtitle={`Espanhol • Prof. ${testProfile.teacherName.replace(/^Prof\.?\s*/i, '')}`} compact />
         <div className="sticky top-0 z-20 mt-3 rounded-2xl bg-[#f6f3ff]/95 py-3 backdrop-blur-xl">
           <ProgressBar current={index} total={questions.length} />
         </div>
