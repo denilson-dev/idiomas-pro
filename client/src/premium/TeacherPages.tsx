@@ -729,6 +729,23 @@ export function TeacherSettings() {
               <i />
             </button>
           </div>
+
+          <div className="toggle-row">
+            <div>
+              <ShieldCheck size={19} />
+              <span>
+                <b>Reduzir movimentos</b>
+                <small>Desativa animações e transições para maior conforto visual.</small>
+              </span>
+            </div>
+            <button
+              type="button"
+              className={`switch ${preferences.reducedMotion ? 'on' : ''}`}
+              onClick={() => togglePreference('reducedMotion')}
+            >
+              <i />
+            </button>
+          </div>
         </Surface>
       </div>
 
