@@ -87,6 +87,8 @@ export function AdminPage() {
   );
   const [data, setData] = useState<AdminAccounts | null>(null);
   const [query, setQuery] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [editor, setEditor] = useState<Editor | null>(null);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -96,7 +98,8 @@ export function AdminPage() {
     api
       .getAdminAccounts(teacherToken)
       .then(setData)
-      .catch((err) => setError(err instanceof Error ? err.message : 'Não foi possível carregar as contas.'));
+      .catch((err) => setError(err instanceof Error ? err.message : 'Não foi possível carregar as contas.'))
+      .finally(() => setLoading(false));
   }, [teacherToken]);
 
   useEffect(() => {
@@ -201,6 +204,7 @@ export function AdminPage() {
     }
 
     try {
+      setSaving(true);
       setError('');
 
       if (editor.role === 'student') {
@@ -240,6 +244,8 @@ export function AdminPage() {
       setMessage(editor.id ? 'Conta atualizada com sucesso.' : 'Conta cadastrada com sucesso.');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Não foi possível salvar a conta.');
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -284,6 +290,18 @@ export function AdminPage() {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Não foi possível excluir a conta.');
     }
+  }
+
+  if (loading && !data) {
+    return (
+      <Workspace area="admin">
+        <Surface className="empty workspace-loading">
+          <div className="empty__icon">✦</div>
+          <h3>Carregando administração</h3>
+          <p>Buscando contas, permissões e status da plataforma.</p>
+        </Surface>
+      </Workspace>
+    );
   }
 
   return (
@@ -582,8 +600,12 @@ export function AdminPage() {
               >
                 Cancelar
               </Button>
-              <Button type="submit">
-                {editor.id ? 'Salvar alterações' : 'Cadastrar conta'}
+              <Button type="submit" disabled={saving}>
+                {saving
+                  ? 'Salvando...'
+                  : editor.id
+                    ? 'Salvar alterações'
+                    : 'Cadastrar conta'}
               </Button>
             </div>
           </form>
