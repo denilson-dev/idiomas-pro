@@ -1,14 +1,13 @@
-# 🌍 Nivelamento no Topo
+# 🌍 Idiomas Pro — Nivelamento de Idiomas
 
 <div align="center">
 
-### Projeto de estudos full stack para nivelamento de idiomas
+### Projeto de estudos full stack
 
-Aplicação web desenvolvida para praticar **frontend, backend, banco de dados, autenticação, UX/UI, testes automatizados, CI/CD e deploy** em um cenário real de ensino de idiomas.
+Aplicação desenvolvida para praticar, na prática, conceitos de **frontend, backend, banco de dados, APIs, autenticação, UX/UI, testes, CI/CD e deploy**.
 
-A proposta foi apresentada a uma **professora de idiomas**, que avaliou e aprovou o conceito do projeto e contribuiu com feedbacks para a evolução do fluxo de nivelamento e do acompanhamento pedagógico.
-
-<br />
+> Este repositório é **exclusivamente um projeto de estudos**.  
+> Não representa um sistema oficial de escola, certificação de proficiência, produto comercial finalizado ou experiência profissional anterior.
 
 ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)
@@ -22,260 +21,326 @@ A proposta foi apresentada a uma **professora de idiomas**, que avaliou e aprovo
 
 ---
 
-## 📌 Sobre o projeto
+## 📌 O que é este projeto?
 
-O **Nivelamento no Topo** nasceu como um projeto de estudos aplicado.
+O **Idiomas Pro** começou como uma forma de transformar estudos de programação em uma aplicação completa.
 
-A ideia foi sair de exercícios isolados e construir uma aplicação completa, baseada em uma necessidade real: permitir que um aluno faça uma avaliação de nivelamento e que o professor responsável consiga acompanhar os resultados posteriormente.
+Em vez de praticar apenas partes isoladas, a ideia foi montar um fluxo real de uma plataforma de nivelamento de idiomas:
 
-O projeto evoluiu para um fluxo com dois perfis principais:
+1. o aluno entra na aplicação;
+2. escolhe o idioma disponível;
+3. identifica-se ou acessa como visitante;
+4. seleciona um professor;
+5. realiza uma avaliação;
+6. responde questões de gramática, vocabulário e listening;
+7. revisa as respostas;
+8. recebe um resultado de nível;
+9. o professor consegue acompanhar as avaliações vinculadas ao seu acesso.
 
-- **Aluno**, que realiza o teste de nivelamento;
-- **Professor**, que acompanha e gerencia as avaliações vinculadas ao seu acesso.
-
-> [!IMPORTANT]
-> Este repositório representa um **projeto de estudo e prática técnica**.  
-> Ele não é apresentado como sistema oficial de uma escola, produto comercial finalizado ou experiência profissional anterior.
-
----
-
-## ✅ Estado atual
-
-Atualmente o projeto possui:
-
-- interface em **Português do Brasil (PT-BR)**;
-- avaliação ativa em **Espanhol**;
-- níveis de resultado de **A1 a C2**;
-- Inglês e Francês representados na interface como idiomas planejados;
-- fluxo de aluno;
-- autenticação de usuário;
-- acesso como visitante;
-- portal exclusivo do professor;
-- persistência em PostgreSQL;
-- áudio de Listening via TTS;
-- layout responsivo;
-- testes automatizados;
-- CI com GitHub Actions;
-- configuração de deploy para Render.
+O objetivo principal do projeto é **aprender construindo**.
 
 ---
 
-## 🎯 Objetivos de aprendizagem
+## 🎯 Objetivo de aprendizagem
 
-Durante o desenvolvimento, o projeto foi utilizado para praticar:
+Este projeto foi usado para estudar e praticar:
 
-- arquitetura full stack;
-- React e componentização;
-- TypeScript;
-- React Router;
-- gerenciamento de estado com Zustand;
-- APIs REST com Express;
-- modelagem relacional;
-- PostgreSQL;
+- criação de interfaces com React;
+- organização de uma aplicação com TypeScript;
+- rotas no frontend;
+- estado global;
+- criação de APIs REST;
+- backend com Node.js e Express;
+- banco de dados PostgreSQL;
+- modelagem de dados;
 - Prisma ORM;
-- migrations;
-- autenticação baseada em sessão;
-- validação com Zod;
+- migrations e seed;
+- autenticação e sessões;
 - hash de senhas;
-- segurança de rotas;
-- UX/UI responsivo;
-- mobile-first;
-- safe areas de iPhone;
-- integração com serviços externos;
-- Text-to-Speech;
-- testes unitários;
-- testes de componentes;
-- testes de integração;
-- testes end-to-end;
-- CI/CD;
+- validação de dados;
+- separação entre aluno e professor;
+- segurança básica de API;
+- integração com Text-to-Speech;
+- responsividade para desktop e celular;
+- comportamento em Android e iPhone;
+- testes automatizados;
+- integração contínua;
 - deploy em ambiente cloud.
 
 ---
 
-# ✨ Funcionalidades
+# 🧭 Como o projeto evoluiu
 
-## 👨‍🎓 Fluxo do aluno
+O histórico do repositório mostra uma evolução gradual. Cada etapa trouxe um problema novo para estudar e resolver.
 
-O aluno pode:
+## 1. Estrutura inicial
 
-- iniciar como visitante;
-- criar uma conta;
-- entrar em uma conta existente;
-- escolher o idioma da avaliação;
-- informar nome;
-- informar e-mail opcional;
-- selecionar obrigatoriamente o professor responsável;
-- realizar o teste;
-- responder questões de:
-  - Gramática;
-  - Vocabulário;
-  - Listening;
-- ouvir os áudios mais de uma vez;
-- revisar as respostas antes da finalização;
-- receber o resultado somente após concluir o teste;
-- visualizar:
-  - nota;
-  - nível CEFR;
-  - desempenho por habilidade;
-  - recomendações;
-- consultar o histórico de avaliações.
+A primeira etapa foi criar a base da aplicação:
 
-### Privacidade da avaliação
+- React;
+- TypeScript;
+- Vite;
+- páginas do fluxo de nivelamento;
+- componentes reutilizáveis;
+- navegação entre telas.
 
-Durante o teste:
+### Aprendizado
 
-- o nível CEFR interno da questão não é enviado ao frontend;
-- a resposta correta não é enviada ao frontend;
-- a correção é realizada no backend.
+Entender como organizar um projeto frontend maior do que uma página única.
 
 ---
 
-## 👩‍🏫 Portal do professor
+## 2. Fluxo completo do aluno
 
-O professor possui autenticação separada da conta do aluno.
+Depois foram adicionados:
 
-O painel permite:
+- tela inicial;
+- escolha de idioma;
+- identificação do aluno;
+- tela de teste;
+- questões;
+- progresso;
+- revisão;
+- resultado;
+- histórico.
 
-- login exclusivo;
-- criação segura do primeiro acesso pedagógico;
-- visualizar quantidade de avaliações;
-- visualizar quantidade de alunos;
-- acompanhar média de desempenho;
-- visualizar o último nível registrado;
-- consultar distribuição dos resultados por CEFR;
-- pesquisar aluno por nome, e-mail ou nível;
-- abrir uma avaliação individual;
-- consultar:
-  - nota;
-  - nível;
-  - desempenho por habilidade;
-  - respostas dadas;
-  - respostas corretas;
-- editar os dados administrativos de uma avaliação;
+### Aprendizado
+
+Manter dados durante várias telas e controlar corretamente o estado da avaliação.
+
+---
+
+## 3. Backend e banco de dados
+
+O projeto deixou de depender apenas do navegador e passou a utilizar:
+
+- Node.js;
+- Express;
+- PostgreSQL;
+- Prisma;
+- API REST;
+- migrations;
+- seed;
+- persistência de usuários, sessões, questões e resultados.
+
+### Aprendizado
+
+Separar frontend, backend e banco de dados e fazer essas três partes trabalharem juntas.
+
+---
+
+## 4. Autenticação
+
+Foram criados fluxos diferentes para:
+
+- aluno visitante;
+- aluno com conta;
+- professor.
+
+As senhas são armazenadas com hash e as sessões são persistidas no banco.
+
+### Aprendizado
+
+Autenticação não é apenas criar uma tela de login. Foi necessário estudar:
+
+- sessão;
+- token;
+- expiração;
+- rotas protegidas;
+- identificação do usuário;
+- separação de permissões.
+
+---
+
+## 5. Portal do professor
+
+O projeto ganhou uma área própria para professores.
+
+O professor pode:
+
+- fazer login;
+- visualizar avaliações;
+- consultar alunos;
+- abrir detalhes de uma avaliação;
+- editar nome e e-mail vinculados ao registro;
 - excluir uma avaliação;
-- limpar todas as avaliações listadas.
+- limpar as avaliações vinculadas ao próprio acesso.
 
-### Gestão das provas
+### Aprendizado
 
-Cada avaliação possui ações de:
-
-#### ✏️ Editar
-
-O professor pode corrigir:
-
-- nome do aluno;
-- e-mail do aluno.
-
-A edição **não altera**:
-
-- nota;
-- nível CEFR;
-- respostas;
-- resultado pedagógico.
-
-Isso evita mudanças indevidas no resultado original.
-
-#### 🗑️ Excluir
-
-O professor pode excluir uma avaliação específica.
-
-Ao excluir, as respostas vinculadas à tentativa também são removidas pelo relacionamento do banco.
-
-#### 🧹 Limpar todas
-
-O professor pode remover todas as avaliações concluídas vinculadas ao próprio acesso.
-
-A aplicação apresenta confirmação antes da operação.
-
-### Isolamento entre professores
-
-As operações de leitura, edição e exclusão verificam o professor autenticado.
-
-Um professor não consegue:
-
-- consultar avaliação de outro professor;
-- editar avaliação de outro professor;
-- excluir avaliação de outro professor;
-- limpar avaliações pertencentes a outro professor.
+Criar permissões diferentes e garantir que um professor não manipule dados pertencentes a outro professor.
 
 ---
 
-# 🎧 Listening e Text-to-Speech
+## 6. Listening e geração de áudio
 
-As questões de Listening possuem endpoint próprio:
+As questões de listening passaram por várias abordagens até chegar à estrutura atual.
 
-```text
+O backend possui uma rota específica:
+
+```http
 GET /api/tts/:questionId
 ```
 
-A estratégia atual de áudio é:
+A aplicação pode utilizar:
 
-```text
-Google Cloud Text-to-Speech
-          ↓
-Google Translate TTS
-          ↓
-MP3 local de fallback
-```
+1. Google Cloud Text-to-Speech;
+2. um fallback externo;
+3. arquivos MP3 locais.
 
-Quando `GOOGLE_TTS_API_KEY` está configurada, o backend utiliza Google Cloud TTS como primeira opção.
+### Aprendizado
 
-A voz configurada no ambiente Render é:
+Áudio na web envolve vários detalhes, principalmente em navegadores móveis:
 
-```text
-es-ES-Chirp3-HD-Zephyr
-```
-
-O player possui:
-
-- pré-carregamento;
-- estado de carregamento;
+- carregamento;
 - reprodução;
-- interrupção;
-- repetição;
-- feedback visual;
-- waveform animado;
-- cache no backend;
-- fallback em caso de indisponibilidade externa.
+- preload;
+- cache;
+- falhas de rede;
+- comportamento do Safari;
+- alternativas quando um serviço externo não responde.
+
+---
+
+## 7. Responsividade e experiência mobile
+
+Grande parte da evolução do projeto envolveu ajustes para:
+
+- desktop;
+- Android;
+- iPhone;
+- Safari/WebKit;
+- telas estreitas;
+- telas com pouca altura;
+- teclado virtual;
+- safe areas;
+- scroll;
+- botões fixos;
+- componentes de áudio.
+
+Também foram criadas bandeiras em SVG para evitar diferenças visuais entre sistemas operacionais.
+
+### Aprendizado
+
+Uma tela que funciona no desktop não necessariamente funciona bem no celular.
+
+---
+
+## 8. Testes automatizados
+
+O projeto passou a utilizar:
+
+- Vitest;
+- Testing Library;
+- Supertest;
+- Playwright.
+
+Os testes cobrem diferentes camadas da aplicação.
+
+### Aprendizado
+
+Testar apenas manualmente começou a ficar difícil conforme o projeto cresceu. Os testes automatizados ajudam a detectar regressões depois de alterações.
+
+---
+
+## 9. CI e deploy
+
+Também foram estudadas configurações para:
+
+- GitHub Actions;
+- Vercel;
+- Render;
+- PostgreSQL em cloud;
+- variáveis de ambiente;
+- build de frontend e backend.
+
+O repositório ainda mantém arquivos relacionados a Vercel e Render porque os dois ambientes fizeram parte do processo de aprendizagem.
+
+### Aprendizado
+
+Um projeto funcionar localmente não significa que ele funcionará automaticamente em produção.
+
+Foi necessário lidar com:
+
+- comandos de build;
+- variáveis de ambiente;
+- banco remoto;
+- geração do Prisma Client;
+- migrations;
+- caminhos de API;
+- arquivos estáticos;
+- diferenças entre ambiente local e cloud.
+
+---
+
+# 🧩 Funcionalidades atuais
+
+## 👨‍🎓 Aluno
+
+O fluxo atual permite:
+
+- entrar como visitante;
+- criar conta;
+- fazer login;
+- escolher o idioma da avaliação;
+- informar nome;
+- informar e-mail opcional;
+- selecionar um professor;
+- iniciar a prova;
+- responder questões de gramática;
+- responder questões de vocabulário;
+- responder questões de listening;
+- acompanhar o progresso;
+- revisar respostas;
+- finalizar a avaliação;
+- visualizar nota;
+- visualizar nível;
+- visualizar desempenho por habilidade;
+- consultar histórico de avaliações.
+
+---
+
+## 👩‍🏫 Professor
+
+O portal do professor permite:
+
+- autenticação separada;
+- visualizar quantidade de avaliações;
+- visualizar alunos;
+- acompanhar resultados;
+- abrir detalhes de uma prova;
+- pesquisar registros;
+- editar dados administrativos;
+- excluir uma avaliação;
+- limpar avaliações vinculadas ao próprio professor.
 
 ---
 
 # 🌐 Idiomas
 
-É importante separar dois conceitos:
+## Interface
 
-## Idioma da interface
-
-Atualmente:
+A interface principal está em:
 
 ```text
-PT-BR
+Português do Brasil
 ```
 
-O seletor do cabeçalho representa o **idioma da interface**, não o idioma que está sendo avaliado.
+## Avaliação disponível
 
-## Idioma da avaliação
-
-Atualmente disponível:
+Atualmente:
 
 ```text
 Espanhol
 ```
 
-Planejados na interface:
-
-```text
-Inglês
-Francês
-```
-
-As bandeiras são renderizadas através de SVG próprio para manter a mesma aparência em Windows, macOS, Android, iOS e diferentes navegadores.
+Inglês e Francês aparecem como possibilidades de evolução do projeto.
 
 ---
 
-# 🧠 Classificação utilizada no projeto
+# 🧠 Sobre os níveis A1 a C2
 
-A aplicação utiliza a seguinte regra para converter o percentual de acertos em um nível:
+O projeto utiliza níveis inspirados no CEFR:
 
 | Aproveitamento | Nível |
 |---:|:---:|
@@ -286,142 +351,256 @@ A aplicação utiliza a seguinte regra para converter o percentual de acertos em
 | 81–95% | C1 |
 | 96–100% | C2 |
 
-A pontuação é calculada no backend.
-
-> [!NOTE]
-> Essa classificação é uma **regra de negócio criada para o projeto de estudos**.  
-> O resultado não deve ser interpretado como certificação oficial de proficiência CEFR.
+> Essa regra foi criada para fins de estudo.  
+> O resultado da aplicação **não é uma certificação oficial de proficiência**.
 
 ---
 
-# 🛠️ Stack
+# 🛠️ Tecnologias utilizadas
 
-| Área | Tecnologia |
+A tabela abaixo explica de forma simples o papel de cada tecnologia.
+
+| Tecnologia | Uso no projeto |
 |---|---|
-| Frontend | React 19 |
-| Bundler | Vite 8 |
-| Linguagem | TypeScript 5 |
-| Roteamento | React Router |
-| Estado global | Zustand |
-| UI | Tailwind CSS 4 |
-| Ícones | Lucide React |
-| Backend | Node.js 22 |
-| API | Express 5 |
-| Validação | Zod 4 |
-| Segurança HTTP | Helmet |
-| Hash de senha | bcryptjs |
-| Banco | PostgreSQL |
-| ORM | Prisma 7 |
-| Driver | pg / Prisma PostgreSQL Adapter |
-| Unit tests | Vitest |
-| Component tests | Testing Library |
-| API tests | Supertest |
-| E2E | Playwright |
-| CI | GitHub Actions |
-| Deploy | Render |
-| TTS | Google Cloud TTS + fallbacks |
+| React 19 | Construção das telas e componentes |
+| React DOM | Renderização da interface no navegador |
+| TypeScript | Tipagem e organização do código |
+| Vite 8 | Ambiente de desenvolvimento e build do frontend |
+| React Router | Navegação entre páginas |
+| Zustand | Estado global da aplicação |
+| Tailwind CSS 4 | Estilização e responsividade |
+| Lucide React | Ícones da interface |
+| Node.js 22 | Ambiente de execução do backend |
+| Express 5 | Criação da API REST |
+| Zod 4 | Validação de dados recebidos pela API |
+| Helmet | Cabeçalhos de segurança HTTP |
+| CORS | Controle de comunicação entre origens |
+| bcryptjs | Hash de senhas |
+| PostgreSQL | Banco de dados relacional |
+| Prisma 7 | ORM e acesso ao banco |
+| pg | Driver PostgreSQL |
+| Docker Compose | Banco PostgreSQL local para desenvolvimento |
+| Google Cloud TTS | Geração de áudio para listening |
+| Vitest | Testes unitários |
+| Testing Library | Testes de componentes React |
+| Supertest | Testes das rotas da API |
+| Playwright | Testes end-to-end em navegador |
+| GitHub Actions | Pipeline automatizada de testes e build |
+| Vercel | Ambiente estudado para deploy |
+| Render | Ambiente estudado para deploy full stack |
 
 ---
 
-# 🏗️ Arquitetura
+# 🏗️ Arquitetura atual
 
 ```text
-┌───────────────────────────────────────────────────────┐
-│                       Usuários                        │
-│                                                       │
-│                 Aluno            Professor            │
-└──────────────────────────┬────────────────────────────┘
-                           │
-                           ▼
-                 ┌───────────────────┐
-                 │   React + Vite    │
-                 │     Frontend      │
-                 └─────────┬─────────┘
-                           │
-                         /api
-                           │
-                           ▼
-                 ┌───────────────────┐
-                 │ Node.js + Express │
-                 │      Backend      │
-                 └─────────┬─────────┘
-                           │
-              ┌────────────┼────────────┐
-              │            │            │
-              ▼            ▼            ▼
-      ┌─────────────┐ ┌──────────┐ ┌─────────────┐
-      │ PostgreSQL  │ │ Prisma   │ │ TTS externo │
-      │ Persistência│ │   ORM    │ │ + fallback  │
-      └─────────────┘ └──────────┘ └─────────────┘
-```
+Aluno / Professor
+       │
+       ▼
+┌───────────────────────┐
+│ React + TypeScript    │
+│ Frontend              │
+└──────────┬────────────┘
+           │
+           │ /api
+           ▼
+┌───────────────────────┐
+│ Node.js + Express     │
+│ Backend               │
+└──────────┬────────────┘
+           │
+           ▼
+┌───────────────────────┐
+│ Prisma ORM            │
+└──────────┬────────────┘
+           │
+           ▼
+┌───────────────────────┐
+│ PostgreSQL            │
+└───────────────────────┘
 
-Em produção no Render, o Express também serve o build do frontend, permitindo comunicação com a API através da mesma origem:
-
-```text
-Frontend
-   ↓
-/api
-   ↓
-Express
-   ↓
-PostgreSQL
+Listening
+    │
+    └── TTS externo + fallback local
 ```
 
 ---
 
-# 🗃️ Modelo de dados
+# 🗃️ Principais dados armazenados
 
-Principais entidades:
+O banco possui entidades para:
 
-### `User`
+### User
 
-Conta persistente do aluno.
+Conta do aluno.
 
-### `Session`
+### Session
 
-Sessão autenticada ou anônima do aluno.
+Sessão do aluno, autenticado ou visitante.
 
-### `Teacher`
+### Teacher
 
-Professor com acesso pedagógico.
+Conta do professor.
 
-### `TeacherSession`
+### TeacherSession
 
 Sessão exclusiva do professor.
 
-### `Question`
+### Question
 
-Questões da avaliação, incluindo:
+Questão da avaliação.
 
-- categoria;
-- nível interno;
+Armazena informações como:
+
+- enunciado;
 - alternativas;
 - resposta correta;
-- mídia opcional.
+- categoria;
+- nível interno;
+- mídia.
 
-### `TestAttempt`
+### TestAttempt
 
-Representa uma tentativa de nivelamento.
+Representa uma tentativa de avaliação.
 
-Armazena, entre outros:
+### AttemptAnswer
 
-- aluno;
-- professor;
-- idioma;
-- questões utilizadas;
-- status;
-- nota;
-- nível final;
-- breakdown;
-- data de conclusão.
-
-### `AttemptAnswer`
-
-Resposta individual de uma questão dentro de uma tentativa.
+Representa a resposta de uma questão dentro de uma tentativa.
 
 ---
 
-# 📂 Estrutura
+# 🔐 Cuidados estudados no projeto
+
+Algumas práticas aplicadas:
+
+- senha com hash;
+- sessões persistidas;
+- validação com Zod;
+- Helmet;
+- CORS;
+- variáveis de ambiente;
+- resposta correta mantida no backend;
+- nível interno da questão não exposto durante a prova;
+- separação das sessões de aluno e professor;
+- isolamento dos dados por professor;
+- banco separado para testes automatizados.
+
+Esses recursos foram adicionados como parte do aprendizado sobre segurança e organização de aplicações web.
+
+---
+
+# 🧪 Testes
+
+## Unitários
+
+Usados para testar regras isoladas, como:
+
+- cálculo;
+- classificação de nível;
+- desempenho por categoria.
+
+## Componentes
+
+Usados para testar partes da interface.
+
+Exemplo:
+
+- seleção de alternativas;
+- comportamento do card de questão.
+
+## Integração da API
+
+Usados para testar:
+
+- autenticação;
+- criação de sessão;
+- início de avaliação;
+- envio de respostas;
+- resultado;
+- painel do professor;
+- edição;
+- exclusão;
+- isolamento entre professores.
+
+## End-to-end
+
+O Playwright simula uma jornada real da aplicação.
+
+Os testes são executados em perfis equivalentes a:
+
+- Desktop Chrome;
+- Android / Pixel 7;
+- iPhone 13 / WebKit.
+
+---
+
+# ⚙️ GitHub Actions
+
+A pipeline de CI executa automaticamente:
+
+1. PostgreSQL 16 temporário;
+2. instalação das dependências;
+3. geração do Prisma Client;
+4. migrations;
+5. seed;
+6. testes unitários;
+7. testes de componentes;
+8. testes de integração;
+9. build do backend;
+10. build do frontend;
+11. Playwright em Chromium e WebKit.
+
+Isso foi criado para praticar o conceito de **integração contínua**.
+
+---
+
+# 🚧 Principais desafios encontrados
+
+Alguns dos desafios que fizeram parte do desenvolvimento:
+
+### 1. Fazer frontend e backend trabalharem juntos
+
+Foi necessário entender requisições HTTP, rotas, respostas da API e tratamento de erros.
+
+### 2. Persistir os dados
+
+A aplicação começou com dados mais simples e depois passou a utilizar PostgreSQL e Prisma.
+
+### 3. Trabalhar com autenticação
+
+Foi necessário separar visitante, aluno cadastrado e professor.
+
+### 4. Não expor respostas da prova
+
+A resposta correta e o nível interno da questão precisaram permanecer no backend.
+
+### 5. Fazer o áudio funcionar em diferentes dispositivos
+
+O listening exigiu ajustes de preload, reprodução, fallback e comportamento mobile.
+
+### 6. Corrigir problemas específicos do iPhone
+
+Safe areas, Safari, WebKit, scroll e botões fixos exigiram vários ajustes.
+
+### 7. Manter o layout consistente
+
+Elementos como bandeiras, cards, navegação e players precisaram funcionar de forma semelhante em navegadores diferentes.
+
+### 8. Separar os dados dos professores
+
+O backend precisa verificar a identidade do professor antes de permitir leitura, edição ou exclusão de registros.
+
+### 9. Fazer deploy
+
+Vercel e Render possuem comportamentos diferentes. Isso exigiu aprender sobre build, API, banco, arquivos estáticos e variáveis de ambiente.
+
+### 10. Evitar regressões
+
+Conforme o sistema cresceu, uma alteração podia quebrar outra parte. Os testes automatizados e a CI passaram a ajudar nesse processo.
+
+---
+
+# 📂 Estrutura do repositório
 
 ```text
 idiomas-pro/
@@ -440,7 +619,6 @@ idiomas-pro/
 ├── server/
 │   └── src/
 │       ├── controllers/
-│       ├── generated/
 │       ├── lib/
 │       ├── routes/
 │       ├── services/
@@ -454,38 +632,35 @@ idiomas-pro/
 │   └── seed.ts
 │
 ├── e2e/
-│   ├── global-setup.ts
-│   └── placement-flow.spec.ts
 │
 ├── .github/
 │   └── workflows/
 │       └── ci.yml
 │
-├── playwright.config.ts
-├── vitest.server.config.ts
-├── vitest.client.config.ts
-├── vitest.api.config.ts
-├── prisma7.config.ts
+├── api/
 ├── docker-compose.yml
+├── playwright.config.ts
 ├── render.yaml
 ├── vercel.json
-└── package.json
+├── package.json
+└── README.md
 ```
 
 ---
 
-# 🚀 Executando localmente
+# 🚀 Como executar localmente
 
 ## Pré-requisitos
 
 - Node.js 22+
 - npm
 - PostgreSQL
-- ou Docker para subir o banco local
+
+Ou Docker, caso queira subir o banco local de forma mais simples.
 
 ---
 
-## 1. Clonar
+## 1. Clone o projeto
 
 ```bash
 git clone https://github.com/denilson-dev/idiomas-pro.git
@@ -494,7 +669,17 @@ cd idiomas-pro
 
 ---
 
-## 2. Criar o arquivo de ambiente
+## 2. Instale as dependências
+
+```bash
+npm install
+```
+
+O projeto utiliza **npm workspaces** para organizar `client` e `server`.
+
+---
+
+## 3. Crie o arquivo de ambiente
 
 Linux/macOS:
 
@@ -515,20 +700,18 @@ DATABASE_URL="postgresql://postgres:postgres@localhost:5432/idiomas_pro?schema=p
 PORT=3333
 CLIENT_ORIGIN=http://localhost:5173
 VITE_API_URL=http://localhost:3333/api
-```
 
-Variáveis opcionais para Google Cloud TTS:
-
-```env
 GOOGLE_TTS_API_KEY=
 GOOGLE_TTS_VOICE=es-ES-Chirp3-HD-Zephyr
 ```
 
-> Nunca versione chaves ou credenciais reais.
+As variáveis de TTS são opcionais.
+
+> Nunca coloque credenciais reais no Git.
 
 ---
 
-## 3. Subir PostgreSQL
+## 4. Suba o PostgreSQL
 
 Com Docker:
 
@@ -538,17 +721,7 @@ docker compose up -d
 
 ---
 
-## 4. Instalar dependências
-
-```bash
-npm install
-```
-
-O projeto utiliza npm workspaces para `client` e `server`.
-
----
-
-## 5. Gerar o Prisma Client
+## 5. Gere o Prisma Client
 
 ```bash
 npm run db:generate
@@ -556,21 +729,15 @@ npm run db:generate
 
 ---
 
-## 6. Aplicar migrations existentes
+## 6. Aplique as migrations
 
 ```bash
 npm run db:deploy
 ```
 
-Para criar uma **nova migration durante desenvolvimento** após alterar o schema:
-
-```bash
-npm run db:migrate
-```
-
 ---
 
-## 7. Popular o banco
+## 7. Popule o banco
 
 ```bash
 npm run db:seed
@@ -578,7 +745,7 @@ npm run db:seed
 
 ---
 
-## 8. Executar em desenvolvimento
+## 8. Inicie a aplicação
 
 ```bash
 npm run dev
@@ -587,41 +754,33 @@ npm run dev
 Por padrão:
 
 ```text
-Frontend:    http://localhost:5173
-Backend:     http://localhost:3333
-API health:  http://localhost:3333/api/health
+Frontend:   http://localhost:5173
+Backend:    http://localhost:3333
+Health:     http://localhost:3333/api/health
 ```
 
 ---
 
-# 📜 Scripts principais
+# 📜 Comandos principais
 
-| Comando | Função |
+| Comando | O que faz |
 |---|---|
-| `npm run dev` | Executa frontend e backend |
-| `npm run build` | Gera Prisma Client e compila o projeto |
-| `npm start` | Executa o backend compilado |
-| `npm run db:generate` | Gera Prisma Client |
-| `npm run db:deploy` | Aplica migrations existentes |
-| `npm run db:migrate` | Cria/aplica migration de desenvolvimento |
-| `npm run db:seed` | Executa seed |
-| `npm run db:studio` | Abre Prisma Studio |
-| `npm run test:unit` | Unitários + componentes |
-| `npm run test:api` | Integração da API |
-| `npm run test:e2e` | Build + Playwright |
+| `npm run dev` | Inicia frontend e backend |
+| `npm run build` | Compila toda a aplicação |
+| `npm start` | Inicia o backend compilado |
+| `npm run db:generate` | Gera o Prisma Client |
+| `npm run db:deploy` | Aplica migrations |
+| `npm run db:migrate` | Executa migration de desenvolvimento |
+| `npm run db:seed` | Popula o banco |
+| `npm run db:studio` | Abre o Prisma Studio |
+| `npm run test:unit` | Testes unitários e de componentes |
+| `npm run test:api` | Testes de integração da API |
+| `npm run test:e2e` | Testes end-to-end |
 | `npm run test:all` | Executa todas as suítes |
 
 ---
 
-# 🔌 API
-
-## Healthcheck
-
-```http
-GET /api/health
-```
-
----
+# 🔌 Principais rotas da API
 
 ## Autenticação do aluno
 
@@ -633,15 +792,11 @@ GET  /api/auth/me
 POST /api/auth/logout
 ```
 
----
-
-## Professores disponíveis
+## Professores
 
 ```http
 GET /api/teachers
 ```
-
----
 
 ## Autenticação do professor
 
@@ -653,29 +808,22 @@ GET  /api/teacher/auth/me
 POST /api/teacher/auth/logout
 ```
 
----
-
-## Painel e gestão do professor
+## Painel do professor
 
 ```http
 GET    /api/teacher/dashboard
 DELETE /api/teacher/attempts
-
 GET    /api/teacher/attempts/:attemptId
 PATCH  /api/teacher/attempts/:attemptId
 DELETE /api/teacher/attempts/:attemptId
 ```
 
----
-
-## Teste
+## Avaliação
 
 ```http
 POST /api/test/start
 POST /api/test/:attemptId/submit
 ```
-
----
 
 ## Resultados
 
@@ -683,8 +831,6 @@ POST /api/test/:attemptId/submit
 GET /api/results/history
 GET /api/results/:attemptId
 ```
-
----
 
 ## Listening
 
@@ -694,293 +840,86 @@ GET /api/tts/:questionId
 
 ---
 
-# 🧪 Testes automatizados
+# ☁️ Deploy
 
-O projeto possui quatro camadas principais de testes.
+O projeto possui arquivos de configuração para experiências de deploy em:
 
-| Tipo | Ferramentas | Exemplos |
-|---|---|---|
-| Unitário | Vitest | mapeamento CEFR, pontuação, breakdown |
-| Componente | Testing Library + Vitest | seleção de alternativa e ocultação de nível |
-| Integração | Supertest + Vitest | autenticação, API, professor, CRUD de avaliações |
-| E2E | Playwright | jornada real aluno → professor |
+- **Vercel**;
+- **Render**.
+
+O `render.yaml` configura uma aplicação Node.js com PostgreSQL.
+
+O `vercel.json` contém a configuração utilizada durante os estudos de deploy serverless/full stack.
+
+Esses arquivos permanecem no repositório porque fazem parte do histórico de aprendizado do projeto.
 
 ---
 
-## Regras CEFR testadas
+# 📈 Próximos estudos possíveis
 
-Os limites são validados explicitamente:
+Algumas ideias para continuar evoluindo o projeto:
+
+- adicionar Inglês;
+- adicionar Francês;
+- ampliar o banco de questões;
+- permitir criação de provas pelo professor;
+- criar turmas;
+- criar relatórios;
+- exportar resultados;
+- adicionar filtros avançados;
+- estudar envio de e-mails;
+- adicionar reconhecimento de voz;
+- estudar avaliação de pronúncia;
+- estudar acessibilidade com mais profundidade;
+- melhorar observabilidade e logs;
+- estudar containers para toda a aplicação;
+- aprofundar segurança e autorização.
+
+---
+
+# ⚠️ Limitações
+
+Por ser um projeto de estudos:
+
+- não é uma plataforma oficial de certificação;
+- não substitui uma avaliação pedagógica profissional;
+- não possui garantia de disponibilidade;
+- pode passar por mudanças frequentes;
+- algumas integrações dependem de serviços externos;
+- alguns recursos ainda estão em evolução.
+
+---
+
+# 👨‍💻 O que este repositório representa
+
+Este projeto representa meu processo de aprendizagem através da prática.
+
+A intenção não é afirmar que já possuo experiência profissional com todas as tecnologias utilizadas.
+
+O objetivo é mostrar que, durante os estudos, tive contato prático com diferentes partes de uma aplicação moderna e enfrentei problemas reais de desenvolvimento, integração, responsividade, testes e deploy.
 
 ```text
-0%   → A1
-20%  → A1
-
-21%  → A2
-40%  → A2
-
-41%  → B1
-60%  → B1
-
-61%  → B2
-80%  → B2
-
-81%  → C1
-95%  → C1
-
-96%  → C2
-100% → C2
-```
-
----
-
-## Integração da API
-
-Entre os cenários cobertos:
-
-- healthcheck;
-- criação de visitante;
-- criação do primeiro professor;
-- exigência de professor no início do teste;
-- não exposição do nível interno;
-- não exposição da resposta correta;
-- finalização da avaliação;
-- registro no painel do professor;
-- edição da identificação de uma prova;
-- exclusão individual;
-- limpeza de todas as provas;
-- isolamento de leitura entre professores;
-- isolamento de edição entre professores;
-- isolamento de exclusão entre professores.
-
----
-
-## E2E
-
-O cenário principal automatiza:
-
-```text
-Página inicial
-      ↓
-Visitante
-      ↓
-Seleção de Espanhol
-      ↓
-Nome + e-mail + professor
-      ↓
-18 questões
-      ↓
-Revisão
-      ↓
-Finalização
-      ↓
-Resultado CEFR
-      ↓
-Login do professor
-      ↓
-Painel pedagógico
-      ↓
-Resultado do aluno
-```
-
-O Playwright executa o fluxo em:
-
-- Desktop Chrome;
-- Android / Pixel 7;
-- iPhone 13 / WebKit.
-
-Isso ajuda a detectar problemas de:
-
-- responsividade;
-- navegação;
-- WebKit/Safari;
-- scroll;
-- safe areas;
-- comportamento mobile.
-
----
-
-# ⚙️ CI com GitHub Actions
-
-Em cada push para `main` e em pull requests, a pipeline:
-
-1. cria um PostgreSQL 16 descartável;
-2. instala dependências;
-3. gera o Prisma Client;
-4. aplica as migrations;
-5. executa o seed;
-6. roda testes unitários e de componentes;
-7. roda testes de integração da API;
-8. compila o backend;
-9. compila o frontend;
-10. instala Chromium e WebKit;
-11. executa testes E2E.
-
-O banco utilizado pelo CI é isolado:
-
-```text
-idiomas_pro_test
-```
-
-Nenhum teste automatizado utiliza o banco de produção.
-
----
-
-# 📱 UX/UI e responsividade
-
-A interface foi desenvolvida com foco em experiência mobile e possui:
-
-- layouts fluidos;
-- safe areas para iOS;
-- tipografia responsiva;
-- cards adaptativos;
-- glassmorphism;
-- blur;
-- microinterações;
-- estados de toque;
-- navegação compacta no teste;
-- player de Listening responsivo;
-- controle de overflow;
-- tratamento de teclado virtual;
-- tratamento específico para telas estreitas;
-- tratamento específico para telas com pouca altura;
-- `prefers-reduced-motion`;
-- bandeiras SVG independentes do sistema operacional.
-
----
-
-# 🔐 Segurança e integridade
-
-Entre as práticas aplicadas:
-
-- hash de senha com bcrypt;
-- sessões persistidas em banco;
-- sessão independente para professores;
-- validação de dados com Zod;
-- Helmet;
-- CORS;
-- credenciais externas por variáveis de ambiente;
-- respostas corretas mantidas no backend;
-- níveis internos das questões ocultos no frontend;
-- isolamento de dados por professor;
-- confirmação para operações destrutivas no painel;
-- migrations versionadas;
-- `.env` ignorado pelo Git;
-- banco isolado nos testes.
-
----
-
-# ☁️ Deploy no Render
-
-O repositório possui `render.yaml` para provisionamento da aplicação.
-
-A configuração atual prevê:
-
-- Web Service Node.js;
-- PostgreSQL;
-- build do frontend e backend;
-- migrations no startup;
-- seed;
-- healthcheck em `/api/health`;
-- deploy automático após checks;
-- `DATABASE_URL` ligada ao banco;
-- `GOOGLE_TTS_API_KEY` como segredo;
-- voz TTS configurável.
-
-Fluxo:
-
-```text
-GitHub
-  ↓
-GitHub Actions
-  ↓
-checks aprovados
-  ↓
-Render build
-  ↓
-Prisma migrations
-  ↓
-seed
-  ↓
-Express + React
-```
-
----
-
-# 📈 Possíveis evoluções
-
-Algumas ideias mantidas como continuidade de estudos:
-
-- múltiplas escolas;
-- administrador da instituição;
-- cadastro de múltiplos professores pelo painel;
-- turmas;
-- convite de alunos;
-- relatórios pedagógicos;
-- filtros avançados;
-- exportação para PDF;
-- exportação para planilha;
-- envio de resultado por e-mail;
-- dashboard analítico mais completo;
-- Inglês;
-- Francês;
-- banco maior de questões;
-- testes personalizados por professor;
-- reconhecimento de voz;
-- avaliação de pronúncia;
-- gamificação;
-- trilhas de estudo.
-
----
-
-# ✅ Validação com uma professora
-
-A proposta foi apresentada a uma **professora de idiomas**, que avaliou e aprovou o conceito como uma solução interessante para o contexto de nivelamento e acompanhamento dos alunos.
-
-Os feedbacks ajudaram a orientar mudanças como:
-
-- melhoria da experiência mobile;
-- ocultação do nível da questão durante a prova;
-- atenção à compreensão dos áudios;
-- revisão antes da finalização;
-- associação do aluno ao professor;
-- criação de um painel pedagógico.
-
-Essa validação é tratada neste repositório como **feedback aplicado ao projeto de estudos**, e não como vínculo profissional ou implantação oficial em uma instituição.
-
----
-
-# 👨‍💻 Contexto de aprendizagem
-
-Este projeto registra meu processo de aprendizado por meio da prática.
-
-A intenção não é afirmar experiência profissional que ainda não possuo, mas demonstrar contato prático com diferentes partes de uma aplicação moderna:
-
-```text
-Frontend
-   +
-Backend
-   +
-Banco de dados
-   +
-APIs
-   +
-Autenticação
-   +
-UX/UI
-   +
-Testes
-   +
-CI/CD
-   +
-Deploy
+Estudar
+   ↓
+Construir
+   ↓
+Encontrar problemas
+   ↓
+Pesquisar
+   ↓
+Corrigir
+   ↓
+Testar
+   ↓
+Aprender
+   ↓
+Evoluir
 ```
 
 ---
 
 <div align="center">
 
-## 📚 Teoria → prática → feedback → testes → evolução
-
-**Projeto de estudos aplicado a um cenário real de ensino de idiomas.**
+### 📚 Projeto criado para estudar, praticar e registrar evolução técnica.
 
 </div>
