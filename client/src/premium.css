@@ -94,7 +94,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
   .exam-layout{display:block}.exam-side{margin-top:14px}.question-panel,.exam-side{padding:18px}.audio-player{grid-template-columns:1fr}.wave{order:3}.question-map{grid-template-columns:repeat(3,1fr)}
   .result-hero{grid-template-columns:1fr}.result-hero .owl{display:none}.result-page{padding-top:12px}
   .workspace{display:block}.sidebar{position:fixed;z-index:100;bottom:10px;left:10px;right:10px;top:auto;height:auto;border:1px solid rgba(255,255,255,.9);border-radius:22px;padding:8px;display:block;background:rgba(56,19,116,.96);box-shadow:0 16px 40px rgba(43,13,113,.22)}
-  .sidebar>.brand,.sidebar__foot{display:none}.sidebar nav{margin:0;display:flex;justify-content:space-around;gap:3px}.nav-item{padding:10px;border-radius:14px}.sidebar nav .nav-item:nth-child(n+5){display:none}
+  .sidebar>.brand,.sidebar__foot{display:none}.sidebar nav{margin:0;display:flex;justify-content:space-around;gap:3px}.nav-item{padding:10px;border-radius:14px}.sidebar nav .nav-item{flex:1;min-width:0}
   .workspace__top{padding:14px 16px;min-height:74px}.workspace__content{padding:18px 12px 110px}.workspace-heading{align-items:flex-start;flex-direction:column}.workspace-heading h1{font-size:30px}.heading-actions{width:100%}.heading-actions .button{flex:1}
   .stat-grid{grid-template-columns:repeat(2,1fr);gap:10px}.stat{min-height:125px;padding:16px}.history-table,.chart-card,.recommendations,.quick-actions,.admin-health,.answer-audit{padding:16px}
   .table{overflow-x:auto}.table__head,.table__row{min-width:760px}.admin-tabs{overflow-x:auto}.admin-toolbar{padding:10px}.admin-segment{min-width:100%;width:100%}.search-box input{min-width:0;width:100%}
