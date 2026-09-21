@@ -16,13 +16,14 @@ on:
 env:
   DATABASE_URL: postgresql://postgres@127.0.0.1:5432/idiomas_pro?schema=public
   DATA_DATABASE_URL: postgresql://postgres@127.0.0.1:5432/idiomas_pro
-  SOURCE_SCHEMA: public
+  SOURCE_SCHEMA: synthetic
   PIPELINE_BATCH_SIZE: 250
   DB_HOST: 127.0.0.1
   DB_PORT: 5432
   DB_USER: postgres
   DB_PASSWORD: postgres
   DB_NAME: idiomas_pro
+  DBT_VARS: '{"analytics_source_system": "idiomas_pro:synthetic"}'
 
 jobs:
   validate-data-platform:
@@ -72,17 +73,30 @@ jobs:
       - name: Bootstrap analytics schemas
         run: python data-engineering/src/bootstrap.py
 
+      - name: Generate small synthetic dataset
+        run: >
+          python data-engineering/src/generate_synthetic_data.py
+          --students 20
+          --teachers 5
+          --questions 36
+          --attempts 100
+          --answers-per-attempt 18
+          --days 90
+
       - name: Incremental ingestion
         run: python data-engineering/src/ingest.py
 
+      - name: Verify incremental rerun
+        run: python data-engineering/src/ingest.py
+
       - name: Build dbt staging
-        run: dbt run --select path:models/staging --project-dir data-engineering/dbt --profiles-dir data-engineering/dbt
+        run: dbt run --select path:models/staging --vars "$DBT_VARS" --project-dir data-engineering/dbt --profiles-dir data-engineering/dbt
 
       - name: Update SCD snapshots
-        run: dbt snapshot --project-dir data-engineering/dbt --profiles-dir data-engineering/dbt
+        run: dbt snapshot --vars "$DBT_VARS" --project-dir data-engineering/dbt --profiles-dir data-engineering/dbt
 
       - name: Build and test warehouse
-        run: dbt build --project-dir data-engineering/dbt --profiles-dir data-engineering/dbt
+        run: dbt build --vars "$DBT_VARS" --project-dir data-engineering/dbt --profiles-dir data-engineering/dbt
 
       - name: Run persisted data quality checks
         run: python data-engineering/src/quality.py
@@ -92,3 +106,6 @@ jobs:
 
       - name: Build partition demonstration
         run: python data-engineering/src/partition_demo.py
+
+      - name: Generate EXPLAIN ANALYZE report
+        run: python data-engineering/src/performance_report.py

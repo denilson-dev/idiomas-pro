@@ -11,3 +11,4 @@ select
   ingested_at,
   source_system
 from {{ source('raw', 'attempt_answers') }}
+where source_system = '{{ var("analytics_source_system", "idiomas_pro:public") }}'

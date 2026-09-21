@@ -188,6 +188,17 @@ Depois:
 SOURCE_SCHEMA=synthetic python data-engineering/src/ingest.py
 ```
 
+Para transformar especificamente a origem sintética com dbt, informe a variável:
+
+```bash
+dbt build \
+  --vars '{"analytics_source_system": "idiomas_pro:synthetic"}' \
+  --project-dir data-engineering/dbt \
+  --profiles-dir data-engineering/dbt
+```
+
+A camada RAW mantém `source_system`, permitindo que dados de `public` e `synthetic` coexistam sem serem misturados nos modelos dbt.
+
 Os registros são fictícios e existem apenas para testes de volume.
 
 ## 9. Orquestração com Prefect

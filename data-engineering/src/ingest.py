@@ -70,9 +70,11 @@ def finish_run(conn, run_id: uuid.UUID, status: str, read: int, written: int, er
 def ingest_source(source_name: str, config: dict[str, str]) -> tuple[int, int]:
     total_read = 0
     total_written = 0
+    control_key = f"{SOURCE_SCHEMA}.{source_name}"
+    source_system = f"idiomas_pro:{SOURCE_SCHEMA}"
 
     with connect() as conn:
-        run_id = start_run(conn, source_name)
+        run_id = start_run(conn, control_key)
         conn.commit()
 
         try:
@@ -82,7 +84,7 @@ def ingest_source(source_name: str, config: dict[str, str]) -> tuple[int, int]:
                 FROM monitoring.pipeline_control
                 WHERE source_name = %s
                 """,
-                (source_name,),
+                (control_key,),
             ).fetchone()
 
             if control:
@@ -121,7 +123,7 @@ def ingest_source(source_name: str, config: dict[str, str]) -> tuple[int, int]:
                     INSERT INTO {raw_table}
                       (source_pk, payload, source_updated_at, ingested_at, batch_id, source_system)
                     VALUES (%s, %s, %s, NOW(), %s, %s)
-                    ON CONFLICT (source_pk)
+                    ON CONFLICT (source_system, source_pk)
                     DO UPDATE SET
                       payload = EXCLUDED.payload,
                       source_updated_at = EXCLUDED.source_updated_at,
@@ -142,7 +144,7 @@ def ingest_source(source_name: str, config: dict[str, str]) -> tuple[int, int]:
                             Jsonb(payload),
                             watermark,
                             batch_id,
-                            f"idiomas_pro:{SOURCE_SCHEMA}",
+                            source_system,
                         )
                     )
 
@@ -165,7 +167,7 @@ def ingest_source(source_name: str, config: dict[str, str]) -> tuple[int, int]:
                       last_source_pk = EXCLUDED.last_source_pk,
                       updated_at = NOW()
                     """,
-                    (source_name, last_watermark, last_source_pk),
+                    (control_key, last_watermark, last_source_pk),
                 )
                 conn.commit()
 

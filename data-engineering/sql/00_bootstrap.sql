@@ -43,12 +43,13 @@ CREATE INDEX IF NOT EXISTS rejected_records_source_idx
   ON data_quality.rejected_records(source_table, rejected_at DESC);
 
 CREATE TABLE IF NOT EXISTS raw.users (
-  source_pk TEXT PRIMARY KEY,
+  source_pk TEXT NOT NULL,
   payload JSONB NOT NULL,
   source_updated_at TIMESTAMPTZ NOT NULL,
   ingested_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   batch_id UUID NOT NULL,
-  source_system TEXT NOT NULL DEFAULT 'idiomas_pro'
+  source_system TEXT NOT NULL DEFAULT 'idiomas_pro:public',
+  PRIMARY KEY (source_system, source_pk)
 );
 
 CREATE TABLE IF NOT EXISTS raw.teachers (LIKE raw.users INCLUDING ALL);

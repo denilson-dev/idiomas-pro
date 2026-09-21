@@ -21,3 +21,6 @@ models:
 snapshots:
   idiomas_pro_analytics:
     +target_schema: warehouse
+
+vars:
+  analytics_source_system: "idiomas_pro:public"

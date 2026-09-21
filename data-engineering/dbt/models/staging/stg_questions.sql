@@ -15,3 +15,4 @@ select
   ingested_at,
   source_system
 from {{ source('raw', 'questions') }}
+where source_system = '{{ var("analytics_source_system", "idiomas_pro:public") }}'

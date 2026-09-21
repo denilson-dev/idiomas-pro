@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -14,6 +15,11 @@ def run(command: list[str]) -> None:
     subprocess.run(command, cwd=ROOT, check=True)
 
 
+def dbt_vars() -> str:
+    source_schema = os.getenv("SOURCE_SCHEMA", "public")
+    return '{"analytics_source_system": "idiomas_pro:' + source_schema + '"}'
+
+
 @task
 def bootstrap():
     run([sys.executable, "data-engineering/src/bootstrap.py"])
@@ -26,17 +32,33 @@ def ingest():
 
 @task
 def dbt_staging():
-    run(["dbt", "run", "--select", "path:models/staging", "--project-dir", str(DBT_DIR), "--profiles-dir", str(DBT_DIR)])
+    run([
+        "dbt", "run",
+        "--select", "path:models/staging",
+        "--vars", dbt_vars(),
+        "--project-dir", str(DBT_DIR),
+        "--profiles-dir", str(DBT_DIR),
+    ])
 
 
 @task
 def dbt_snapshot():
-    run(["dbt", "snapshot", "--project-dir", str(DBT_DIR), "--profiles-dir", str(DBT_DIR)])
+    run([
+        "dbt", "snapshot",
+        "--vars", dbt_vars(),
+        "--project-dir", str(DBT_DIR),
+        "--profiles-dir", str(DBT_DIR),
+    ])
 
 
 @task
 def dbt_build():
-    run(["dbt", "build", "--project-dir", str(DBT_DIR), "--profiles-dir", str(DBT_DIR)])
+    run([
+        "dbt", "build",
+        "--vars", dbt_vars(),
+        "--project-dir", str(DBT_DIR),
+        "--profiles-dir", str(DBT_DIR),
+    ])
 
 
 @task
