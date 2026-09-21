@@ -19,9 +19,9 @@ const updateAttemptSchema = z.object({
   studentEmail: z.union([z.string().email(), z.literal('')]).optional(),
 });
 
-function expiry(days = 30) {
+function teacherExpiry(hours = 12) {
   const date = new Date();
-  date.setDate(date.getDate() + days);
+  date.setHours(date.getHours() + hours);
   return date;
 }
 
@@ -85,12 +85,16 @@ export async function bootstrapTeacher(req: Request, res: Response) {
     },
   });
 
-  const session = await prisma.teacherSession.create({
-    data: {
-      token: randomUUID(),
-      teacherId: teacher.id,
-      expiresAt: expiry(),
-    },
+  const session = await prisma.$transaction(async (tx) => {
+    await tx.teacherSession.deleteMany({ where: { teacherId: teacher.id } });
+
+    return tx.teacherSession.create({
+      data: {
+        token: randomUUID(),
+        teacherId: teacher.id,
+        expiresAt: teacherExpiry(),
+      },
+    });
   });
 
   return res.status(201).json({
@@ -109,12 +113,16 @@ export async function teacherLogin(req: Request, res: Response) {
     return res.status(401).json({ message: 'E-mail ou senha incorretos.' });
   }
 
-  const session = await prisma.teacherSession.create({
-    data: {
-      token: randomUUID(),
-      teacherId: teacher.id,
-      expiresAt: expiry(),
-    },
+  const session = await prisma.$transaction(async (tx) => {
+    await tx.teacherSession.deleteMany({ where: { teacherId: teacher.id } });
+
+    return tx.teacherSession.create({
+      data: {
+        token: randomUUID(),
+        teacherId: teacher.id,
+        expiresAt: teacherExpiry(),
+      },
+    });
   });
 
   return res.json({

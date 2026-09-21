@@ -2,13 +2,13 @@ export function Brand({ compact = false }: { compact?: boolean }) {
   return (
     <div className={`brand ${compact ? 'brand--compact' : ''}`}>
       <div className="brand__mark">
-        M
+        IP
         <span className="brand__dot brand__dot--a" />
         <span className="brand__dot brand__dot--b" />
       </div>
       <div>
-        <strong>Nivelamento no Topo</strong>
-        <span>Idiomas • A1 a C2</span>
+        <strong>Idiomas Pro</strong>
+        <span>Nivelamento • A1 a C2</span>
       </div>
     </div>
   );
