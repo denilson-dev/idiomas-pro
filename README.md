@@ -1,13 +1,15 @@
-# 🌍 Idiomas Pro — Nivelamento de Idiomas
+# 🌍 Idiomas Pro
 
 <div align="center">
 
-### Projeto de estudos full stack
+### Projeto de estudos: aplicação web + Engenharia de Dados com PostgreSQL
 
-Aplicação desenvolvida para praticar, na prática, conceitos de **frontend, backend, banco de dados, APIs, autenticação, UX/UI, testes, CI/CD e deploy**.
+O **Idiomas Pro** é um projeto criado para transformar estudos em prática.
 
-> Este repositório é **exclusivamente um projeto de estudos**.  
-> Não representa um sistema oficial de escola, certificação de proficiência, produto comercial finalizado ou experiência profissional anterior.
+A aplicação simula um fluxo de nivelamento de idiomas e, a partir dos dados gerados pelo próprio sistema, também possui uma camada de **Engenharia de Dados** com ingestão incremental, Data Warehouse, Data Marts, qualidade de dados e integração com ferramentas analíticas.
+
+> **Importante:** este repositório é exclusivamente um projeto de estudos.  
+> Não representa uma plataforma oficial de ensino, certificação de proficiência, produto comercial finalizado ou experiência profissional anterior.
 
 ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)
@@ -15,278 +17,308 @@ Aplicação desenvolvida para praticar, na prática, conceitos de **frontend, ba
 ![Express](https://img.shields.io/badge/Express-5-000000?logo=express&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white)
 ![Prisma](https://img.shields.io/badge/Prisma-7-2D3748?logo=prisma&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
 ![Playwright](https://img.shields.io/badge/Playwright-E2E-2EAD33?logo=playwright&logoColor=white)
 
 </div>
 
 ---
 
-## 📌 O que é este projeto?
+## 📖 Sobre o projeto
 
-O **Idiomas Pro** começou como uma forma de transformar estudos de programação em uma aplicação completa.
+O Idiomas Pro nasceu com uma ideia simples: em vez de estudar programação apenas com exercícios isolados, construir uma aplicação baseada em uma necessidade real e evoluí-la conforme novos assuntos fossem estudados.
 
-Em vez de praticar apenas partes isoladas, a ideia foi montar um fluxo real de uma plataforma de nivelamento de idiomas:
+A primeira etapa foi criar uma plataforma em que:
 
 1. o aluno entra na aplicação;
 2. escolhe o idioma disponível;
-3. identifica-se ou acessa como visitante;
+3. acessa como visitante ou usuário cadastrado;
 4. seleciona um professor;
 5. realiza uma avaliação;
 6. responde questões de gramática, vocabulário e listening;
 7. revisa as respostas;
-8. recebe um resultado de nível;
-9. o professor consegue acompanhar as avaliações vinculadas ao seu acesso.
+8. recebe uma classificação de nível;
+9. o professor consegue acompanhar as avaliações relacionadas ao seu acesso.
 
-O objetivo principal do projeto é **aprender construindo**.
+Depois, o projeto passou a ser usado também para estudar **o caminho percorrido pelos dados**.
+
+Assim, os dados gerados pela própria aplicação passaram a alimentar uma arquitetura analítica com PostgreSQL.
 
 ---
 
-## 🎯 Objetivo de aprendizagem
+## 🎯 Objetivo
 
-Este projeto foi usado para estudar e praticar:
+O principal objetivo é **aprender construindo**.
 
-- criação de interfaces com React;
-- organização de uma aplicação com TypeScript;
-- rotas no frontend;
-- estado global;
-- criação de APIs REST;
-- backend com Node.js e Express;
-- banco de dados PostgreSQL;
-- modelagem de dados;
-- Prisma ORM;
-- migrations e seed;
-- autenticação e sessões;
-- hash de senhas;
-- validação de dados;
-- separação entre aluno e professor;
-- segurança básica de API;
-- integração com Text-to-Speech;
-- responsividade para desktop e celular;
-- comportamento em Android e iPhone;
+O projeto reúne estudos de:
+
+- desenvolvimento frontend;
+- desenvolvimento backend;
+- APIs REST;
+- modelagem de banco de dados;
+- PostgreSQL;
+- autenticação;
+- segurança básica;
+- responsividade;
 - testes automatizados;
-- integração contínua;
-- deploy em ambiente cloud.
+- CI/CD;
+- deploy;
+- Python para Engenharia de Dados;
+- ETL/ELT;
+- cargas incrementais;
+- Data Warehouse;
+- modelagem dimensional;
+- qualidade de dados;
+- observabilidade de pipelines;
+- Data Marts;
+- dbt;
+- Apache Airflow;
+- análise de performance no PostgreSQL;
+- Power BI e Metabase.
 
 ---
 
-# 🧭 Como o projeto evoluiu
+# 🏗️ Arquitetura geral
 
-O histórico do repositório mostra uma evolução gradual. Cada etapa trouxe um problema novo para estudar e resolver.
+Hoje o projeto possui duas partes que trabalham sobre os mesmos dados.
 
-## 1. Estrutura inicial
+~~~text
+                    IDIOMAS PRO
 
-A primeira etapa foi criar a base da aplicação:
+Aluno / Professor
+       │
+       ▼
+┌─────────────────────────────┐
+│ React + TypeScript          │
+│ Frontend                    │
+└──────────────┬──────────────┘
+               │
+               │ API REST
+               ▼
+┌─────────────────────────────┐
+│ Node.js + Express           │
+│ Backend                     │
+└──────────────┬──────────────┘
+               │
+               ▼
+┌─────────────────────────────┐
+│ Prisma ORM                  │
+└──────────────┬──────────────┘
+               │
+               ▼
+┌─────────────────────────────┐
+│ PostgreSQL                  │
+│ schema public - OLTP        │
+└──────────────┬──────────────┘
+               │
+               │ Pipeline incremental
+               ▼
+┌─────────────────────────────┐
+│ Python + psycopg            │
+└──────────────┬──────────────┘
+               │
+               ▼
+       raw → staging
+               │
+               ▼
+           warehouse
+               │
+               ▼
+             marts
+               │
+        ┌──────┴──────┐
+        ▼             ▼
+     Power BI      Metabase
+~~~
+
+O banco operacional continua responsável pela aplicação.
+
+A camada analítica foi adicionada separadamente para estudar Engenharia de Dados sem misturar as responsabilidades do sistema transacional.
+
+---
+
+# 🧭 Evolução do projeto
+
+## 1. Frontend
+
+A primeira versão foi construída com:
 
 - React;
 - TypeScript;
 - Vite;
-- páginas do fluxo de nivelamento;
 - componentes reutilizáveis;
-- navegação entre telas.
+- navegação entre páginas;
+- gerenciamento de estado.
 
-### Aprendizado
-
-Entender como organizar um projeto frontend maior do que uma página única.
+O objetivo inicial foi entender como estruturar uma aplicação maior do que uma página isolada.
 
 ---
 
-## 2. Fluxo completo do aluno
+## 2. Fluxo do aluno
 
-Depois foram adicionados:
+Foram desenvolvidas telas para:
 
-- tela inicial;
-- escolha de idioma;
-- identificação do aluno;
-- tela de teste;
-- questões;
+- página inicial;
+- escolha do idioma;
+- identificação;
+- cadastro;
+- login;
+- execução da avaliação;
 - progresso;
 - revisão;
 - resultado;
 - histórico.
 
-### Aprendizado
-
-Manter dados durante várias telas e controlar corretamente o estado da avaliação.
+Essa etapa trouxe desafios de navegação, persistência de estado e experiência do usuário.
 
 ---
 
-## 3. Backend e banco de dados
+## 3. Backend
 
-O projeto deixou de depender apenas do navegador e passou a utilizar:
+O projeto evoluiu para uma arquitetura full stack utilizando:
 
 - Node.js;
 - Express;
-- PostgreSQL;
-- Prisma;
+- TypeScript;
 - API REST;
-- migrations;
-- seed;
-- persistência de usuários, sessões, questões e resultados.
-
-### Aprendizado
-
-Separar frontend, backend e banco de dados e fazer essas três partes trabalharem juntas.
+- validação com Zod;
+- autenticação;
+- sessões;
+- tratamento de erros.
 
 ---
 
-## 4. Autenticação
+## 4. PostgreSQL e Prisma
 
-Foram criados fluxos diferentes para:
+Os dados passaram a ser persistidos em PostgreSQL.
 
-- aluno visitante;
-- aluno com conta;
+O Prisma é utilizado para:
+
+- modelagem;
+- acesso aos dados;
+- migrations;
+- geração do Prisma Client;
+- seed do banco.
+
+---
+
+## 5. Autenticação
+
+Existem fluxos distintos para:
+
+- visitante;
+- aluno cadastrado;
 - professor.
 
-As senhas são armazenadas com hash e as sessões são persistidas no banco.
-
-### Aprendizado
-
-Autenticação não é apenas criar uma tela de login. Foi necessário estudar:
-
-- sessão;
-- token;
-- expiração;
-- rotas protegidas;
-- identificação do usuário;
-- separação de permissões.
+As senhas são armazenadas com hash e as sessões ficam registradas no banco.
 
 ---
 
-## 5. Portal do professor
+## 6. Portal do professor
 
-O projeto ganhou uma área própria para professores.
+O professor possui uma área separada da experiência do aluno.
 
-O professor pode:
+Entre as funcionalidades atuais estão:
 
-- fazer login;
-- visualizar avaliações;
-- consultar alunos;
-- abrir detalhes de uma avaliação;
-- editar nome e e-mail vinculados ao registro;
-- excluir uma avaliação;
-- limpar as avaliações vinculadas ao próprio acesso.
-
-### Aprendizado
-
-Criar permissões diferentes e garantir que um professor não manipule dados pertencentes a outro professor.
+- autenticação própria;
+- visualização das avaliações;
+- consulta aos alunos;
+- detalhes das tentativas;
+- pesquisa;
+- edição de dados administrativos;
+- exclusão de avaliação;
+- limpeza das avaliações vinculadas ao próprio professor.
 
 ---
 
-## 6. Listening e geração de áudio
+## 7. Listening e Text-to-Speech
 
-As questões de listening passaram por várias abordagens até chegar à estrutura atual.
+O projeto possui questões de listening.
 
-O backend possui uma rota específica:
+O backend disponibiliza uma rota para áudio:
 
-```http
+~~~http
 GET /api/tts/:questionId
-```
+~~~
 
-A aplicação pode utilizar:
+O estudo dessa funcionalidade envolveu:
 
-1. Google Cloud Text-to-Speech;
-2. um fallback externo;
-3. arquivos MP3 locais.
-
-### Aprendizado
-
-Áudio na web envolve vários detalhes, principalmente em navegadores móveis:
-
+- Google Cloud Text-to-Speech;
+- fallback de áudio;
+- arquivos locais;
 - carregamento;
-- reprodução;
 - preload;
 - cache;
-- falhas de rede;
-- comportamento do Safari;
-- alternativas quando um serviço externo não responde.
+- diferenças entre navegadores;
+- comportamento em dispositivos móveis.
 
 ---
 
-## 7. Responsividade e experiência mobile
+## 8. Responsividade
 
-Grande parte da evolução do projeto envolveu ajustes para:
+A interface foi ajustada pensando em:
 
 - desktop;
 - Android;
 - iPhone;
 - Safari/WebKit;
 - telas estreitas;
-- telas com pouca altura;
-- teclado virtual;
+- telas de pouca altura;
 - safe areas;
+- teclado virtual;
 - scroll;
-- botões fixos;
-- componentes de áudio.
-
-Também foram criadas bandeiras em SVG para evitar diferenças visuais entre sistemas operacionais.
-
-### Aprendizado
-
-Uma tela que funciona no desktop não necessariamente funciona bem no celular.
+- players de áudio;
+- botões e navegação.
 
 ---
 
-## 8. Testes automatizados
+## 9. Testes
 
-O projeto passou a utilizar:
+Com o crescimento da aplicação, foram adicionados testes automatizados para reduzir regressões.
+
+O projeto utiliza:
 
 - Vitest;
 - Testing Library;
 - Supertest;
 - Playwright.
 
-Os testes cobrem diferentes camadas da aplicação.
+---
 
-### Aprendizado
+## 10. Engenharia de Dados
 
-Testar apenas manualmente começou a ficar difícil conforme o projeto cresceu. Os testes automatizados ajudam a detectar regressões depois de alterações.
+A etapa mais recente foi transformar os dados produzidos pela aplicação em uma fonte para estudos de Engenharia de Dados.
+
+Foram adicionados:
+
+- pipeline incremental em Python;
+- controle de watermarks;
+- camada raw;
+- camada staging;
+- Data Warehouse dimensional;
+- Data Marts;
+- qualidade de dados;
+- histórico de execuções;
+- dados sintéticos;
+- dbt;
+- DAG de Airflow;
+- laboratórios de performance;
+- integração com BI.
 
 ---
 
-## 9. CI e deploy
+# 👨‍🎓 Funcionalidades do aluno
 
-Também foram estudadas configurações para:
+O aluno pode:
 
-- GitHub Actions;
-- Vercel;
-- Render;
-- PostgreSQL em cloud;
-- variáveis de ambiente;
-- build de frontend e backend.
-
-O repositório ainda mantém arquivos relacionados a Vercel e Render porque os dois ambientes fizeram parte do processo de aprendizagem.
-
-### Aprendizado
-
-Um projeto funcionar localmente não significa que ele funcionará automaticamente em produção.
-
-Foi necessário lidar com:
-
-- comandos de build;
-- variáveis de ambiente;
-- banco remoto;
-- geração do Prisma Client;
-- migrations;
-- caminhos de API;
-- arquivos estáticos;
-- diferenças entre ambiente local e cloud.
-
----
-
-# 🧩 Funcionalidades atuais
-
-## 👨‍🎓 Aluno
-
-O fluxo atual permite:
-
-- entrar como visitante;
-- criar conta;
+- acessar como visitante;
+- criar uma conta;
 - fazer login;
 - escolher o idioma da avaliação;
 - informar nome;
 - informar e-mail opcional;
 - selecionar um professor;
-- iniciar a prova;
+- iniciar uma avaliação;
 - responder questões de gramática;
 - responder questões de vocabulário;
 - responder questões de listening;
@@ -295,52 +327,47 @@ O fluxo atual permite:
 - finalizar a avaliação;
 - visualizar nota;
 - visualizar nível;
-- visualizar desempenho por habilidade;
-- consultar histórico de avaliações.
+- visualizar o desempenho por habilidade;
+- consultar o histórico.
 
 ---
 
-## 👩‍🏫 Professor
+# 👩‍🏫 Funcionalidades do professor
 
 O portal do professor permite:
 
-- autenticação separada;
-- visualizar quantidade de avaliações;
-- visualizar alunos;
-- acompanhar resultados;
-- abrir detalhes de uma prova;
-- pesquisar registros;
-- editar dados administrativos;
-- excluir uma avaliação;
-- limpar avaliações vinculadas ao próprio professor.
+- login separado do aluno;
+- primeiro acesso pedagógico;
+- consulta ao dashboard;
+- visualização de avaliações;
+- consulta aos alunos;
+- abertura dos detalhes de uma tentativa;
+- pesquisa de registros;
+- edição de dados;
+- exclusão de uma avaliação;
+- limpeza das avaliações vinculadas ao professor.
+
+O backend verifica o professor autenticado antes de permitir operações sobre os registros.
 
 ---
 
 # 🌐 Idiomas
 
-## Interface
+### Interface
 
-A interface principal está em:
+Português do Brasil.
 
-```text
-Português do Brasil
-```
+### Avaliação disponível atualmente
 
-## Avaliação disponível
+Espanhol.
 
-Atualmente:
-
-```text
-Espanhol
-```
-
-Inglês e Francês aparecem como possibilidades de evolução do projeto.
+Inglês e Francês aparecem como possibilidades futuras de expansão.
 
 ---
 
-# 🧠 Sobre os níveis A1 a C2
+# 🧠 Níveis A1 a C2
 
-O projeto utiliza níveis inspirados no CEFR:
+O projeto utiliza uma classificação inspirada nos níveis CEFR.
 
 | Aproveitamento | Nível |
 |---:|:---:|
@@ -351,90 +378,81 @@ O projeto utiliza níveis inspirados no CEFR:
 | 81–95% | C1 |
 | 96–100% | C2 |
 
-> Essa regra foi criada para fins de estudo.  
-> O resultado da aplicação **não é uma certificação oficial de proficiência**.
+> Essa regra foi criada para fins de estudo e funcionamento interno da aplicação.  
+> O resultado não representa uma certificação oficial de proficiência.
 
 ---
 
-# 🛠️ Tecnologias utilizadas
+# 🛠️ Tecnologias
 
-A tabela abaixo explica de forma simples o papel de cada tecnologia.
+## Frontend
 
-| Tecnologia | Uso no projeto |
+| Tecnologia | Uso |
 |---|---|
-| React 19 | Construção das telas e componentes |
-| React DOM | Renderização da interface no navegador |
-| TypeScript | Tipagem e organização do código |
-| Vite 8 | Ambiente de desenvolvimento e build do frontend |
-| React Router | Navegação entre páginas |
-| Zustand | Estado global da aplicação |
+| React 19 | Construção da interface |
+| React DOM | Renderização da aplicação |
+| TypeScript 5 | Tipagem do código |
+| Vite 8 | Desenvolvimento e build |
+| React Router 7 | Rotas do frontend |
+| Zustand 5 | Estado global |
 | Tailwind CSS 4 | Estilização e responsividade |
-| Lucide React | Ícones da interface |
-| Node.js 22 | Ambiente de execução do backend |
-| Express 5 | Criação da API REST |
-| Zod 4 | Validação de dados recebidos pela API |
-| Helmet | Cabeçalhos de segurança HTTP |
-| CORS | Controle de comunicação entre origens |
+| Lucide React | Ícones |
+
+## Backend
+
+| Tecnologia | Uso |
+|---|---|
+| Node.js 22 | Ambiente de execução |
+| Express 5 | API REST |
+| TypeScript | Backend tipado |
+| Zod 4 | Validação |
+| Helmet | Cabeçalhos de segurança |
+| CORS | Controle de origem |
 | bcryptjs | Hash de senhas |
-| PostgreSQL | Banco de dados relacional |
-| Prisma 7 | ORM e acesso ao banco |
+| dotenv | Variáveis de ambiente |
+
+## Banco de dados
+
+| Tecnologia | Uso |
+|---|---|
+| PostgreSQL 16 | Banco operacional e analítico |
+| Prisma 7 | ORM |
 | pg | Driver PostgreSQL |
-| Docker Compose | Banco PostgreSQL local para desenvolvimento |
-| Google Cloud TTS | Geração de áudio para listening |
+| Docker Compose | PostgreSQL local |
+
+## Engenharia de Dados
+
+| Tecnologia | Uso |
+|---|---|
+| Python 3.12 | Pipeline de dados |
+| psycopg | Comunicação com PostgreSQL |
+| Faker | Dados sintéticos |
+| dbt | Estudos de transformação e testes |
+| Apache Airflow | Exemplo de orquestração |
+| SQL | Transformações e modelagem |
+| PostgreSQL Materialized Views | Data Marts |
+| Power BI | Possível consumo analítico |
+| Metabase | Visualização local opcional |
+
+## Qualidade e entrega
+
+| Tecnologia | Uso |
+|---|---|
 | Vitest | Testes unitários |
-| Testing Library | Testes de componentes React |
-| Supertest | Testes das rotas da API |
-| Playwright | Testes end-to-end em navegador |
-| GitHub Actions | Pipeline automatizada de testes e build |
-| Vercel | Ambiente estudado para deploy |
-| Render | Ambiente estudado para deploy full stack |
-| Python | Pipeline incremental de dados |
-| psycopg | Comunicação do pipeline com PostgreSQL |
-| dbt | Estudos de transformação, testes e lineage |
-| Apache Airflow | Orquestração do pipeline analítico |
-| Faker | Geração de dados sintéticos para testes de volume |
-| Metabase / Power BI | Consumo dos data marts |
+| Testing Library | Testes de componentes |
+| Supertest | Testes da API |
+| Playwright | Testes end-to-end |
+| GitHub Actions | CI |
+| Vercel | Estudos de deploy |
+| Render | Estudos de deploy full stack |
 
 ---
 
-# 🏗️ Arquitetura atual
+# 🗄️ Banco operacional
 
-```text
-Aluno / Professor
-       │
-       ▼
-┌───────────────────────┐
-│ React + TypeScript    │
-│ Frontend              │
-└──────────┬────────────┘
-           │
-           │ /api
-           ▼
-┌───────────────────────┐
-│ Node.js + Express     │
-│ Backend               │
-└──────────┬────────────┘
-           │
-           ▼
-┌───────────────────────┐
-│ Prisma ORM            │
-└──────────┬────────────┘
-           │
-           ▼
-┌───────────────────────┐
-│ PostgreSQL            │
-└───────────────────────┘
+A aplicação utiliza o schema PostgreSQL **public** como camada transacional.
 
-Listening
-    │
-    └── TTS externo + fallback local
-```
-
----
-
-# 🗃️ Principais dados armazenados
-
-O banco possui entidades para:
+As principais entidades são:
 
 ### User
 
@@ -442,7 +460,7 @@ Conta do aluno.
 
 ### Session
 
-Sessão do aluno, autenticado ou visitante.
+Sessão autenticada ou anônima.
 
 ### Teacher
 
@@ -454,85 +472,432 @@ Sessão exclusiva do professor.
 
 ### Question
 
-Questão da avaliação.
-
-Armazena informações como:
-
-- enunciado;
-- alternativas;
-- resposta correta;
-- categoria;
-- nível interno;
-- mídia.
+Questões da avaliação.
 
 ### TestAttempt
 
-Representa uma tentativa de avaliação.
+Tentativa de avaliação.
 
 ### AttemptAnswer
 
-Representa a resposta de uma questão dentro de uma tentativa.
+Resposta individual de uma questão.
 
 ---
 
-# 🔐 Cuidados estudados no projeto
+# 🏭 Engenharia de Dados com PostgreSQL
 
-Algumas práticas aplicadas:
+A implementação está dentro da pasta:
 
-- senha com hash;
-- sessões persistidas;
-- validação com Zod;
-- Helmet;
-- CORS;
-- variáveis de ambiente;
-- resposta correta mantida no backend;
-- nível interno da questão não exposto durante a prova;
-- separação das sessões de aluno e professor;
-- isolamento dos dados por professor;
-- banco separado para testes automatizados.
+~~~text
+data-engineering/
+~~~
 
-Esses recursos foram adicionados como parte do aprendizado sobre segurança e organização de aplicações web.
+A arquitetura utiliza diferentes schemas no PostgreSQL.
+
+| Schema | Responsabilidade |
+|---|---|
+| public | Sistema transacional da aplicação |
+| meta | Controle das execuções e watermarks |
+| raw | Dados ingeridos da origem |
+| staging | Limpeza e padronização |
+| warehouse | Modelo dimensional |
+| marts | Dados preparados para análise |
+| data_quality | Validações e registros rejeitados |
 
 ---
 
-# 🧪 Testes
+## 🔄 Pipeline incremental
 
-## Unitários
+O pipeline principal está em Python e utiliza psycopg.
 
-Usados para testar regras isoladas, como:
+Fluxo:
 
-- cálculo;
-- classificação de nível;
-- desempenho por categoria.
+~~~text
+public
+   │
+   ▼
+extract
+   │
+   ▼
+raw
+   │
+   ▼
+staging
+   │
+   ▼
+transform
+   │
+   ▼
+warehouse
+   │
+   ▼
+marts
+   │
+   ▼
+data quality
+~~~
 
-## Componentes
+Cada conjunto de dados possui um watermark registrado em:
 
-Usados para testar partes da interface.
+~~~text
+meta.pipeline_control
+~~~
+
+Assim, uma nova execução pode buscar somente registros novos ou atualizados.
+
+---
+
+## 📊 Observabilidade do pipeline
+
+As execuções são registradas em:
+
+~~~text
+meta.pipeline_runs
+~~~
+
+Entre as informações armazenadas estão:
+
+- identificação da execução;
+- pipeline;
+- horário de início;
+- horário de término;
+- registros lidos;
+- registros escritos;
+- registros rejeitados;
+- status;
+- mensagem de erro.
 
 Exemplo:
 
-- seleção de alternativas;
-- comportamento do card de questão.
+~~~sql
+SELECT *
+FROM meta.pipeline_runs
+ORDER BY started_at DESC;
+~~~
 
-## Integração da API
+---
 
-Usados para testar:
+# ⭐ Data Warehouse
+
+O Warehouse utiliza uma modelagem dimensional.
+
+## Dimensões
+
+~~~text
+warehouse.dim_date
+warehouse.dim_student
+warehouse.dim_teacher
+warehouse.dim_question
+warehouse.dim_language
+warehouse.dim_cefr_level
+~~~
+
+## Fatos
+
+~~~text
+warehouse.fact_test_attempt
+warehouse.fact_answer
+~~~
+
+Arquitetura simplificada:
+
+~~~text
+                 dim_student
+                     │
+                     │
+dim_teacher ─ fact_test_attempt ─ dim_date
+                     │
+                     │
+               dim_language
+                     │
+               dim_cefr_level
+
+
+dim_question ─── fact_answer
+                      │
+                 fact_test_attempt
+~~~
+
+---
+
+# 🕒 SCD Type 2
+
+A dimensão de professores possui uma implementação de **Slowly Changing Dimension Type 2**.
+
+Quando informações do professor mudam, a versão anterior pode ser encerrada e uma nova versão passa a representar o estado atual.
+
+Campos utilizados:
+
+~~~text
+valid_from
+valid_to
+is_current
+hashdiff
+~~~
+
+Essa implementação foi criada com finalidade educacional para estudar histórico em Data Warehouses.
+
+---
+
+# 🥇 Data Marts
+
+O projeto cria Materialized Views para consumo analítico.
+
+### Distribuição CEFR
+
+~~~text
+marts.cefr_distribution
+~~~
+
+Permite analisar a quantidade de avaliações por nível e a média de pontuação.
+
+### Desempenho por professor
+
+~~~text
+marts.teacher_performance
+~~~
+
+Inclui informações como:
+
+- quantidade de alunos;
+- avaliações;
+- média;
+- distribuição A1–C2.
+
+### Análise das questões
+
+~~~text
+marts.question_analysis
+~~~
+
+Permite observar:
+
+- quantidade de respostas;
+- acertos;
+- erros;
+- taxa de acerto.
+
+### Evolução do aluno
+
+~~~text
+marts.student_progress
+~~~
+
+Permite analisar resultados anteriores e mudanças de nível ao longo das avaliações.
+
+---
+
+# ✅ Qualidade de dados
+
+O projeto possui uma camada específica para estudar Data Quality.
+
+Algumas validações:
+
+- pontuação fora de 0–100;
+- nível CEFR inválido;
+- resposta sem avaliação correspondente;
+- resposta sem questão correspondente.
+
+Problemas encontrados ficam disponíveis em:
+
+~~~text
+data_quality.current_issues
+~~~
+
+Também existe:
+
+~~~text
+data_quality.rejected_records
+~~~
+
+para registrar rejeições associadas às execuções.
+
+---
+
+# 🔒 Privacidade na camada analítica
+
+O pipeline não leva hashes de senha nem tokens de sessão para o Warehouse.
+
+Na camada de staging, endereços de e-mail utilizados para análise são convertidos em hash.
+
+> A camada raw pode conter os campos recebidos da origem e deve ser tratada como uma área de acesso restrito. Em um ambiente real, controles de acesso, criptografia, retenção, governança e LGPD precisariam ser aprofundados.
+
+---
+
+# 🧪 Dados sintéticos
+
+Para estudar volume sem depender de dados reais, o projeto possui um gerador com Faker.
+
+Exemplo:
+
+~~~bash
+python data-engineering/synthetic/generate.py   --students 5000   --teachers 50   --questions 180   --attempts 100000   --answers-per-attempt 18
+~~~
+
+Os dados recebem:
+
+~~~text
+source_system = synthetic
+~~~
+
+Isso permite diferenciá-los claramente dos dados originados pela aplicação.
+
+> Os dados sintéticos existem somente para testes, consultas, índices, performance e aprendizado. Eles não representam usuários reais.
+
+---
+
+# ⚡ PostgreSQL e performance
+
+Existem laboratórios isolados para estudar:
+
+- índices;
+- planos de execução;
+- EXPLAIN;
+- EXPLAIN ANALYZE;
+- buffers;
+- estatísticas;
+- particionamento por data;
+- partition pruning.
+
+Arquivos:
+
+~~~text
+data-engineering/sql/labs/001_partitioning.sql
+data-engineering/sql/labs/002_performance.sql
+~~~
+
+Exemplo:
+
+~~~sql
+EXPLAIN (ANALYZE, BUFFERS)
+SELECT *
+FROM warehouse.fact_answer
+WHERE question_key = 10
+  AND is_correct = false;
+~~~
+
+Os laboratórios são educacionais e não são executados automaticamente pelo pipeline principal.
+
+---
+
+# 🧱 dbt
+
+Existe um projeto dbt em:
+
+~~~text
+data-engineering/dbt/
+~~~
+
+Ele foi adicionado para estudar:
+
+- sources;
+- models;
+- ref;
+- testes;
+- staging;
+- marts;
+- organização das transformações.
+
+Exemplo de execução:
+
+~~~bash
+dbt debug --project-dir data-engineering/dbt
+dbt build --project-dir data-engineering/dbt
+~~~
+
+O dbt é uma trilha complementar de estudos. O pipeline principal continua funcionando com Python, SQL e PostgreSQL.
+
+---
+
+# ⏱️ Apache Airflow
+
+Existe uma DAG de exemplo em:
+
+~~~text
+data-engineering/airflow/dags/idiomas_pro_analytics.py
+~~~
+
+Fluxo proposto:
+
+~~~text
+init
+  ↓
+extract
+  ↓
+transform
+  ↓
+quality
+~~~
+
+O agendamento de exemplo é diário.
+
+O Airflow não é necessário para executar a aplicação principal e foi incluído como estudo de orquestração.
+
+---
+
+# 📈 Power BI e Metabase
+
+Os Data Marts foram preparados para consumo por ferramentas analíticas.
+
+## Metabase
+
+Existe um Docker Compose opcional:
+
+~~~bash
+docker compose -f docker-compose.analytics.yml up -d
+~~~
+
+Por padrão:
+
+~~~text
+http://localhost:3001
+~~~
+
+## Power BI
+
+Uma abordagem possível é conectar diretamente ao PostgreSQL e utilizar preferencialmente as estruturas do schema **marts**.
+
+Exemplos de análises:
+
+- total de avaliações;
+- média de pontuação;
+- distribuição CEFR;
+- desempenho por professor;
+- taxa de acerto por questão;
+- evolução dos alunos;
+- desempenho por categoria.
+
+---
+
+# 🧪 Testes automatizados
+
+## Testes unitários
+
+Cobrem regras isoladas, incluindo lógica de classificação e desempenho.
+
+## Testes de componentes
+
+Validam partes da interface React.
+
+## Testes da API
+
+Cobrem fluxos como:
 
 - autenticação;
-- criação de sessão;
-- início de avaliação;
+- sessão;
+- criação de avaliação;
 - envio de respostas;
-- resultado;
-- painel do professor;
+- resultados;
+- portal do professor;
 - edição;
 - exclusão;
 - isolamento entre professores.
 
 ## End-to-end
 
-O Playwright simula uma jornada real da aplicação.
+O Playwright testa a aplicação simulando diferentes ambientes.
 
-Os testes são executados em perfis equivalentes a:
+Configurações atuais:
 
 - Desktop Chrome;
 - Android / Pixel 7;
@@ -540,75 +905,93 @@ Os testes são executados em perfis equivalentes a:
 
 ---
 
-# ⚙️ GitHub Actions
+# ⚙️ Integração contínua
 
-A pipeline de CI executa automaticamente:
+O GitHub Actions executa uma pipeline com:
 
-1. PostgreSQL 16 temporário;
-2. instalação das dependências;
-3. geração do Prisma Client;
-4. migrations;
-5. seed;
-6. testes unitários;
-7. testes de componentes;
-8. testes de integração;
-9. build do backend;
-10. build do frontend;
-11. Playwright em Chromium e WebKit.
+1. PostgreSQL 16;
+2. Node.js 22;
+3. Python 3.12;
+4. instalação das dependências;
+5. geração do Prisma Client;
+6. aplicação das migrations;
+7. seed;
+8. validação dos arquivos Python;
+9. execução do pipeline analítico;
+10. Data Quality;
+11. testes unitários;
+12. testes de componentes;
+13. testes da API;
+14. build do backend;
+15. build do frontend;
+16. instalação dos navegadores Playwright;
+17. testes end-to-end.
 
-Isso foi criado para praticar o conceito de **integração contínua**.
+A ideia é detectar regressões tanto na aplicação quanto na camada de dados.
 
 ---
 
-# 🚧 Principais desafios encontrados
+# 🚧 Principais desafios estudados
 
-Alguns dos desafios que fizeram parte do desenvolvimento:
+Durante a evolução do projeto, alguns dos principais desafios foram:
 
-### 1. Fazer frontend e backend trabalharem juntos
+### Frontend e backend
 
-Foi necessário entender requisições HTTP, rotas, respostas da API e tratamento de erros.
+Entender a comunicação entre telas, API e banco de dados.
 
-### 2. Persistir os dados
+### Autenticação
 
-A aplicação começou com dados mais simples e depois passou a utilizar PostgreSQL e Prisma.
+Separar os fluxos de visitante, aluno e professor.
 
-### 3. Trabalhar com autenticação
+### Segurança da avaliação
 
-Foi necessário separar visitante, aluno cadastrado e professor.
+Evitar que respostas corretas e informações internas da questão fossem expostas durante a prova.
 
-### 4. Não expor respostas da prova
+### Responsividade
 
-A resposta correta e o nível interno da questão precisaram permanecer no backend.
+Corrigir diferenças de comportamento em desktop, Android, iPhone, Safari e WebKit.
 
-### 5. Fazer o áudio funcionar em diferentes dispositivos
+### Áudio
 
-O listening exigiu ajustes de preload, reprodução, fallback e comportamento mobile.
+Trabalhar com carregamento, reprodução, TTS, fallback e diferenças entre navegadores.
 
-### 6. Corrigir problemas específicos do iPhone
+### Persistência
 
-Safe areas, Safari, WebKit, scroll e botões fixos exigiram vários ajustes.
+Modelar usuários, professores, sessões, questões, avaliações e respostas.
 
-### 7. Manter o layout consistente
+### Deploy
 
-Elementos como bandeiras, cards, navegação e players precisaram funcionar de forma semelhante em navegadores diferentes.
+Entender diferenças entre execução local, Vercel, Render e banco em cloud.
 
-### 8. Separar os dados dos professores
+### Pipeline incremental
 
-O backend precisa verificar a identidade do professor antes de permitir leitura, edição ou exclusão de registros.
+Evitar a necessidade de recarregar todos os registros em todas as execuções.
 
-### 9. Fazer deploy
+### Modelagem analítica
 
-Vercel e Render possuem comportamentos diferentes. Isso exigiu aprender sobre build, API, banco, arquivos estáticos e variáveis de ambiente.
+Separar banco transacional, raw, staging, Warehouse e marts.
 
-### 10. Evitar regressões
+### Histórico
 
-Conforme o sistema cresceu, uma alteração podia quebrar outra parte. Os testes automatizados e a CI passaram a ajudar nesse processo.
+Estudar SCD Type 2 para preservar mudanças de dimensão.
+
+### Data Quality
+
+Criar verificações antes do consumo analítico.
+
+### Performance
+
+Analisar índices, planos de execução e particionamento no PostgreSQL.
+
+### Testes e regressões
+
+Automatizar verificações conforme o projeto foi crescendo.
 
 ---
 
 # 📂 Estrutura do repositório
 
-```text
+~~~text
 idiomas-pro/
 │
 ├── client/
@@ -618,9 +1001,7 @@ idiomas-pro/
 │       ├── pages/
 │       ├── services/
 │       ├── store/
-│       ├── test/
-│       ├── App.tsx
-│       └── main.tsx
+│       └── test/
 │
 ├── server/
 │   └── src/
@@ -628,31 +1009,29 @@ idiomas-pro/
 │       ├── lib/
 │       ├── routes/
 │       ├── services/
-│       ├── tests/
-│       ├── app.ts
-│       └── index.ts
+│       └── tests/
 │
 ├── prisma/
 │   ├── migrations/
 │   ├── schema.prisma
 │   └── seed.ts
 │
-├── e2e/
-│
 ├── data-engineering/
 │   ├── airflow/
+│   │   └── dags/
 │   ├── dbt/
+│   │   └── models/
 │   ├── sql/
+│   │   └── labs/
 │   ├── synthetic/
 │   ├── pipeline.py
 │   ├── requirements.txt
 │   └── README.md
 │
+├── e2e/
+├── api/
 ├── .github/
 │   └── workflows/
-│       └── ci.yml
-│
-├── api/
 ├── docker-compose.yml
 ├── docker-compose.analytics.yml
 ├── playwright.config.ts
@@ -660,58 +1039,64 @@ idiomas-pro/
 ├── vercel.json
 ├── package.json
 └── README.md
-```
+~~~
 
 ---
 
-# 🚀 Como executar localmente
+# 🚀 Executando localmente
 
 ## Pré-requisitos
 
+Para a aplicação:
+
 - Node.js 22+
 - npm
-- PostgreSQL
+- PostgreSQL 16 ou compatível
+- Docker opcional
 
-Ou Docker, caso queira subir o banco local de forma mais simples.
+Para a parte de Engenharia de Dados:
+
+- Python 3.12 recomendado
+- pip
 
 ---
 
-## 1. Clone o projeto
+## 1. Clone
 
-```bash
+~~~bash
 git clone https://github.com/denilson-dev/idiomas-pro.git
 cd idiomas-pro
-```
+~~~
 
 ---
 
-## 2. Instale as dependências
+## 2. Instale as dependências Node
 
-```bash
+~~~bash
 npm install
-```
+~~~
 
-O projeto utiliza **npm workspaces** para organizar `client` e `server`.
+O projeto utiliza npm workspaces para organizar frontend e backend.
 
 ---
 
-## 3. Crie o arquivo de ambiente
+## 3. Configure o ambiente
 
 Linux/macOS:
 
-```bash
+~~~bash
 cp .env.example .env
-```
+~~~
 
 Windows PowerShell:
 
-```powershell
+~~~powershell
 Copy-Item .env.example .env
-```
+~~~
 
 Exemplo:
 
-```env
+~~~env
 DATABASE_URL="postgresql://postgres:postgres@localhost:5432/idiomas_pro?schema=public"
 PORT=3333
 CLIENT_ORIGIN=http://localhost:5173
@@ -719,293 +1104,338 @@ VITE_API_URL=http://localhost:3333/api
 
 GOOGLE_TTS_API_KEY=
 GOOGLE_TTS_VOICE=es-ES-Chirp3-HD-Zephyr
-```
+~~~
 
-As variáveis de TTS são opcionais.
+As variáveis relacionadas ao TTS são opcionais.
 
-> Nunca coloque credenciais reais no Git.
+> Nunca coloque senhas, tokens ou chaves reais em arquivos versionados.
 
 ---
 
 ## 4. Suba o PostgreSQL
 
-Com Docker:
-
-```bash
+~~~bash
 docker compose up -d
-```
+~~~
 
 ---
 
 ## 5. Gere o Prisma Client
 
-```bash
+~~~bash
 npm run db:generate
-```
+~~~
 
 ---
 
 ## 6. Aplique as migrations
 
-```bash
+~~~bash
 npm run db:deploy
-```
+~~~
 
 ---
 
-## 7. Popule o banco
+## 7. Execute o seed
 
-```bash
+~~~bash
 npm run db:seed
-```
+~~~
 
 ---
 
-## 8. Inicie a aplicação
+## 8. Inicie frontend e backend
 
-```bash
+~~~bash
 npm run dev
-```
+~~~
 
 Por padrão:
 
-```text
-Frontend:   http://localhost:5173
-Backend:    http://localhost:3333
-Health:     http://localhost:3333/api/health
-```
+~~~text
+Frontend: http://localhost:5173
+Backend:  http://localhost:3333
+Health:   http://localhost:3333/api/health
+~~~
 
 ---
 
-# 📜 Comandos principais
+# 🏭 Executando a camada de Engenharia de Dados
 
-| Comando | O que faz |
+## 1. Crie um ambiente virtual
+
+~~~bash
+python -m venv .venv
+~~~
+
+### Windows PowerShell
+
+~~~powershell
+.\.venv\Scripts\Activate.ps1
+~~~
+
+### Linux/macOS
+
+~~~bash
+source .venv/bin/activate
+~~~
+
+---
+
+## 2. Instale as dependências
+
+~~~bash
+pip install -r data-engineering/requirements.txt
+~~~
+
+---
+
+## 3. Inicialize a arquitetura analítica
+
+~~~bash
+npm run data:init
+~~~
+
+---
+
+## 4. Execute a ingestão
+
+~~~bash
+npm run data:extract
+~~~
+
+---
+
+## 5. Atualize Warehouse e Data Marts
+
+~~~bash
+npm run data:transform
+~~~
+
+---
+
+## 6. Execute Data Quality
+
+~~~bash
+npm run data:quality
+~~~
+
+---
+
+## Executar tudo
+
+~~~bash
+npm run data:run
+~~~
+
+---
+
+# 📜 Principais comandos
+
+| Comando | Função |
 |---|---|
-| `npm run dev` | Inicia frontend e backend |
-| `npm run build` | Compila toda a aplicação |
-| `npm start` | Inicia o backend compilado |
-| `npm run db:generate` | Gera o Prisma Client |
-| `npm run db:deploy` | Aplica migrations |
-| `npm run db:migrate` | Executa migration de desenvolvimento |
-| `npm run db:seed` | Popula o banco |
-| `npm run db:studio` | Abre o Prisma Studio |
-| `npm run test:unit` | Testes unitários e de componentes |
-| `npm run test:api` | Testes de integração da API |
-| `npm run test:e2e` | Testes end-to-end |
-| `npm run test:all` | Executa todas as suítes |
+| npm run dev | Frontend + backend |
+| npm run build | Build completo |
+| npm start | Backend compilado |
+| npm run db:generate | Gera Prisma Client |
+| npm run db:deploy | Aplica migrations |
+| npm run db:migrate | Migration de desenvolvimento |
+| npm run db:seed | Seed |
+| npm run db:studio | Prisma Studio |
+| npm run test:unit | Testes unitários/componentes |
+| npm run test:api | Integração da API |
+| npm run test:e2e | Testes E2E |
+| npm run test:all | Todas as suítes |
+| npm run data:init | Cria arquitetura analítica |
+| npm run data:extract | Ingestão incremental |
+| npm run data:transform | Warehouse + marts |
+| npm run data:quality | Data Quality |
+| npm run data:run | Pipeline analítico completo |
+| npm run data:synthetic | Gera dataset sintético padrão |
 
 ---
 
 # 🔌 Principais rotas da API
 
-## Autenticação do aluno
+## Aluno
 
-```http
+~~~http
 POST /api/auth/anonymous
 POST /api/auth/register
 POST /api/auth/login
 GET  /api/auth/me
 POST /api/auth/logout
-```
+~~~
 
 ## Professores
 
-```http
+~~~http
 GET /api/teachers
-```
+~~~
 
 ## Autenticação do professor
 
-```http
+~~~http
 GET  /api/teacher/auth/bootstrap-status
 POST /api/teacher/auth/bootstrap
 POST /api/teacher/auth/login
 GET  /api/teacher/auth/me
 POST /api/teacher/auth/logout
-```
+~~~
 
 ## Painel do professor
 
-```http
+~~~http
 GET    /api/teacher/dashboard
 DELETE /api/teacher/attempts
 GET    /api/teacher/attempts/:attemptId
 PATCH  /api/teacher/attempts/:attemptId
 DELETE /api/teacher/attempts/:attemptId
-```
+~~~
 
 ## Avaliação
 
-```http
+~~~http
 POST /api/test/start
 POST /api/test/:attemptId/submit
-```
+~~~
 
 ## Resultados
 
-```http
+~~~http
 GET /api/results/history
 GET /api/results/:attemptId
-```
+~~~
 
 ## Listening
 
-```http
+~~~http
 GET /api/tts/:questionId
-```
+~~~
 
 ---
 
 # ☁️ Deploy
 
-O projeto possui arquivos de configuração para experiências de deploy em:
+O repositório possui configurações usadas durante estudos de deploy em:
 
-- **Vercel**;
-- **Render**.
+- Vercel;
+- Render.
 
-O `render.yaml` configura uma aplicação Node.js com PostgreSQL.
+O objetivo foi compreender:
 
-O `vercel.json` contém a configuração utilizada durante os estudos de deploy serverless/full stack.
+- build em ambiente cloud;
+- variáveis de ambiente;
+- rotas da API;
+- PostgreSQL remoto;
+- migrations;
+- Prisma Client;
+- arquivos estáticos;
+- diferenças entre desenvolvimento e produção.
 
-Esses arquivos permanecem no repositório porque fazem parte do histórico de aprendizado do projeto.
-
----
-
-# 🏭 Engenharia de Dados com PostgreSQL
-
-O projeto também possui uma camada de Engenharia de Dados criada para estudar o ciclo completo do dado.
-
-A aplicação continua utilizando o schema `public` como banco transacional. A partir dele, um pipeline incremental em Python leva os dados para uma arquitetura analítica dentro do PostgreSQL:
-
-```text
-Aplicação
-   ↓
-PostgreSQL / public (OLTP)
-   ↓
-Pipeline Python incremental
-   ↓
-raw
-   ↓
-staging
-   ↓
-warehouse
-   ↓
-marts
-   ↓
-Power BI / Metabase
-```
-
-A implementação está em:
-
-```text
-data-engineering/
-```
-
-Foram adicionados:
-
-- controle de cargas e watermarks em `meta`;
-- ingestão incremental;
-- camada `raw`;
-- camada `staging`;
-- anonimização de e-mails para uso analítico;
-- Data Warehouse em modelo dimensional;
-- dimensões de aluno, professor, questão, data, idioma e nível CEFR;
-- fatos de avaliações e respostas;
-- SCD Type 2 para histórico de professores;
-- data marts com materialized views;
-- testes de qualidade de dados;
-- armazenamento de registros rejeitados;
-- observabilidade em `meta.pipeline_runs`;
-- gerador de dados sintéticos para testes de volume;
-- índices para estudos de performance;
-- exemplos com `EXPLAIN ANALYZE`;
-- projeto dbt;
-- DAG de Apache Airflow;
-- serviço opcional do Metabase via Docker Compose;
-- validação do pipeline no GitHub Actions.
-
-Comandos principais:
-
-```bash
-npm run data:init
-npm run data:extract
-npm run data:transform
-npm run data:quality
-npm run data:run
-npm run data:synthetic
-```
-
-A documentação completa está em `data-engineering/README.md`.
-
-> Os dados gerados pelo script sintético são identificados como `source_system = 'synthetic'` e existem somente para estudo de volume e performance. Eles não representam alunos ou avaliações reais.
+A presença dessas configurações faz parte do histórico de aprendizado do projeto.
 
 ---
 
-# 📈 Próximos estudos possíveis
+# 📚 Documentação adicional
 
-Algumas ideias para continuar evoluindo o projeto:
+A parte específica de Engenharia de Dados possui documentação própria:
 
-- adicionar Inglês;
-- adicionar Francês;
+~~~text
+data-engineering/README.md
+~~~
+
+Ela contém detalhes sobre:
+
+- schemas;
+- pipeline;
+- Data Warehouse;
+- Data Marts;
+- dados sintéticos;
+- dbt;
+- Airflow;
+- Metabase;
+- Power BI;
+- performance;
+- privacidade.
+
+---
+
+# 🔭 Possíveis próximos estudos
+
+Algumas evoluções possíveis:
+
+- ampliar os idiomas disponíveis;
 - ampliar o banco de questões;
-- permitir criação de provas pelo professor;
 - criar turmas;
-- criar relatórios;
+- adicionar relatórios pedagógicos;
 - exportar resultados;
-- adicionar filtros avançados;
-- estudar envio de e-mails;
-- adicionar reconhecimento de voz;
-- estudar avaliação de pronúncia;
-- estudar acessibilidade com mais profundidade;
-- melhorar observabilidade e logs;
-- estudar containers para toda a aplicação;
-- aprofundar segurança e autorização.
+- estudar CDC;
+- estudar filas e processamento assíncrono;
+- implementar uma estratégia mais robusta de incrementalidade para registros mutáveis;
+- aprofundar dbt;
+- executar Airflow em ambiente containerizado;
+- adicionar testes específicos do pipeline;
+- estudar Great Expectations ou Soda;
+- implementar métricas de SLA/SLO do pipeline;
+- estudar observabilidade com Prometheus/Grafana;
+- experimentar PostgreSQL logical replication;
+- estudar armazenamento em objeto;
+- criar uma camada lake/lakehouse;
+- explorar Spark ou Databricks em uma evolução futura;
+- conectar os marts a um dashboard completo no Power BI;
+- estudar governança, catálogo, lineage e LGPD.
 
 ---
 
 # ⚠️ Limitações
 
-Por ser um projeto de estudos:
+Como este é um projeto de estudos:
 
 - não é uma plataforma oficial de certificação;
 - não substitui uma avaliação pedagógica profissional;
 - não possui garantia de disponibilidade;
-- pode passar por mudanças frequentes;
 - algumas integrações dependem de serviços externos;
-- alguns recursos ainda estão em evolução.
+- dbt e Airflow são trilhas complementares e não são necessários para o funcionamento principal;
+- os laboratórios de escala foram criados para aprendizado e não significam que a aplicação atual necessite dessa complexidade;
+- a arquitetura pode mudar conforme novos conceitos forem estudados.
 
 ---
 
 # 👨‍💻 O que este repositório representa
 
-Este projeto representa meu processo de aprendizagem através da prática.
+Este repositório representa um processo de aprendizado através da prática.
 
-A intenção não é afirmar que já possuo experiência profissional com todas as tecnologias utilizadas.
+A intenção não é afirmar experiência profissional com todas as tecnologias presentes.
 
-O objetivo é mostrar que, durante os estudos, tive contato prático com diferentes partes de uma aplicação moderna e enfrentei problemas reais de desenvolvimento, integração, responsividade, testes e deploy.
+O objetivo é registrar o contato prático com diferentes partes do ciclo de software e dados:
 
-```text
-Estudar
-   ↓
-Construir
-   ↓
-Encontrar problemas
-   ↓
-Pesquisar
-   ↓
-Corrigir
-   ↓
-Testar
-   ↓
-Aprender
-   ↓
-Evoluir
-```
+~~~text
+Necessidade
+    ↓
+Aplicação
+    ↓
+Geração de dados
+    ↓
+PostgreSQL
+    ↓
+Pipeline
+    ↓
+Tratamento
+    ↓
+Data Warehouse
+    ↓
+Data Marts
+    ↓
+Análise
+    ↓
+Aprendizado
+~~~
 
 ---
 
 <div align="center">
 
-### 📚 Projeto criado para estudar, praticar e registrar evolução técnica.
+### 📚 Projeto criado para estudar, praticar e documentar evolução em desenvolvimento, Ciência de Dados e Engenharia de Dados.
 
 </div>
