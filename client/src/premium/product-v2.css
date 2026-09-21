@@ -365,6 +365,7 @@ body{
   font-size:22px;
 }
 .learning-snapshot__skills{display:grid;gap:15px}
+.learning-snapshot__skills .bar i,.skill-board .bar i{background:var(--v2-teal)}
 .learning-snapshot__skills>div{
   display:grid;
   grid-template-columns:105px 1fr 42px;
@@ -671,7 +672,16 @@ body{
   }
   .product-public-header .brand>div:last-child{display:none}
   .product-public-header__side--end{gap:2px}
-  .product-public-header .language-menu{display:none}
+  .product-public-header .language-pill{
+    width:42px;
+    min-height:40px;
+    padding:0;
+    justify-content:center;
+    gap:2px;
+    overflow:hidden;
+  }
+  .product-public-header .language-pill__code{display:none}
+  .product-public-header .language-pill__flag{font-size:16px}
   .product-public-header .text-action span{display:none}
   .product-public-header .text-action{
     width:40px;
@@ -695,7 +705,16 @@ body{
   .product-header__brand .brand>div:last-child{display:none}
   .product-header__identity{display:none}
   .product-header__actions{gap:3px}
-  .product-header__actions .language-menu{display:none}
+  .product-header__actions .language-pill{
+    width:38px;
+    min-height:38px;
+    padding:0;
+    justify-content:center;
+    gap:1px;
+    overflow:hidden;
+  }
+  .product-header__actions .language-pill__code{display:none}
+  .product-header__actions .language-pill__flag{font-size:15px}
   .product-header__actions .avatar{display:none}
   .product-header__actions .text-action span{display:none}
   .product-header__actions .text-action{
