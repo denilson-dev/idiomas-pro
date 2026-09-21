@@ -11,5 +11,6 @@ export async function getSessionFromRequest(req: Request) {
   });
 
   if (!session || session.expiresAt < new Date()) return null;
+  if (session.user && !session.user.isActive) return null;
   return session;
 }
