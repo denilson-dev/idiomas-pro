@@ -91,7 +91,7 @@ export async function login(req: Request, res: Response) {
   return res.json({
     token: session.token,
     expiresAt: session.expiresAt,
-    user: { id: user.id, name: user.name, email: user.email },
+    user: { id: user.id, name: user.name, email: user.email, isActive: user.isActive },
   });
 }
 
