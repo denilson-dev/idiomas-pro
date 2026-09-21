@@ -177,8 +177,8 @@ export function TeacherLogin() {
             {bootstrap && (
               <Field label="Nome" value={bootstrapName} onChange={setBootstrapName} />
             )}
-            <Field label="E-mail" value={email} onChange={setEmail} type="email" />
-            <Field label="Senha" value={password} onChange={setPassword} type="password" />
+            <Field label="E-mail" value={email} onChange={setEmail} type="email" placeholder="professor@escola.com" />
+            <Field label="Senha" value={password} onChange={setPassword} type="password" placeholder="Sua senha" />
             <Button type="submit" className="full" disabled={loading}>
               {loading ? 'Aguarde...' : bootstrap ? 'Criar acesso' : 'Entrar no painel'}
               <ArrowRight size={17} />
