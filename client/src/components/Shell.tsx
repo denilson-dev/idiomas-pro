@@ -83,6 +83,7 @@ export function Workspace({children,area='student'}:{children:ReactNode,area?:'s
   ];
 
   const person=area==='student'?user:teacher;
+  const compactMode=area!=='student' && Boolean(teacher?.compactMode);
 
   async function logout(){
     try {
@@ -100,7 +101,7 @@ export function Workspace({children,area='student'}:{children:ReactNode,area?:'s
     }
   }
 
-  return <div className="workspace">
+  return <div className={'workspace '+(compactMode?'workspace--compact':'')}>
     <aside className="sidebar">
       <Link to={area==='student'?'/dashboard':area==='admin'?'/professor/administracao':'/professor/painel'}><Brand compact/></Link>
       <nav>{items.map(item=><NavEntry key={item[0]+item[2]} item={item}/>)}</nav>
