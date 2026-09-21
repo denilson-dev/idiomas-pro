@@ -1,0 +1,42 @@
+version: 2
+models:
+  - name: stg_users
+    columns:
+      - name: user_id
+        tests: [not_null, unique]
+      - name: email
+        tests: [not_null]
+  - name: stg_teachers
+    columns:
+      - name: teacher_id
+        tests: [not_null, unique]
+      - name: email
+        tests: [not_null]
+  - name: stg_questions
+    columns:
+      - name: question_id
+        tests: [not_null, unique]
+      - name: category
+        tests:
+          - accepted_values:
+              values: ['GRAMMAR', 'VOCABULARY', 'LISTENING']
+      - name: cefr_level
+        tests:
+          - accepted_values:
+              values: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
+  - name: stg_test_attempts
+    columns:
+      - name: attempt_id
+        tests: [not_null, unique]
+      - name: status
+        tests:
+          - accepted_values:
+              values: ['IN_PROGRESS', 'COMPLETED']
+  - name: stg_attempt_answers
+    columns:
+      - name: answer_id
+        tests: [not_null, unique]
+      - name: attempt_id
+        tests: [not_null]
+      - name: question_id
+        tests: [not_null]
