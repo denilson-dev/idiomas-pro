@@ -31,7 +31,7 @@ function firstParam(value: string | string[] | undefined) {
 
 export async function listTeachers(_req: Request, res: Response) {
   const teachers = await prisma.teacher.findMany({
-    where: { isActive: true },
+    where: { isActive: true, role: 'TEACHER' },
     orderBy: { name: 'asc' },
     select: { id: true, name: true },
   });
@@ -75,7 +75,15 @@ export async function bootstrapTeacher(req: Request, res: Response) {
   return res.status(201).json({
     token: session.token,
     expiresAt: session.expiresAt,
-    teacher: { id: teacher.id, name: teacher.name, email: teacher.email, role: teacher.role },
+    teacher: {
+      id: teacher.id,
+      name: teacher.name,
+      email: teacher.email,
+      role: teacher.role,
+      isActive: teacher.isActive,
+      compactMode: teacher.compactMode,
+      rememberFilters: teacher.rememberFilters,
+    },
   });
 }
 
@@ -99,7 +107,15 @@ export async function teacherLogin(req: Request, res: Response) {
   return res.json({
     token: session.token,
     expiresAt: session.expiresAt,
-    teacher: { id: teacher.id, name: teacher.name, email: teacher.email, role: teacher.role },
+    teacher: {
+      id: teacher.id,
+      name: teacher.name,
+      email: teacher.email,
+      role: teacher.role,
+      isActive: teacher.isActive,
+      compactMode: teacher.compactMode,
+      rememberFilters: teacher.rememberFilters,
+    },
   });
 }
 
@@ -113,6 +129,9 @@ export async function teacherMe(req: Request, res: Response) {
       name: session.teacher.name,
       email: session.teacher.email,
       role: session.teacher.role,
+      isActive: session.teacher.isActive,
+      compactMode: session.teacher.compactMode,
+      rememberFilters: session.teacher.rememberFilters,
     },
     expiresAt: session.expiresAt,
   });
@@ -156,7 +175,15 @@ export async function teacherDashboard(req: Request, res: Response) {
   }));
 
   return res.json({
-    teacher: { id: session.teacher.id, name: session.teacher.name, email: session.teacher.email, role: session.teacher.role },
+    teacher: {
+      id: session.teacher.id,
+      name: session.teacher.name,
+      email: session.teacher.email,
+      role: session.teacher.role,
+      isActive: session.teacher.isActive,
+      compactMode: session.teacher.compactMode,
+      rememberFilters: session.teacher.rememberFilters,
+    },
     metrics: {
       totalAssessments: attempts.length,
       uniqueStudents,

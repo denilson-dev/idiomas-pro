@@ -1,0 +1,6 @@
+ALTER TABLE "User"
+ADD COLUMN "notificationsEnabled" BOOLEAN NOT NULL DEFAULT true;
+
+ALTER TABLE "Teacher"
+ADD COLUMN "compactMode" BOOLEAN NOT NULL DEFAULT false,
+ADD COLUMN "rememberFilters" BOOLEAN NOT NULL DEFAULT true;

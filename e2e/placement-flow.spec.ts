@@ -7,27 +7,23 @@ const teacher = JSON.parse(readFileSync('.e2e-teacher.json', 'utf8')) as {
   secret: string;
 };
 
-test('aluno conclui o nivelamento e professor visualiza o resultado', async ({ page }, testInfo) => {
+test('aluno conclui o nivelamento premium e professor visualiza o resultado', async ({ page }, testInfo) => {
   const studentName = `Aluno ${testInfo.project.name}`;
   const studentEmail = `aluno.${testInfo.project.name.replace(/[^a-z0-9]/gi, '.')}@example.com`;
 
-  page.on('console', (message) => console.log('[browser-console]', message.type(), message.text()));
   page.on('pageerror', (error) => console.log('[browser-pageerror]', error.message));
-  page.on('request', (request) => {
-    if (request.url().includes('/api/')) {
-      console.log('[browser-request]', request.method(), request.url());
-    }
-  });
-  page.on('requestfailed', (request) => console.log('[browser-requestfailed]', request.url(), request.failure()?.errorText));
+  page.on('requestfailed', (request) =>
+    console.log('[browser-requestfailed]', request.url(), request.failure()?.errorText),
+  );
 
   await page.goto('/');
 
   const anonymousResponsePromise = page.waitForResponse(
     (response) => response.url().endsWith('/api/auth/anonymous'),
   );
+
   await page.getByRole('button', { name: /começar avaliação/i }).click();
-  const anonymousResponse = await anonymousResponsePromise;
-  expect(anonymousResponse.status()).toBe(201);
+  expect((await anonymousResponsePromise).status()).toBe(201);
   await expect(page).toHaveURL(/\/language$/, { timeout: 10000 });
 
   await page.getByRole('button', { name: /continuar/i }).click();
@@ -36,7 +32,7 @@ test('aluno conclui o nivelamento e professor visualiza o resultado', async ({ p
   await page.getByPlaceholder('Digite seu nome completo').fill(studentName);
   await page.getByPlaceholder('seuemail@exemplo.com').fill(studentEmail);
   await page.getByRole('combobox').selectOption({ label: teacher.name });
-  await page.getByRole('button', { name: /começar teste/i }).click();
+  await page.getByRole('button', { name: /começar avaliação/i }).click();
 
   await expect(page).toHaveURL(/\/test$/);
 
@@ -52,7 +48,9 @@ test('aluno conclui o nivelamento e professor visualiza o resultado', async ({ p
     }
   }
 
+  await expect(page).toHaveURL(/\/review$/);
   await expect(page.getByText(/18 de 18 respondidas/i)).toBeVisible();
+
   await page.getByRole('button', { name: /finalizar avaliação/i }).click();
 
   await expect(page).toHaveURL(/\/result\//);
@@ -65,10 +63,12 @@ test('aluno conclui o nivelamento e professor visualiza o resultado', async ({ p
   await page.getByRole('button', { name: /entrar no painel/i }).click();
 
   await expect(page).toHaveURL(/\/professor\/painel$/);
-  await expect(page.getByText('Resultados dos alunos')).toBeVisible();
+  await expect(page.getByText('Visão pedagógica')).toBeVisible();
   await expect(page.getByText(studentName).first()).toBeVisible();
 
-  await page.getByRole('button', { name: new RegExp(studentName, 'i') }).first().click();
+  const row = page.locator('.table__row').filter({ hasText: studentName }).first();
+  await row.getByRole('button', { name: /abrir/i }).click();
+
   await expect(page).toHaveURL(/\/professor\/aluno\//);
   await expect(page.getByText('Respostas da avaliação')).toBeVisible();
 });

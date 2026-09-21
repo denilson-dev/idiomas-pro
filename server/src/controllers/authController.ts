@@ -66,7 +66,13 @@ export async function register(req: Request, res: Response) {
   return res.status(201).json({
     token: session.token,
     expiresAt: session.expiresAt,
-    user: { id: user.id, name: user.name, email: user.email, isActive: user.isActive },
+    user: {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      isActive: user.isActive,
+      notificationsEnabled: user.notificationsEnabled,
+    },
   });
 }
 
@@ -91,7 +97,13 @@ export async function login(req: Request, res: Response) {
   return res.json({
     token: session.token,
     expiresAt: session.expiresAt,
-    user: { id: user.id, name: user.name, email: user.email, isActive: user.isActive },
+    user: {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      isActive: user.isActive,
+      notificationsEnabled: user.notificationsEnabled,
+    },
   });
 }
 
@@ -103,7 +115,13 @@ export async function me(req: Request, res: Response) {
     isAnonymous: session.isAnonymous,
     expiresAt: session.expiresAt,
     user: session.user
-      ? { id: session.user.id, name: session.user.name, email: session.user.email, isActive: session.user.isActive }
+      ? {
+          id: session.user.id,
+          name: session.user.name,
+          email: session.user.email,
+          isActive: session.user.isActive,
+          notificationsEnabled: session.user.notificationsEnabled,
+        }
       : null,
   });
 }
