@@ -407,7 +407,7 @@ export function TeacherStudentDetail() {
   async function saveIdentification() {
     if (!detail || !attemptId) return;
     try {
-      const response = await api.updateTeacherAttempt(teacherToken, attemptId, {
+      const response = await api.updateTeacherAttempt(teacherToken!, attemptId, {
         studentName: name,
         studentEmail: email,
       });
@@ -432,7 +432,7 @@ export function TeacherStudentDetail() {
   async function removeAttempt() {
     if (!attemptId || !window.confirm('Excluir esta avaliação permanentemente?')) return;
     try {
-      await api.deleteTeacherAttempt(teacherToken, attemptId);
+      await api.deleteTeacherAttempt(teacherToken!, attemptId);
       navigate('/professor/painel');
     } catch (error) {
       setTone('error');
@@ -573,8 +573,8 @@ export function TeacherSettings() {
 
   async function saveProfile() {
     try {
-      const response = await api.updateTeacherProfile(teacherToken, { name, email });
-      setTeacherSession(teacherToken, response.teacher);
+      const response = await api.updateTeacherProfile(teacherToken!, { name, email });
+      setTeacherSession(teacherToken!, response.teacher);
       setTone('success');
       setMessage('Conta atualizada.');
     } catch (error) {
@@ -591,7 +591,7 @@ export function TeacherSettings() {
     }
 
     try {
-      await api.updateTeacherPassword(teacherToken, { currentPassword, newPassword });
+      await api.updateTeacherPassword(teacherToken!, { currentPassword, newPassword });
       setCurrentPassword('');
       setNewPassword('');
       setTone('success');
@@ -606,7 +606,7 @@ export function TeacherSettings() {
     const next = { ...preferences, [key]: !preferences[key] };
     setPreferences(next);
     try {
-      const response = await api.updateTeacherPreferences(teacherToken, { [key]: next[key] });
+      const response = await api.updateTeacherPreferences(teacherToken!, { [key]: next[key] });
       setPreferences((current) => ({ ...current, ...response.preferences }));
     } catch (error) {
       setTone('error');
