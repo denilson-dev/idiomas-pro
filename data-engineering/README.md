@@ -97,7 +97,7 @@ monitoring.pipeline_runs
 Primeiro construa o staging:
 
 ```bash
-dbt run --select staging --project-dir data-engineering/dbt --profiles-dir data-engineering/dbt
+dbt run --select path:models/staging --project-dir data-engineering/dbt --profiles-dir data-engineering/dbt
 ```
 
 Depois atualize o histórico SCD Type 2:
