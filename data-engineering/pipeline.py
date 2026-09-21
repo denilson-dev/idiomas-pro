@@ -7,6 +7,7 @@ import uuid
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 import psycopg
 
@@ -121,7 +122,12 @@ def database_url() -> str:
     value = os.getenv("ANALYTICS_DATABASE_URL") or os.getenv("DATABASE_URL")
     if not value:
         raise RuntimeError("Defina ANALYTICS_DATABASE_URL ou DATABASE_URL.")
-    return value
+
+    # Prisma aceita ?schema=public, mas libpq/psycopg não reconhece esse parâmetro.
+    # Mantemos os demais parâmetros da URI (ex.: sslmode) e removemos apenas schema.
+    parts = urlsplit(value)
+    query = [(key, val) for key, val in parse_qsl(parts.query) if key != "schema"]
+    return urlunsplit((parts.scheme, parts.netloc, parts.path, urlencode(query), parts.fragment))
 
 
 def execute_file(conn: psycopg.Connection, filename: str) -> None:
