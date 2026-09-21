@@ -30,8 +30,8 @@ test('aluno conclui o nivelamento premium e professor visualiza o resultado', as
   await page.getByRole('button', { name: /continuar/i }).click();
   await expect(page).toHaveURL(/\/setup$/);
 
-  await page.getByPlaceholder('Digite seu nome completo').fill(studentName);
-  await page.getByPlaceholder('seuemail@exemplo.com').fill(studentEmail);
+  await page.getByLabel('Seu nome').fill(studentName);
+  await page.getByLabel('E-mail').fill(studentEmail);
   await page.getByRole('combobox').selectOption({ label: teacher.name });
   await page.getByRole('button', { name: /começar avaliação/i }).click();
 
