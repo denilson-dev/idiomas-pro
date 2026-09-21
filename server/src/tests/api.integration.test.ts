@@ -268,14 +268,48 @@ describe.sequential('API integration', () => {
       });
 
     expect(createdUser.status).toBe(201);
+    expect(createdUser.body.user.isActive).toBe(true);
 
-    const updatedUser = await request(app)
+    const studentLogin = await request(app)
+      .post('/api/auth/login')
+      .send({ email: 'managed.user@example.com', password: 'Senha123!' });
+
+    expect(studentLogin.status).toBe(200);
+
+    const disabledUser = await request(app)
       .patch(`/api/teacher/admin/users/${createdUser.body.user.id}`)
       .set('x-teacher-token', adminSession.token)
-      .send({ name: 'Usuário Atualizado' });
+      .send({ name: 'Usuário Atualizado', isActive: false });
 
-    expect(updatedUser.status).toBe(200);
-    expect(updatedUser.body.user.name).toBe('Usuário Atualizado');
+    expect(disabledUser.status).toBe(200);
+    expect(disabledUser.body.user.name).toBe('Usuário Atualizado');
+    expect(disabledUser.body.user.isActive).toBe(false);
+
+    const invalidatedSession = await request(app)
+      .get('/api/auth/me')
+      .set('x-session-token', studentLogin.body.token);
+
+    expect(invalidatedSession.status).toBe(401);
+
+    const blockedLogin = await request(app)
+      .post('/api/auth/login')
+      .send({ email: 'managed.user@example.com', password: 'Senha123!' });
+
+    expect(blockedLogin.status).toBe(401);
+
+    const reactivatedUser = await request(app)
+      .patch(`/api/teacher/admin/users/${createdUser.body.user.id}`)
+      .set('x-teacher-token', adminSession.token)
+      .send({ isActive: true, password: 'NovaSenha123!' });
+
+    expect(reactivatedUser.status).toBe(200);
+    expect(reactivatedUser.body.user.isActive).toBe(true);
+
+    const newLogin = await request(app)
+      .post('/api/auth/login')
+      .send({ email: 'managed.user@example.com', password: 'NovaSenha123!' });
+
+    expect(newLogin.status).toBe(200);
 
     const createdTeacher = await request(app)
       .post('/api/teacher/admin/teachers')
@@ -296,6 +330,26 @@ describe.sequential('API integration', () => {
 
     expect(disabledTeacher.status).toBe(200);
     expect(disabledTeacher.body.teacher.isActive).toBe(false);
+
+    const disabledTeacherLogin = await request(app)
+      .post('/api/teacher/auth/login')
+      .send({ email: 'managed.teacher@example.com', password: 'Senha123!' });
+
+    expect(disabledTeacherLogin.status).toBe(401);
+
+    const reactivatedTeacher = await request(app)
+      .patch(`/api/teacher/admin/teachers/${createdTeacher.body.teacher.id}`)
+      .set('x-teacher-token', adminSession.token)
+      .send({ isActive: true, password: 'NovaSenha123!' });
+
+    expect(reactivatedTeacher.status).toBe(200);
+    expect(reactivatedTeacher.body.teacher.isActive).toBe(true);
+
+    const teacherLoginAfterReset = await request(app)
+      .post('/api/teacher/auth/login')
+      .send({ email: 'managed.teacher@example.com', password: 'NovaSenha123!' });
+
+    expect(teacherLoginAfterReset.status).toBe(200);
 
     const cannotDeleteSelf = await request(app)
       .delete(`/api/teacher/admin/teachers/${admin.id}`)

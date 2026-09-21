@@ -368,15 +368,21 @@ O administrador possui uma área exclusiva em:
 
 Nela é possível:
 
-- cadastrar usuários;
-- editar usuários;
-- redefinir senha de usuários;
-- remover usuários;
+- visualizar um resumo de contas ativas e inativas;
+- pesquisar alunos e professores por nome ou e-mail;
+- cadastrar alunos;
+- editar nome e e-mail de alunos;
+- redefinir senha de alunos;
+- ativar ou desativar alunos;
+- excluir alunos;
 - cadastrar professores;
-- editar professores;
+- editar nome e e-mail de professores;
 - redefinir senha de professores;
 - ativar ou desativar professores;
-- remover professores.
+- excluir professores;
+- visualizar quantas avaliações estão vinculadas a cada conta.
+
+Quando uma senha é redefinida ou uma conta é desativada, sessões existentes são invalidadas para que a alteração tenha efeito imediato.
 
 O papel `ADMIN` não pode ser atribuído pela interface. A conta administrativa também não pode ser removida nem desativada pela própria tela de administração.
 
