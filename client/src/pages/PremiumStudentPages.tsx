@@ -122,8 +122,8 @@ export function StudentProfile(){
   async function saveProfile(){
     try{
       setLoading(true);setError('');
-      const response=await api.updateStudentProfile(token,{name,email});
-      updateUser({...user,...response.user});
+      const response=await api.updateStudentProfile(token!,{name,email});
+      updateUser({...user!,...response.user});
       setMessage('Perfil atualizado com sucesso.');
     }catch(err){setError(err instanceof Error?err.message:'Não foi possível atualizar o perfil.')}
     finally{setLoading(false)}
@@ -133,7 +133,7 @@ export function StudentProfile(){
     if(!currentPassword||newPassword.length<8){setError('Informe a senha atual e uma nova senha com pelo menos 8 caracteres.');return}
     try{
       setLoading(true);setError('');
-      await api.changeStudentPassword(token,{currentPassword,newPassword});
+      await api.changeStudentPassword(token!,{currentPassword,newPassword});
       setCurrentPassword('');setNewPassword('');
       setMessage('Senha atualizada. As outras sessões foram encerradas.');
     }catch(err){setError(err instanceof Error?err.message:'Não foi possível alterar a senha.')}
@@ -144,8 +144,8 @@ export function StudentProfile(){
     try{
       const next=!notifications;
       setNotifications(next);
-      await api.updateStudentPreferences(token,next);
-      updateUser({...user,notificationsEnabled:next});
+      await api.updateStudentPreferences(token!,next);
+      updateUser({...user!,notificationsEnabled:next});
       setMessage('Preferência de notificações atualizada.');
     }catch(err){
       setNotifications(notifications);
@@ -154,7 +154,7 @@ export function StudentProfile(){
   }
 
   async function logout(){
-    try{await api.logout(token)}catch{}
+    try{await api.logout(token!)}catch{}
     clearSession();nav('/');
   }
 
