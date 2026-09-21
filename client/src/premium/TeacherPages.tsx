@@ -105,8 +105,8 @@ function printReport(detail: TeacherAttemptDetail) {
 export function TeacherLogin() {
   const navigate = useNavigate();
   const setTeacherSession = useAppStore((state) => state.setTeacherSession);
+  const clearTeacherSession = useAppStore((state) => state.clearTeacherSession);
   const teacherToken = useAppStore((state) => state.teacherToken);
-  const teacher = useAppStore((state) => state.teacher);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -123,14 +123,14 @@ export function TeacherLogin() {
       .catch(() => undefined);
   }, []);
 
-  if (teacherToken && teacher) {
-    return (
-      <Navigate
-        to={teacher.role === 'ADMIN' ? '/professor/administracao' : '/professor/painel'}
-        replace
-      />
-    );
-  }
+  useEffect(() => {
+    if (!teacherToken) return;
+
+    api
+      .teacherLogout(teacherToken)
+      .catch(() => undefined)
+      .finally(() => clearTeacherSession());
+  }, [teacherToken, clearTeacherSession]);
 
   async function submit(event: FormEvent) {
     event.preventDefault();
