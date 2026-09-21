@@ -393,14 +393,25 @@ E-mail: administrador@adm.com
 Senha: admin123
 ~~~
 
-Em produção, configure:
+Por padrão, o projeto também provisiona essa conta durante o deploy usando:
+
+~~~text
+E-mail: administrador@adm.com
+Senha: admin123
+~~~
+
+Isso foi mantido porque este repositório é um projeto de estudos e essas foram as credenciais solicitadas para teste.
+
+Para trocar a senha no ambiente publicado sem alterar o código, configure:
 
 ~~~env
 ADMIN_EMAIL=administrador@adm.com
 ADMIN_PASSWORD=uma-senha-segura
 ~~~
 
-> A senha `admin123` existe apenas como conveniência para o ambiente de estudos. Não utilize essa senha em um ambiente público.
+Depois faça um novo deploy.
+
+> Como o repositório é público, a senha padrão é conhecida. Use `ADMIN_PASSWORD` antes de tratar a aplicação como um ambiente real ou expô-la para uso de terceiros.
 
 ---
 
