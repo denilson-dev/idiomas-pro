@@ -4,8 +4,33 @@ const API_URL =
     : '/api';
 
 export type User = { id: string; name: string; email: string };
-export type Teacher = { id: string; name: string; email: string };
+export type Teacher = { id: string; name: string; email: string; role: 'TEACHER' | 'ADMIN' };
 export type TeacherOption = { id: string; name: string };
+
+export type AdminUser = {
+  id: string;
+  name: string;
+  email: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type AdminTeacher = {
+  id: string;
+  name: string;
+  email: string;
+  role: 'TEACHER' | 'ADMIN';
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type AdminAccounts = {
+  currentAdminId: string;
+  users: AdminUser[];
+  teachers: AdminTeacher[];
+};
+
 export type SessionResponse = { token: string; expiresAt: string; user: User | null };
 export type TeacherSessionResponse = { token: string; expiresAt: string; teacher: Teacher };
 
@@ -198,6 +223,64 @@ export const api = {
   clearTeacherAttempts: (token: string) =>
     request<{ deleted: number; message: string }>(
       '/teacher/attempts',
+      { method: 'DELETE' },
+      token,
+      'x-teacher-token',
+    ),
+
+  getAdminAccounts: (token: string) =>
+    request<AdminAccounts>('/teacher/admin/accounts', {}, token, 'x-teacher-token'),
+
+  adminCreateUser: (token: string, payload: { name: string; email: string; password: string }) =>
+    request<{ user: AdminUser }>(
+      '/teacher/admin/users',
+      { method: 'POST', body: JSON.stringify(payload) },
+      token,
+      'x-teacher-token',
+    ),
+  adminUpdateUser: (
+    token: string,
+    userId: string,
+    payload: { name?: string; email?: string; password?: string },
+  ) =>
+    request<{ user: AdminUser }>(
+      `/teacher/admin/users/${userId}`,
+      { method: 'PATCH', body: JSON.stringify(payload) },
+      token,
+      'x-teacher-token',
+    ),
+  adminDeleteUser: (token: string, userId: string) =>
+    request<void>(
+      `/teacher/admin/users/${userId}`,
+      { method: 'DELETE' },
+      token,
+      'x-teacher-token',
+    ),
+
+  adminCreateTeacher: (
+    token: string,
+    payload: { name: string; email: string; password: string; isActive?: boolean },
+  ) =>
+    request<{ teacher: AdminTeacher }>(
+      '/teacher/admin/teachers',
+      { method: 'POST', body: JSON.stringify(payload) },
+      token,
+      'x-teacher-token',
+    ),
+  adminUpdateTeacher: (
+    token: string,
+    teacherId: string,
+    payload: { name?: string; email?: string; password?: string; isActive?: boolean },
+  ) =>
+    request<{ teacher: AdminTeacher }>(
+      `/teacher/admin/teachers/${teacherId}`,
+      { method: 'PATCH', body: JSON.stringify(payload) },
+      token,
+      'x-teacher-token',
+    ),
+  adminDeleteTeacher: (token: string, teacherId: string) =>
+    request<void>(
+      `/teacher/admin/teachers/${teacherId}`,
       { method: 'DELETE' },
       token,
       'x-teacher-token',
