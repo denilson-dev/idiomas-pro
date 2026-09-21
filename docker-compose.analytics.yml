@@ -1,0 +1,11 @@
+services:
+  metabase:
+    image: metabase/metabase:latest
+    container_name: idiomas-pro-metabase
+    ports:
+      - "3001:3000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      MB_JETTY_PORT: 3000
+    restart: unless-stopped
