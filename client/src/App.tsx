@@ -78,7 +78,7 @@ function TeacherGate({ children }: { children: ReactNode }) {
   const teacherToken = useAppStore((state) => state.teacherToken);
   const setTeacherSession = useAppStore((state) => state.setTeacherSession);
   const clearTeacherSession = useAppStore((state) => state.clearTeacherSession);
-  const [status, setStatus] = useState<'checking' | 'valid' | 'invalid'>(
+  const [status, setStatus] = useState<'checking' | 'valid' | 'admin' | 'invalid'>(
     teacherToken ? 'checking' : 'invalid',
   );
 
@@ -98,7 +98,7 @@ function TeacherGate({ children }: { children: ReactNode }) {
       .then(({ teacher }) => {
         if (!active) return;
         setTeacherSession(teacherToken, teacher);
-        setStatus('valid');
+        setStatus(teacher.role === 'ADMIN' ? 'admin' : 'valid');
       })
       .catch(() => {
         if (!active) return;
@@ -112,16 +112,16 @@ function TeacherGate({ children }: { children: ReactNode }) {
   }, [teacherToken, setTeacherSession, clearTeacherSession]);
 
   if (!teacherToken || status === 'invalid') return <Navigate to="/professor" replace />;
+  if (status === 'admin') return <Navigate to="/professor/administracao" replace />;
   if (status === 'checking') return <RouteLoading />;
   return children;
 }
 
 function AdminGate({ children }: { children: ReactNode }) {
   const teacherToken = useAppStore((state) => state.teacherToken);
-  const teacher = useAppStore((state) => state.teacher);
   const setTeacherSession = useAppStore((state) => state.setTeacherSession);
   const clearTeacherSession = useAppStore((state) => state.clearTeacherSession);
-  const [status, setStatus] = useState<'checking' | 'valid' | 'invalid'>(
+  const [status, setStatus] = useState<'checking' | 'valid' | 'teacher' | 'invalid'>(
     teacherToken ? 'checking' : 'invalid',
   );
 
@@ -138,10 +138,10 @@ function AdminGate({ children }: { children: ReactNode }) {
     setStatus('checking');
     api
       .teacherMe(teacherToken)
-      .then(({ teacher: freshTeacher }) => {
+      .then(({ teacher }) => {
         if (!active) return;
-        setTeacherSession(teacherToken, freshTeacher);
-        setStatus(freshTeacher.role === 'ADMIN' ? 'valid' : 'invalid');
+        setTeacherSession(teacherToken, teacher);
+        setStatus(teacher.role === 'ADMIN' ? 'valid' : 'teacher');
       })
       .catch(() => {
         if (!active) return;
@@ -154,9 +154,8 @@ function AdminGate({ children }: { children: ReactNode }) {
     };
   }, [teacherToken, setTeacherSession, clearTeacherSession]);
 
-  if (!teacherToken || status === 'invalid' || teacher?.role === 'TEACHER') {
-    return <Navigate to="/professor" replace />;
-  }
+  if (!teacherToken || status === 'invalid') return <Navigate to="/professor" replace />;
+  if (status === 'teacher') return <Navigate to="/professor/painel" replace />;
   if (status === 'checking') return <RouteLoading />;
   return children;
 }
