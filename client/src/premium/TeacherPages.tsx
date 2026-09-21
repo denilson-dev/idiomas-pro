@@ -657,7 +657,7 @@ export function TeacherStudentDetail() {
     if (!attemptId || !window.confirm('Excluir esta avaliação permanentemente?')) return;
     try {
       await api.deleteTeacherAttempt(teacherToken!, attemptId);
-      navigate('/professor/painel');
+      navigate('/professor/painel?view=assessments');
     } catch (error) {
       setTone('error');
       setMessage(error instanceof Error ? error.message : 'Não foi possível excluir.');
@@ -666,7 +666,7 @@ export function TeacherStudentDetail() {
 
   if (!detail) {
     return (
-      <Workspace area="teacher">
+      <Workspace area="teacher" backTo="/professor/painel?view=assessments" backLabel="Avaliações">
         <Surface className="empty">
           <h3>Carregando avaliação</h3>
           <p>{message || 'Aguarde...'}</p>
@@ -676,7 +676,7 @@ export function TeacherStudentDetail() {
   }
 
   return (
-    <Workspace area="teacher">
+    <Workspace area="teacher" backTo="/professor/painel?view=assessments" backLabel="Avaliações">
       <div className="workspace-heading">
         <div>
           <small>Detalhes do aluno</small>
