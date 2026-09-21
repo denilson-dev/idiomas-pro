@@ -221,7 +221,25 @@ export function TeacherDashboard() {
       .catch((error) =>
         setMessage(error instanceof Error ? error.message : 'Não foi possível carregar o painel.'),
       );
+
+    api
+      .getTeacherPreferences(teacherToken)
+      .then(({ preferences }) => {
+        document.documentElement.classList.toggle('compact-tables', !!preferences.compactTables);
+        document.documentElement.classList.toggle('reduce-motion', !!preferences.reducedMotion);
+        if (!preferences.rememberFilters) {
+          localStorage.removeItem('idiomas-pro-teacher-filter');
+          setQuery('');
+        } else {
+          setQuery(localStorage.getItem('idiomas-pro-teacher-filter') ?? '');
+        }
+      })
+      .catch(() => undefined);
   }, [teacherToken]);
+
+  useEffect(() => {
+    localStorage.setItem('idiomas-pro-teacher-filter', query);
+  }, [query]);
 
   if (!teacherToken || !teacher) return <Navigate to="/professor" replace />;
 
@@ -563,11 +581,18 @@ export function TeacherSettings() {
     if (!teacherToken) return;
     api
       .getTeacherPreferences(teacherToken)
-      .then(({ preferences }) =>
-        setPreferences((current) => ({ ...current, ...preferences })),
-      )
+      .then(({ preferences }) => {
+        setPreferences((current) => ({ ...current, ...preferences }));
+        document.documentElement.classList.toggle('compact-tables', !!preferences.compactTables);
+        document.documentElement.classList.toggle('reduce-motion', !!preferences.reducedMotion);
+      })
       .catch(() => undefined);
   }, [teacherToken]);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('compact-tables', !!preferences.compactTables);
+    document.documentElement.classList.toggle('reduce-motion', !!preferences.reducedMotion);
+  }, [preferences.compactTables, preferences.reducedMotion]);
 
   if (!teacherToken || !teacher) return <Navigate to="/professor" replace />;
 
