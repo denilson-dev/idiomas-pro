@@ -109,3 +109,5 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
   body{background:#fff}.sidebar,.workspace__top,.topbar,.heading-actions,.mobile-bottom-nav,.toast,.button{display:none!important}.workspace{display:block}.workspace__content{padding:0;max-width:none}.surface{box-shadow:none!important;border:1px solid #ddd!important;break-inside:avoid}
 }
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+
+.workspace--compact .table__row{padding:7px 6px}.workspace--compact .table__head{padding:8px 6px}.workspace--compact .history-table,.workspace--compact .admin-table{padding-top:16px;padding-bottom:16px}.workspace--compact .surface{--shadow:0 14px 45px rgba(43,13,113,.09)}
