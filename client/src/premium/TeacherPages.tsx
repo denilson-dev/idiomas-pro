@@ -185,7 +185,12 @@ export function TeacherLogin() {
               <Button
                 variant="secondary"
                 className="full"
-                onClick={() => {
+                onClick={async () => {
+                  try {
+                    if (teacherToken) await api.teacherLogout(teacherToken);
+                  } catch {
+                    // A troca local de conta deve continuar mesmo se a rede estiver indisponível.
+                  }
                   clearTeacherSession();
                   setMessage('');
                 }}
