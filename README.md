@@ -2,569 +2,498 @@
 
 <div align="center">
 
-### Projeto de estudos: aplicação web + Engenharia de Dados com PostgreSQL
+### Projeto de estudos de Bancos de Dados e Engenharia de Dados com PostgreSQL
 
-O **Idiomas Pro** é um projeto criado para transformar estudos em prática.
+O **Idiomas Pro** é um projeto criado para estudar, praticar e documentar conceitos de **bancos de dados**, **PostgreSQL**, **SQL**, **modelagem de dados** e **Engenharia de Dados** usando uma aplicação real como fonte de dados.
 
-A aplicação simula um fluxo de nivelamento de idiomas e, a partir dos dados gerados pelo próprio sistema, também possui uma camada de **Engenharia de Dados** com ingestão incremental, Data Warehouse, Data Marts, qualidade de dados e integração com ferramentas analíticas.
+A aplicação de nivelamento de idiomas funciona como o cenário prático do projeto: alunos, professores, avaliações, respostas, sessões e resultados geram dados transacionais que depois podem ser persistidos, consultados, transformados e analisados.
 
 > **Importante:** este repositório é exclusivamente um projeto de estudos.  
-> Não representa uma plataforma oficial de ensino, certificação de proficiência, produto comercial finalizado ou experiência profissional anterior.
+> Ele não representa experiência profissional anterior, certificação oficial de idiomas ou um produto comercial finalizado.
 
-![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)
-![Node.js](https://img.shields.io/badge/Node.js-22-339933?logo=nodedotjs&logoColor=white)
-![Express](https://img.shields.io/badge/Express-5-000000?logo=express&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white)
 ![Prisma](https://img.shields.io/badge/Prisma-7-2D3748?logo=prisma&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
+![SQL](https://img.shields.io/badge/SQL-Studies-336791)
+![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-22-339933?logo=nodedotjs&logoColor=white)
 ![Playwright](https://img.shields.io/badge/Playwright-E2E-2EAD33?logo=playwright&logoColor=white)
 
 </div>
 
 ---
 
-## 📖 Sobre o projeto
+# 📚 Qual é o foco deste projeto?
 
-O Idiomas Pro nasceu com uma ideia simples: em vez de estudar programação apenas com exercícios isolados, construir uma aplicação baseada em uma necessidade real e evoluí-la conforme novos assuntos fossem estudados.
+O foco principal deste repositório é aprender **como os dados são gerados, armazenados, relacionados, consultados e transformados** dentro de uma aplicação.
 
-A primeira etapa foi criar uma plataforma em que:
+Em vez de estudar banco de dados apenas com tabelas isoladas, a ideia foi construir um sistema que produzisse dados de uso real.
 
-1. o aluno entra na aplicação;
-2. escolhe o idioma disponível;
-3. acessa como visitante ou usuário cadastrado;
-4. seleciona um professor;
-5. realiza uma avaliação;
-6. responde questões de gramática, vocabulário e listening;
-7. revisa as respostas;
-8. recebe uma classificação de nível;
-9. o professor consegue acompanhar as avaliações relacionadas ao seu acesso.
+Exemplo:
 
-Depois, o projeto passou a ser usado também para estudar **o caminho percorrido pelos dados**.
+~~~text
+Aluno cria conta
+       ↓
+Sessão é criada
+       ↓
+Aluno inicia avaliação
+       ↓
+Questões são selecionadas
+       ↓
+Respostas são registradas
+       ↓
+Resultado é calculado
+       ↓
+Professor acompanha a avaliação
+       ↓
+Dados seguem para a camada analítica
+       ↓
+Data Warehouse
+       ↓
+Data Marts
+       ↓
+Análise
+~~~
 
-Assim, os dados gerados pela própria aplicação passaram a alimentar uma arquitetura analítica com PostgreSQL.
+Dessa forma, o projeto permite estudar tanto o **banco transacional da aplicação** quanto uma arquitetura analítica separada.
 
 ---
 
-## 🎯 Objetivo
+# 🎯 Objetivos de estudo
 
-O principal objetivo é **aprender construindo**.
+Este projeto está sendo utilizado para praticar principalmente:
 
-O projeto reúne estudos de:
+## Banco de Dados
 
-- desenvolvimento frontend;
-- desenvolvimento backend;
-- APIs REST;
-- modelagem de banco de dados;
 - PostgreSQL;
+- SQL;
+- criação de tabelas;
+- chaves primárias e estrangeiras;
+- relacionamentos;
+- índices;
+- constraints;
+- normalização;
+- migrations;
+- transações;
+- CRUD;
+- integridade referencial;
+- performance de consultas;
+- EXPLAIN;
+- EXPLAIN ANALYZE;
+- particionamento;
+- modelagem transacional.
+
+## Engenharia de Dados
+
+- Python;
+- psycopg;
+- ETL/ELT;
+- ingestão incremental;
+- watermarks;
+- schemas analíticos;
+- camada raw;
+- camada staging;
+- Data Warehouse;
+- modelagem dimensional;
+- tabelas fato;
+- dimensões;
+- SCD Type 2;
+- Data Marts;
+- qualidade de dados;
+- observabilidade de pipelines;
+- dados sintéticos;
+- dbt;
+- Apache Airflow;
+- Power BI;
+- Metabase.
+
+## Conhecimentos complementares
+
+A aplicação também foi utilizada para estudar:
+
+- APIs REST;
+- Node.js;
+- Express;
+- TypeScript;
+- React;
 - autenticação;
-- segurança básica;
+- sessões;
+- segurança;
+- controle de acesso;
 - responsividade;
 - testes automatizados;
 - CI/CD;
-- deploy;
-- Python para Engenharia de Dados;
-- ETL/ELT;
-- cargas incrementais;
-- Data Warehouse;
-- modelagem dimensional;
-- qualidade de dados;
-- observabilidade de pipelines;
-- Data Marts;
-- dbt;
-- Apache Airflow;
-- análise de performance no PostgreSQL;
-- Power BI e Metabase.
+- deploy.
+
+Essas tecnologias existem no projeto principalmente para criar um ambiente mais próximo de uma aplicação real e produzir dados para os estudos.
 
 ---
 
 # 🏗️ Arquitetura geral
 
-Hoje o projeto possui duas partes que trabalham sobre os mesmos dados.
-
 ~~~text
-                    IDIOMAS PRO
+                        IDIOMAS PRO
 
-Aluno / Professor
-       │
-       ▼
-┌─────────────────────────────┐
-│ React + TypeScript          │
-│ Frontend                    │
-└──────────────┬──────────────┘
-               │
-               │ API REST
-               ▼
-┌─────────────────────────────┐
-│ Node.js + Express           │
-│ Backend                     │
-└──────────────┬──────────────┘
-               │
-               ▼
-┌─────────────────────────────┐
-│ Prisma ORM                  │
-└──────────────┬──────────────┘
-               │
-               ▼
-┌─────────────────────────────┐
-│ PostgreSQL                  │
-│ schema public - OLTP        │
-└──────────────┬──────────────┘
-               │
-               │ Pipeline incremental
-               ▼
-┌─────────────────────────────┐
-│ Python + psycopg            │
-└──────────────┬──────────────┘
-               │
-               ▼
-       raw → staging
-               │
-               ▼
-           warehouse
-               │
-               ▼
-             marts
-               │
-        ┌──────┴──────┐
-        ▼             ▼
-     Power BI      Metabase
+                ┌──────────────────────┐
+                │        Aluno         │
+                │ Professor / Admin    │
+                └──────────┬───────────┘
+                           │
+                           ▼
+                ┌──────────────────────┐
+                │ React + TypeScript   │
+                │ Frontend             │
+                └──────────┬───────────┘
+                           │
+                           │ API REST
+                           ▼
+                ┌──────────────────────┐
+                │ Node.js + Express    │
+                │ Backend              │
+                └──────────┬───────────┘
+                           │
+                           ▼
+                ┌──────────────────────┐
+                │ Prisma ORM           │
+                └──────────┬───────────┘
+                           │
+                           ▼
+                ┌──────────────────────┐
+                │ PostgreSQL           │
+                │ schema public        │
+                │ OLTP                 │
+                └──────────┬───────────┘
+                           │
+                     ETL incremental
+                           │
+                           ▼
+                    Python + psycopg
+                           │
+                           ▼
+              ┌───────────────────────────┐
+              │ raw → staging → warehouse │
+              └─────────────┬─────────────┘
+                            │
+                            ▼
+                          marts
+                            │
+                ┌───────────┴───────────┐
+                ▼                       ▼
+             Power BI                Metabase
 ~~~
 
-O banco operacional continua responsável pela aplicação.
+O schema `public` representa o banco operacional da aplicação.
 
-A camada analítica foi adicionada separadamente para estudar Engenharia de Dados sem misturar as responsabilidades do sistema transacional.
-
----
-
-# 🧭 Evolução do projeto
-
-## 1. Frontend
-
-A primeira versão foi construída com:
-
-- React;
-- TypeScript;
-- Vite;
-- componentes reutilizáveis;
-- navegação entre páginas;
-- gerenciamento de estado.
-
-O objetivo inicial foi entender como estruturar uma aplicação maior do que uma página isolada.
+A arquitetura analítica fica separada para não misturar o sistema transacional com as estruturas utilizadas para análise.
 
 ---
 
-## 2. Fluxo do aluno
+# 🗄️ Banco de dados transacional
 
-Foram desenvolvidas telas para:
+O projeto utiliza **PostgreSQL 16**.
 
-- página inicial;
-- escolha do idioma;
-- identificação;
-- cadastro;
-- login;
-- execução da avaliação;
-- progresso;
-- revisão;
-- resultado;
-- histórico.
+A modelagem principal é definida em:
 
-Essa etapa trouxe desafios de navegação, persistência de estado e experiência do usuário.
-
----
-
-## 3. Backend
-
-O projeto evoluiu para uma arquitetura full stack utilizando:
-
-- Node.js;
-- Express;
-- TypeScript;
-- API REST;
-- validação com Zod;
-- autenticação;
-- sessões;
-- tratamento de erros.
-
----
-
-## 4. PostgreSQL e Prisma
-
-Os dados passaram a ser persistidos em PostgreSQL.
+~~~text
+prisma/schema.prisma
+~~~
 
 O Prisma é utilizado para:
 
-- modelagem;
-- acesso aos dados;
-- migrations;
+- definição dos modelos;
 - geração do Prisma Client;
-- seed do banco.
+- migrations;
+- acesso aos dados;
+- integração do backend com PostgreSQL.
 
 ---
 
-## 5. Autenticação
+# 🔗 Principais entidades
 
-Existem fluxos distintos para:
+## User
 
-- visitante;
-- aluno cadastrado;
-- professor.
+Representa uma conta de aluno.
 
-As senhas são armazenadas com hash e as sessões ficam registradas no banco.
+Principais informações:
 
----
-
-## 6. Portal do professor
-
-O professor possui uma área separada da experiência do aluno.
-
-Entre as funcionalidades atuais estão:
-
-- autenticação própria;
-- visualização das avaliações;
-- consulta aos alunos;
-- detalhes das tentativas;
-- pesquisa;
-- edição de dados administrativos;
-- exclusão de avaliação;
-- limpeza das avaliações vinculadas ao próprio professor.
-
----
-
-## 7. Listening e Text-to-Speech
-
-O projeto possui questões de listening.
-
-O backend disponibiliza uma rota para áudio:
-
-~~~http
-GET /api/tts/:questionId
+~~~text
+id
+name
+email
+passwordHash
+isActive
+preferences
+createdAt
+updatedAt
 ~~~
 
-O estudo dessa funcionalidade envolveu:
+---
 
-- Google Cloud Text-to-Speech;
-- fallback de áudio;
-- arquivos locais;
-- carregamento;
-- preload;
-- cache;
-- diferenças entre navegadores;
-- comportamento em dispositivos móveis.
+## Session
+
+Representa uma sessão de aluno ou visitante.
+
+~~~text
+id
+token
+userId
+isAnonymous
+expiresAt
+createdAt
+~~~
+
+Uma sessão pode possuir várias tentativas de avaliação.
 
 ---
 
-## 8. Responsividade
+## Teacher
 
-A interface foi ajustada pensando em:
+Representa contas da equipe pedagógica e administração.
 
-- desktop;
-- Android;
-- iPhone;
-- Safari/WebKit;
-- telas estreitas;
-- telas de pouca altura;
-- safe areas;
-- teclado virtual;
-- scroll;
-- players de áudio;
-- botões e navegação.
+~~~text
+id
+name
+email
+passwordHash
+role
+isActive
+preferences
+createdAt
+updatedAt
+~~~
 
----
-
-## 9. Testes
-
-Com o crescimento da aplicação, foram adicionados testes automatizados para reduzir regressões.
-
-O projeto utiliza:
-
-- Vitest;
-- Testing Library;
-- Supertest;
-- Playwright.
-
----
-
-## 10. Engenharia de Dados
-
-A etapa mais recente foi transformar os dados produzidos pela aplicação em uma fonte para estudos de Engenharia de Dados.
-
-Foram adicionados:
-
-- pipeline incremental em Python;
-- controle de watermarks;
-- camada raw;
-- camada staging;
-- Data Warehouse dimensional;
-- Data Marts;
-- qualidade de dados;
-- histórico de execuções;
-- dados sintéticos;
-- dbt;
-- DAG de Airflow;
-- laboratórios de performance;
-- integração com BI.
-
----
-
-# 👨‍🎓 Funcionalidades do aluno
-
-O aluno pode:
-
-- acessar como visitante;
-- criar uma conta;
-- fazer login;
-- escolher o idioma da avaliação;
-- informar nome;
-- informar e-mail opcional;
-- selecionar um professor;
-- iniciar uma avaliação;
-- responder questões de gramática;
-- responder questões de vocabulário;
-- responder questões de listening;
-- acompanhar o progresso;
-- revisar respostas;
-- finalizar a avaliação;
-- visualizar nota;
-- visualizar nível;
-- visualizar o desempenho por habilidade;
-- consultar o histórico.
-
----
-
-# 👩‍🏫 Funcionalidades do professor
-
-O portal do professor permite:
-
-- login separado do aluno;
-- primeiro acesso pedagógico;
-- consulta ao dashboard;
-- visualização de avaliações;
-- consulta aos alunos;
-- abertura dos detalhes de uma tentativa;
-- pesquisa de registros;
-- edição de dados;
-- exclusão de uma avaliação;
-- limpeza das avaliações vinculadas ao professor.
-
-O backend verifica o professor autenticado antes de permitir operações sobre os registros.
-
-## 🛡️ Administrador
-
-O modelo de professores possui dois papéis:
+Papéis disponíveis:
 
 ~~~text
 TEACHER
 ADMIN
 ~~~
 
-Professores comuns continuam com acesso apenas às funcionalidades pedagógicas vinculadas à própria conta.
+---
 
-O administrador possui uma área exclusiva em:
+## TeacherSession
+
+Armazena sessões autenticadas da equipe.
 
 ~~~text
-/professor/administracao
+id
+token
+teacherId
+expiresAt
+createdAt
 ~~~
 
-Nela é possível:
+---
 
-- visualizar um resumo de contas ativas e inativas;
-- pesquisar alunos e professores por nome ou e-mail;
-- cadastrar alunos;
-- editar nome e e-mail de alunos;
-- redefinir senha de alunos;
-- ativar ou desativar alunos;
-- excluir alunos;
-- cadastrar professores;
-- editar nome e e-mail de professores;
-- redefinir senha de professores;
-- ativar ou desativar professores;
-- excluir professores;
-- visualizar quantas avaliações estão vinculadas a cada conta.
+## Question
 
-Quando uma senha é redefinida ou uma conta é desativada, sessões existentes são invalidadas para que a alteração tenha efeito imediato.
+Armazena as questões utilizadas nas avaliações.
 
-O papel `ADMIN` não pode ser atribuído pela interface. A conta administrativa também não pode ser removida nem desativada pela própria tela de administração.
-
-Para garantir a conta administrativa:
-
-~~~bash
-npm run admin:ensure
+~~~text
+id
+prompt
+options
+correctAnswer
+explanation
+category
+level
+mediaType
+mediaUrl
+isActive
 ~~~
 
-A senha administrativa **não fica armazenada no código**. Para criar o primeiro administrador, configure:
+Categorias:
 
-~~~env
-ADMIN_EMAIL=administrador@adm.com
-ADMIN_PASSWORD=<defina-uma-senha-segura-no-ambiente>
+~~~text
+GRAMMAR
+VOCABULARY
+LISTENING
 ~~~
 
-Em produção, `ADMIN_PASSWORD` deve ser configurada como segredo do provedor de hospedagem.
+Níveis:
 
-Se uma conta administrativa já existir e o segredo não estiver disponível durante um deploy, o script preserva a credencial existente sem exibi-la nem redefini-la.
-
-> O repositório não publica senhas administrativas nem credenciais de demonstração.
-
----
-
-# 🌐 Idiomas
-
-### Interface
-
-Português do Brasil.
-
-### Avaliação disponível atualmente
-
-Espanhol.
-
-Inglês e Francês aparecem como possibilidades futuras de expansão.
+~~~text
+A1
+A2
+B1
+B2
+C1
+C2
+~~~
 
 ---
 
-# 🧠 Níveis A1 a C2
+## TestAttempt
 
-O projeto utiliza uma classificação inspirada nos níveis CEFR.
+Representa uma tentativa de avaliação.
 
-| Aproveitamento | Nível |
-|---:|:---:|
-| 0–20% | A1 |
-| 21–40% | A2 |
-| 41–60% | B1 |
-| 61–80% | B2 |
-| 81–95% | C1 |
-| 96–100% | C2 |
+Entre os campos estudados estão:
 
-> Essa regra foi criada para fins de estudo e funcionamento interno da aplicação.  
-> O resultado não representa uma certificação oficial de proficiência.
+~~~text
+sessionId
+userId
+teacherId
+studentName
+studentEmail
+language
+status
+totalQuestions
+questionIds
+score
+cefrLevel
+breakdown
+createdAt
+completedAt
+~~~
 
----
+Status:
 
-# 🛠️ Tecnologias
-
-## Frontend
-
-| Tecnologia | Uso |
-|---|---|
-| React 19 | Construção da interface |
-| React DOM | Renderização da aplicação |
-| TypeScript 5 | Tipagem do código |
-| Vite 8 | Desenvolvimento e build |
-| React Router 7 | Rotas do frontend |
-| Zustand 5 | Estado global |
-| Tailwind CSS 4 | Estilização e responsividade |
-| Lucide React | Ícones |
-
-## Backend
-
-| Tecnologia | Uso |
-|---|---|
-| Node.js 22 | Ambiente de execução |
-| Express 5 | API REST |
-| TypeScript | Backend tipado |
-| Zod 4 | Validação |
-| Helmet | Cabeçalhos de segurança |
-| CORS | Controle de origem |
-| bcryptjs | Hash de senhas |
-| dotenv | Variáveis de ambiente |
-
-## Banco de dados
-
-| Tecnologia | Uso |
-|---|---|
-| PostgreSQL 16 | Banco operacional e analítico |
-| Prisma 7 | ORM |
-| pg | Driver PostgreSQL |
-| Docker Compose | PostgreSQL local |
-
-## Engenharia de Dados
-
-| Tecnologia | Uso |
-|---|---|
-| Python 3.12 | Pipeline de dados |
-| psycopg | Comunicação com PostgreSQL |
-| Faker | Dados sintéticos |
-| dbt | Estudos de transformação e testes |
-| Apache Airflow | Exemplo de orquestração |
-| SQL | Transformações e modelagem |
-| PostgreSQL Materialized Views | Data Marts |
-| Power BI | Possível consumo analítico |
-| Metabase | Visualização local opcional |
-
-## Qualidade e entrega
-
-| Tecnologia | Uso |
-|---|---|
-| Vitest | Testes unitários |
-| Testing Library | Testes de componentes |
-| Supertest | Testes da API |
-| Playwright | Testes end-to-end |
-| GitHub Actions | CI |
-| Vercel | Estudos de deploy |
-| Render | Estudos de deploy full stack |
+~~~text
+IN_PROGRESS
+COMPLETED
+~~~
 
 ---
 
-# 🗄️ Banco operacional
+## AttemptAnswer
 
-A aplicação utiliza o schema PostgreSQL **public** como camada transacional.
+Representa cada resposta enviada pelo aluno.
 
-As principais entidades são:
+~~~text
+attemptId
+questionId
+selectedAnswer
+isCorrect
+category
+questionLevel
+createdAt
+~~~
 
-### User
+Existe uma constraint para impedir que a mesma questão seja respondida duas vezes na mesma tentativa:
 
-Conta do aluno.
-
-### Session
-
-Sessão autenticada ou anônima.
-
-### Teacher
-
-Conta do professor.
-
-### TeacherSession
-
-Sessão exclusiva do professor.
-
-### Question
-
-Questões da avaliação.
-
-### TestAttempt
-
-Tentativa de avaliação.
-
-### AttemptAnswer
-
-Resposta individual de uma questão.
+~~~text
+@@unique([attemptId, questionId])
+~~~
 
 ---
 
-# 🏭 Engenharia de Dados com PostgreSQL
+# 🔐 Relacionamentos e integridade
 
-A implementação está dentro da pasta:
+Alguns relacionamentos estudados no projeto:
+
+~~~text
+User
+  │
+  ├── Session
+  │      │
+  │      └── TestAttempt
+  │
+  └── TestAttempt
+
+Teacher
+  │
+  ├── TeacherSession
+  │
+  └── TestAttempt
+
+Question
+  │
+  └── AttemptAnswer
+
+TestAttempt
+  │
+  └── AttemptAnswer
+~~~
+
+Também são estudados comportamentos de exclusão como:
+
+- `Cascade`;
+- `SetNull`;
+- `Restrict`.
+
+Exemplo:
+
+Uma resposta não deve continuar existindo sem sua tentativa correspondente.
+
+---
+
+# ⚡ Índices
+
+O banco possui índices para consultas utilizadas com frequência.
+
+Exemplos:
+
+~~~text
+Session.token
+Session.userId
+
+Teacher.name
+
+Question.level + category
+
+TestAttempt.sessionId
+TestAttempt.userId + createdAt
+TestAttempt.teacherId + completedAt
+
+AttemptAnswer.attemptId
+~~~
+
+O objetivo é estudar como índices influenciam buscas, joins, filtros e planos de execução.
+
+---
+
+# 🏭 Engenharia de Dados
+
+A camada analítica está em:
 
 ~~~text
 data-engineering/
 ~~~
 
-A arquitetura utiliza diferentes schemas no PostgreSQL.
+Estrutura principal:
 
-| Schema | Responsabilidade |
-|---|---|
-| public | Sistema transacional da aplicação |
-| meta | Controle das execuções e watermarks |
-| raw | Dados ingeridos da origem |
-| staging | Limpeza e padronização |
-| warehouse | Modelo dimensional |
-| marts | Dados preparados para análise |
-| data_quality | Validações e registros rejeitados |
+~~~text
+data-engineering/
+├── pipeline.py
+├── requirements.txt
+├── sql/
+│   ├── 001_init_schemas.sql
+│   ├── 002_raw.sql
+│   ├── 003_staging.sql
+│   ├── 004_warehouse.sql
+│   ├── 005_transform.sql
+│   ├── 006_marts.sql
+│   ├── 007_quality.sql
+│   └── labs/
+├── synthetic/
+│   └── generate.py
+├── dbt/
+└── airflow/
+~~~
 
 ---
 
-## 🔄 Pipeline incremental
+# 🧱 Schemas analíticos
 
-O pipeline principal está em Python e utiliza psycopg.
+| Schema | Responsabilidade |
+|---|---|
+| `public` | Banco transacional da aplicação |
+| `meta` | Controle de execuções e watermarks |
+| `raw` | Ingestão dos dados de origem |
+| `staging` | Limpeza e padronização |
+| `warehouse` | Modelo dimensional |
+| `marts` | Dados preparados para análise |
+| `data_quality` | Validações e registros rejeitados |
+
+---
+
+# 🔄 Pipeline incremental
+
+O pipeline principal está em:
+
+~~~text
+data-engineering/pipeline.py
+~~~
 
 Fluxo:
 
@@ -593,35 +522,25 @@ marts
 data quality
 ~~~
 
-Cada conjunto de dados possui um watermark registrado em:
+O pipeline utiliza **watermarks** para evitar extrair sempre todos os registros.
+
+O controle fica em:
 
 ~~~text
 meta.pipeline_control
 ~~~
 
-Assim, uma nova execução pode buscar somente registros novos ou atualizados.
+Assim, novas execuções podem buscar apenas registros criados ou atualizados depois da última carga bem-sucedida.
 
 ---
 
-## 📊 Observabilidade do pipeline
+# 📋 Observabilidade do pipeline
 
-As execuções são registradas em:
+Cada execução pode ser registrada em:
 
 ~~~text
 meta.pipeline_runs
 ~~~
-
-Entre as informações armazenadas estão:
-
-- identificação da execução;
-- pipeline;
-- horário de início;
-- horário de término;
-- registros lidos;
-- registros escritos;
-- registros rejeitados;
-- status;
-- mensagem de erro.
 
 Exemplo:
 
@@ -631,11 +550,23 @@ FROM meta.pipeline_runs
 ORDER BY started_at DESC;
 ~~~
 
+São armazenadas informações como:
+
+- identificador da execução;
+- nome do pipeline;
+- início;
+- término;
+- registros lidos;
+- registros escritos;
+- registros rejeitados;
+- status;
+- mensagem de erro.
+
 ---
 
 # ⭐ Data Warehouse
 
-O Warehouse utiliza uma modelagem dimensional.
+O projeto possui uma modelagem dimensional para estudos.
 
 ## Dimensões
 
@@ -655,7 +586,7 @@ warehouse.fact_test_attempt
 warehouse.fact_answer
 ~~~
 
-Arquitetura simplificada:
+Modelo simplificado:
 
 ~~~text
                  dim_student
@@ -669,8 +600,8 @@ dim_teacher ─ fact_test_attempt ─ dim_date
                dim_cefr_level
 
 
-dim_question ─── fact_answer
-                      │
+dim_question ───── fact_answer
+                       │
                  fact_test_attempt
 ~~~
 
@@ -678,9 +609,7 @@ dim_question ─── fact_answer
 
 # 🕒 SCD Type 2
 
-A dimensão de professores possui uma implementação de **Slowly Changing Dimension Type 2**.
-
-Quando informações do professor mudam, a versão anterior pode ser encerrada e uma nova versão passa a representar o estado atual.
+A dimensão de professores é utilizada para estudar **Slowly Changing Dimension Type 2**.
 
 Campos utilizados:
 
@@ -691,21 +620,27 @@ is_current
 hashdiff
 ~~~
 
-Essa implementação foi criada com finalidade educacional para estudar histórico em Data Warehouses.
+A ideia é manter histórico quando determinados atributos mudam.
+
+Exemplo conceitual:
+
+~~~text
+Professor A
+versão 1 → encerrada
+versão 2 → atual
+~~~
 
 ---
 
-# 🥇 Data Marts
+# 📊 Data Marts
 
-O projeto cria Materialized Views para consumo analítico.
+O projeto possui estruturas preparadas para análise.
 
-### Distribuição CEFR
+### Distribuição de níveis
 
 ~~~text
 marts.cefr_distribution
 ~~~
-
-Permite analisar a quantidade de avaliações por nível e a média de pontuação.
 
 ### Desempenho por professor
 
@@ -713,107 +648,117 @@ Permite analisar a quantidade de avaliações por nível e a média de pontuaç�
 marts.teacher_performance
 ~~~
 
-Inclui informações como:
-
-- quantidade de alunos;
-- avaliações;
-- média;
-- distribuição A1–C2.
-
-### Análise das questões
+### Análise de questões
 
 ~~~text
 marts.question_analysis
 ~~~
 
-Permite observar:
-
-- quantidade de respostas;
-- acertos;
-- erros;
-- taxa de acerto.
-
-### Evolução do aluno
+### Evolução dos alunos
 
 ~~~text
 marts.student_progress
 ~~~
 
-Permite analisar resultados anteriores e mudanças de nível ao longo das avaliações.
+Essas estruturas podem ser consultadas diretamente com SQL ou consumidas por ferramentas de BI.
 
 ---
 
 # ✅ Qualidade de dados
 
-O projeto possui uma camada específica para estudar Data Quality.
+O projeto possui uma camada específica para estudar validação de dados.
 
-Algumas validações:
+Exemplos de regras:
 
-- pontuação fora de 0–100;
+- pontuação fora do intervalo esperado;
 - nível CEFR inválido;
 - resposta sem avaliação correspondente;
 - resposta sem questão correspondente.
 
-Problemas encontrados ficam disponíveis em:
+Problemas encontrados podem ser consultados em:
 
 ~~~text
 data_quality.current_issues
 ~~~
 
-Também existe:
+Registros rejeitados podem ser armazenados em:
 
 ~~~text
 data_quality.rejected_records
 ~~~
 
-para registrar rejeições associadas às execuções.
-
----
-
-# 🔒 Privacidade na camada analítica
-
-O pipeline não leva hashes de senha nem tokens de sessão para o Warehouse.
-
-Na camada de staging, endereços de e-mail utilizados para análise são convertidos em hash.
-
-> A camada raw pode conter os campos recebidos da origem e deve ser tratada como uma área de acesso restrito. Em um ambiente real, controles de acesso, criptografia, retenção, governança e LGPD precisariam ser aprofundados.
-
 ---
 
 # 🧪 Dados sintéticos
 
-Para estudar volume sem depender de dados reais, o projeto possui um gerador com Faker.
+Para estudar volume sem utilizar usuários reais, existe um gerador de dados com Faker.
 
 Exemplo:
 
 ~~~bash
-python data-engineering/synthetic/generate.py   --students 5000   --teachers 50   --questions 180   --attempts 100000   --answers-per-attempt 18
+python data-engineering/synthetic/generate.py \
+  --students 5000 \
+  --teachers 50 \
+  --questions 180 \
+  --attempts 100000 \
+  --answers-per-attempt 18
 ~~~
 
-Os dados recebem:
+Os dados sintéticos recebem:
 
 ~~~text
 source_system = synthetic
 ~~~
 
-Isso permite diferenciá-los claramente dos dados originados pela aplicação.
+Isso permite diferenciá-los dos registros criados pela aplicação.
 
-> Os dados sintéticos existem somente para testes, consultas, índices, performance e aprendizado. Eles não representam usuários reais.
+> Dados sintéticos existem apenas para estudos de SQL, volume, performance, índices, transformações e análise.
 
 ---
 
-# ⚡ PostgreSQL e performance
+# 🚀 Comandos da camada de dados
 
-Existem laboratórios isolados para estudar:
+Inicializar os schemas analíticos:
 
-- índices;
-- planos de execução;
-- EXPLAIN;
-- EXPLAIN ANALYZE;
-- buffers;
-- estatísticas;
-- particionamento por data;
-- partition pruning.
+~~~bash
+npm run data:init
+~~~
+
+Extrair novos dados:
+
+~~~bash
+npm run data:extract
+~~~
+
+Transformar e atualizar o Warehouse:
+
+~~~bash
+npm run data:transform
+~~~
+
+Executar validações de qualidade:
+
+~~~bash
+npm run data:quality
+~~~
+
+Executar o pipeline completo:
+
+~~~bash
+npm run data:run
+~~~
+
+Também é possível executar diretamente com Python:
+
+~~~bash
+python data-engineering/pipeline.py run-all
+~~~
+
+---
+
+# ⚙️ PostgreSQL e performance
+
+O projeto possui laboratórios separados para estudar performance.
 
 Arquivos:
 
@@ -821,6 +766,17 @@ Arquivos:
 data-engineering/sql/labs/001_partitioning.sql
 data-engineering/sql/labs/002_performance.sql
 ~~~
+
+Entre os assuntos estudados:
+
+- índices;
+- seq scan;
+- index scan;
+- planos de execução;
+- buffers;
+- estatísticas;
+- particionamento;
+- partition pruning.
 
 Exemplo:
 
@@ -832,48 +788,45 @@ WHERE question_key = 10
   AND is_correct = false;
 ~~~
 
-Os laboratórios são educacionais e não são executados automaticamente pelo pipeline principal.
-
 ---
 
 # 🧱 dbt
 
-Existe um projeto dbt em:
+Existe uma trilha complementar de estudos com dbt em:
 
 ~~~text
 data-engineering/dbt/
 ~~~
 
-Ele foi adicionado para estudar:
+Alguns conceitos praticados:
 
 - sources;
 - models;
-- ref;
-- testes;
 - staging;
 - marts;
-- organização das transformações.
+- `ref()`;
+- testes.
 
-Exemplo de execução:
+Exemplo:
 
 ~~~bash
 dbt debug --project-dir data-engineering/dbt
 dbt build --project-dir data-engineering/dbt
 ~~~
 
-O dbt é uma trilha complementar de estudos. O pipeline principal continua funcionando com Python, SQL e PostgreSQL.
+O pipeline principal continua funcionando com Python + SQL + PostgreSQL.
 
 ---
 
 # ⏱️ Apache Airflow
 
-Existe uma DAG de exemplo em:
+Existe uma DAG de estudo em:
 
 ~~~text
 data-engineering/airflow/dags/idiomas_pro_analytics.py
 ~~~
 
-Fluxo proposto:
+Fluxo:
 
 ~~~text
 init
@@ -885,647 +838,728 @@ transform
 quality
 ~~~
 
-O agendamento de exemplo é diário.
-
-O Airflow não é necessário para executar a aplicação principal e foi incluído como estudo de orquestração.
+A utilização do Airflow faz parte dos estudos de orquestração.
 
 ---
 
 # 📈 Power BI e Metabase
 
-Os Data Marts foram preparados para consumo por ferramentas analíticas.
+Os Data Marts podem ser utilizados como camada de consumo para ferramentas analíticas.
 
-## Metabase
-
-Existe um Docker Compose opcional:
-
-~~~bash
-docker compose -f docker-compose.analytics.yml up -d
-~~~
-
-Por padrão:
+Exemplo de fluxo:
 
 ~~~text
-http://localhost:3001
+PostgreSQL
+   │
+   ▼
+marts
+   │
+   ├── Power BI
+   │
+   └── Metabase
 ~~~
 
-## Power BI
+A ideia é evitar que dashboards consultem diretamente as tabelas transacionais da aplicação.
 
-Uma abordagem possível é conectar diretamente ao PostgreSQL e utilizar preferencialmente as estruturas do schema **marts**.
+---
 
-Exemplos de análises:
+# 🔒 Privacidade na camada de dados
 
-- total de avaliações;
-- média de pontuação;
-- distribuição CEFR;
-- desempenho por professor;
-- taxa de acerto por questão;
-- evolução dos alunos;
-- desempenho por categoria.
+Algumas decisões adicionadas durante os estudos:
+
+- hashes de senha não são enviados para o Warehouse;
+- tokens de sessão não são enviados para o Warehouse;
+- e-mails usados na camada analítica podem ser transformados em hash;
+- dados sintéticos são identificados separadamente.
+
+> Este é um projeto educacional. Em um ambiente real ainda seriam necessários controles mais profundos de LGPD, governança, retenção, criptografia, auditoria e gerenciamento de acessos.
+
+---
+
+# 🖥️ Aplicação utilizada como fonte de dados
+
+A aplicação possui três contextos principais.
+
+## Aluno
+
+O aluno pode:
+
+- entrar como visitante;
+- criar uma conta;
+- fazer login;
+- escolher o idioma da avaliação;
+- selecionar um professor;
+- realizar a prova;
+- responder gramática;
+- responder vocabulário;
+- responder listening;
+- revisar respostas;
+- finalizar a avaliação;
+- consultar resultado;
+- acompanhar histórico;
+- acompanhar evolução.
+
+---
+
+## Professor
+
+O professor possui uma área pedagógica própria.
+
+Funcionalidades:
+
+- autenticação;
+- visão pedagógica;
+- consulta aos alunos;
+- histórico de avaliações;
+- busca;
+- detalhes de tentativas;
+- edição de identificação da avaliação;
+- exclusão de avaliação;
+- limpeza das próprias avaliações;
+- exportação de dados;
+- relatório pedagógico.
+
+A API garante que apenas contas com:
+
+~~~text
+role = TEACHER
+~~~
+
+tenham acesso às operações pedagógicas.
+
+---
+
+## Administrador
+
+O administrador é responsável pela gestão das contas da plataforma.
+
+Funcionalidades:
+
+- cadastrar alunos;
+- editar alunos;
+- redefinir senha;
+- ativar/desativar contas;
+- excluir alunos;
+- cadastrar professores;
+- editar professores;
+- redefinir senha;
+- ativar/desativar professores;
+- excluir professores;
+- pesquisar contas;
+- consultar quantidade de avaliações vinculadas.
+
+O administrador **não é professor**.
+
+Por isso:
+
+~~~text
+ADMIN
+→ administra a plataforma
+→ não recebe avaliações
+→ não aparece para o aluno como professor
+→ não corrige provas
+
+TEACHER
+→ recebe avaliações
+→ acompanha alunos
+→ acessa dados pedagógicos
+~~~
+
+Essa separação é validada tanto no frontend quanto no backend.
+
+---
+
+# 🔐 Segurança e isolamento de sessões
+
+A autenticação foi evoluindo durante o projeto e vários problemas foram utilizados como oportunidades de estudo.
+
+Atualmente:
+
+- senhas são armazenadas com bcrypt;
+- tokens ficam registrados no PostgreSQL;
+- rotas protegidas validam a sessão no backend;
+- contas inativas não podem continuar utilizando sessões antigas;
+- redefinição de senha invalida sessões relacionadas;
+- aluno e equipe utilizam fluxos separados;
+- contas `ADMIN` e `TEACHER` possuem permissões diferentes.
+
+## Sessões da equipe
+
+Sessões de professor e administrador receberam regras adicionais:
+
+- não são persistidas no `localStorage`;
+- utilizam `sessionStorage` no navegador;
+- tokens privilegiados antigos salvos no estado persistido são descartados;
+- uma nova autenticação invalida a sessão privilegiada anterior da mesma conta;
+- sessões da equipe possuem expiração reduzida;
+- entrar na página da equipe não abre automaticamente um painel privilegiado;
+- uma sessão existente precisa ser confirmada explicitamente para continuar.
+
+Essas correções foram adicionadas após testes com navegadores e dispositivos diferentes.
+
+---
+
+# 🧹 Cancelamento de avaliações
+
+Uma tentativa em andamento pode ser cancelada explicitamente.
+
+Endpoint:
+
+~~~http
+DELETE /api/test/:attemptId
+~~~
+
+Quando uma prova é abandonada:
+
+- a tentativa `IN_PROGRESS` é removida;
+- o rascunho local é limpo;
+- a aplicação volta para uma rota segura.
+
+Isso evita acumular tentativas incompletas no banco apenas porque o usuário fechou ou abandonou o fluxo.
+
+---
+
+# 🎨 UX/UI e responsividade
+
+A interface também foi utilizada para estudar comportamento em diferentes dispositivos.
+
+Foram revisados:
+
+- página inicial;
+- login;
+- seleção de idioma;
+- preparação da avaliação;
+- prova;
+- revisão;
+- resultado;
+- dashboard do aluno;
+- progresso;
+- portal do professor;
+- administração;
+- perfil e configurações.
+
+A navegação passou a utilizar a mesma estrutura funcional em diferentes breakpoints.
+
+~~~text
+Desktop
+→ navegação superior
+
+Mobile
+→ navegação inferior adaptativa
+~~~
+
+A regra adotada foi:
+
+> um recurso pode mudar de posição ou tamanho conforme o dispositivo, mas não deve desaparecer sem necessidade.
+
+Foram testados cenários de:
+
+- Desktop Chrome;
+- Pixel 7 / Android;
+- iPhone 13 / WebKit;
+- safe-area;
+- Safari;
+- diferentes alturas e larguras;
+- rolagem horizontal;
+- botões de voltar;
+- logout;
+- seletor de idioma.
+
+---
+
+# 🌐 Idiomas
+
+Idioma da interface:
+
+~~~text
+Português do Brasil
+~~~
+
+Avaliação disponível atualmente:
+
+~~~text
+Espanhol
+~~~
+
+Inglês e Francês aparecem apenas como possibilidades futuras.
+
+---
+
+# 🧠 Classificação utilizada
+
+O projeto utiliza uma classificação de estudos inspirada nos níveis CEFR.
+
+| Aproveitamento | Nível |
+|---:|:---:|
+| 0–20% | A1 |
+| 21–40% | A2 |
+| 41–60% | B1 |
+| 61–80% | B2 |
+| 81–95% | C1 |
+| 96–100% | C2 |
+
+> Essa classificação existe somente para funcionamento e estudo dentro do projeto.  
+> Ela não representa certificação oficial.
+
+---
+
+# 🛠️ Tecnologias
+
+## Banco de dados e dados
+
+| Tecnologia | Uso |
+|---|---|
+| PostgreSQL 16 | Banco transacional e estruturas analíticas |
+| Prisma 7 | Modelagem, migrations e acesso aos dados |
+| SQL | Consultas, transformações, marts e laboratórios |
+| Python 3.12 | Pipeline de Engenharia de Dados |
+| psycopg | Comunicação Python ↔ PostgreSQL |
+| Faker | Geração de dados sintéticos |
+| dbt | Estudos de transformação |
+| Apache Airflow | Estudos de orquestração |
+
+## Backend
+
+| Tecnologia | Uso |
+|---|---|
+| Node.js 22 | Runtime |
+| Express 5 | API REST |
+| TypeScript | Tipagem |
+| Zod | Validação |
+| bcryptjs | Hash de senhas |
+| Helmet | Segurança HTTP |
+| CORS | Controle de origem |
+
+## Frontend
+
+| Tecnologia | Uso |
+|---|---|
+| React 19 | Interface |
+| TypeScript 5 | Tipagem |
+| Vite 8 | Desenvolvimento e build |
+| React Router 7 | Navegação |
+| Zustand 5 | Estado da aplicação |
+| Lucide React | Ícones |
+| CSS responsivo | Design e breakpoints |
+
+## Testes e entrega
+
+| Tecnologia | Uso |
+|---|---|
+| Vitest | Testes unitários |
+| Testing Library | Componentes |
+| Supertest | API |
+| Playwright | E2E |
+| GitHub Actions | CI |
+| Render | Backend e PostgreSQL |
+| Vercel | Estudos de frontend/proxy |
+
+---
+
+# 🌐 Arquitetura de deploy
+
+A arquitetura foi reorganizada para existir apenas uma fonte de verdade para dados e autenticação.
+
+~~~text
+Vercel
+Frontend
+   │
+   │ /api
+   ▼
+Proxy
+   │
+   ▼
+Render
+Express API
+   │
+   ▼
+PostgreSQL
+~~~
+
+O frontend não possui um segundo banco ou uma autenticação paralela.
+
+O backend real permanece responsável pelas operações com PostgreSQL.
+
+O Render utiliza a variável `PORT` disponibilizada pelo ambiente e o servidor escuta em:
+
+~~~text
+0.0.0.0:$PORT
+~~~
+
+A CI também testa o servidor utilizando a porta `10000`, simulando o comportamento esperado no Render.
+
+---
+
+# 🛡️ Administrador
+
+A conta administrativa pode ser criada/garantida com:
+
+~~~bash
+npm run admin:ensure
+~~~
+
+Variáveis:
+
+~~~env
+ADMIN_EMAIL=administrador@adm.com
+ADMIN_PASSWORD=
+~~~
+
+A senha não deve ser armazenada no código.
+
+Em produção, `ADMIN_PASSWORD` deve ser configurada como segredo no provedor de hospedagem.
+
+O seed também não cria automaticamente usuários demo com senhas públicas.
 
 ---
 
 # 🧪 Testes automatizados
 
-## Testes unitários
+Com o crescimento do projeto, os testes passaram a ser importantes para evitar regressões.
 
-Cobrem regras isoladas, incluindo lógica de classificação e desempenho.
+## Testes de API
 
-## Testes de componentes
-
-Validam partes da interface React.
-
-## Testes da API
-
-Cobrem fluxos como:
+Cobrem exemplos como:
 
 - autenticação;
-- sessão;
-- criação de avaliação;
-- envio de respostas;
-- resultados;
-- portal do professor;
-- edição;
-- exclusão;
-- isolamento entre professores.
+- perfis;
+- preferências;
+- alteração de senha;
+- professor;
+- administrador;
+- papéis;
+- início de avaliação;
+- finalização;
+- cancelamento;
+- CRUD administrativo.
 
-## End-to-end
+## Playwright
 
-O Playwright testa a aplicação simulando diferentes ambientes.
-
-Configurações atuais:
-
-- Desktop Chrome;
-- Android / Pixel 7;
-- iPhone 13 / WebKit.
-
----
-
-# ⚙️ Integração contínua
-
-O GitHub Actions executa uma pipeline com:
-
-1. PostgreSQL 16;
-2. Node.js 22;
-3. Python 3.12;
-4. instalação das dependências;
-5. geração do Prisma Client;
-6. aplicação das migrations;
-7. seed;
-8. validação dos arquivos Python;
-9. execução do pipeline analítico;
-10. Data Quality;
-11. testes unitários;
-12. testes de componentes;
-13. testes da API;
-14. build do backend;
-15. build do frontend;
-16. instalação dos navegadores Playwright;
-17. testes end-to-end.
-
-A ideia é detectar regressões tanto na aplicação quanto na camada de dados.
-
----
-
-# 🚧 Principais desafios estudados
-
-Durante a evolução do projeto, alguns dos principais desafios foram:
-
-### Frontend e backend
-
-Entender a comunicação entre telas, API e banco de dados.
-
-### Autenticação
-
-Separar os fluxos de visitante, aluno e professor.
-
-### Segurança da avaliação
-
-Evitar que respostas corretas e informações internas da questão fossem expostas durante a prova.
-
-### Responsividade
-
-Corrigir diferenças de comportamento em desktop, Android, iPhone, Safari e WebKit.
-
-### Áudio
-
-Trabalhar com carregamento, reprodução, TTS, fallback e diferenças entre navegadores.
-
-### Persistência
-
-Modelar usuários, professores, sessões, questões, avaliações e respostas.
-
-### Deploy
-
-Entender diferenças entre execução local, Vercel, Render e banco em cloud.
-
-### Pipeline incremental
-
-Evitar a necessidade de recarregar todos os registros em todas as execuções.
-
-### Modelagem analítica
-
-Separar banco transacional, raw, staging, Warehouse e marts.
-
-### Histórico
-
-Estudar SCD Type 2 para preservar mudanças de dimensão.
-
-### Data Quality
-
-Criar verificações antes do consumo analítico.
-
-### Performance
-
-Analisar índices, planos de execução e particionamento no PostgreSQL.
-
-### Testes e regressões
-
-Automatizar verificações conforme o projeto foi crescendo.
-
----
-
-# 📂 Estrutura do repositório
+Os testes E2E executam fluxos em:
 
 ~~~text
-idiomas-pro/
-│
-├── client/
-│   ├── public/
-│   └── src/
-│       ├── components/
-│       ├── pages/
-│       ├── services/
-│       ├── store/
-│       └── test/
-│
-├── server/
-│   └── src/
-│       ├── controllers/
-│       ├── lib/
-│       ├── routes/
-│       ├── services/
-│       └── tests/
-│
-├── prisma/
-│   ├── migrations/
-│   ├── schema.prisma
-│   └── seed.ts
-│
-├── data-engineering/
-│   ├── airflow/
-│   │   └── dags/
-│   ├── dbt/
-│   │   └── models/
-│   ├── sql/
-│   │   └── labs/
-│   ├── synthetic/
-│   ├── pipeline.py
-│   ├── requirements.txt
-│   └── README.md
-│
-├── e2e/
-├── api/
-├── .github/
-│   └── workflows/
-├── docker-compose.yml
-├── docker-compose.analytics.yml
-├── playwright.config.ts
-├── render.yaml
-├── vercel.json
-├── package.json
-└── README.md
+Desktop Chrome
+Pixel 7
+iPhone 13 / WebKit
 ~~~
 
----
+Também existem regressões para:
 
-# 🚀 Executando localmente
-
-## Pré-requisitos
-
-Para a aplicação:
-
-- Node.js 22+
-- npm
-- PostgreSQL 16 ou compatível
-- Docker opcional
-
-Para a parte de Engenharia de Dados:
-
-- Python 3.12 recomendado
-- pip
+- navegação responsiva;
+- ações de voltar;
+- logout;
+- isolamento de sessões entre navegadores;
+- administrador não herdado por outro navegador;
+- invalidação da sessão privilegiada anterior;
+- bloqueio de sessão privilegiada legada no localStorage;
+- separação entre ADMIN e TEACHER.
 
 ---
 
-## 1. Clone
+# 🔁 CI
+
+O GitHub Actions executa uma sequência semelhante a:
+
+~~~text
+PostgreSQL
+   ↓
+Instalação
+   ↓
+Prisma Client
+   ↓
+Migrations
+   ↓
+Seed
+   ↓
+Bootstrap de admin de teste
+   ↓
+Pipeline de dados
+   ↓
+Testes unitários
+   ↓
+Testes da API
+   ↓
+Build backend
+   ↓
+Build frontend
+   ↓
+Teste PORT 10000
+   ↓
+Playwright E2E
+~~~
+
+Isso permite usar o próprio projeto para estudar não apenas banco de dados, mas também integração entre dados, aplicação e entrega.
+
+---
+
+# 💻 Executando localmente
+
+## Requisitos
+
+- Node.js 22;
+- npm;
+- PostgreSQL;
+- Python 3.12 para a camada de Engenharia de Dados.
+
+Clone:
 
 ~~~bash
-git clone https://github.com/denilson-dev/idiomas-pro.git
+git clone git@github.com:denilson-dev/idiomas-pro.git
 cd idiomas-pro
 ~~~
 
----
-
-## 2. Instale as dependências Node
+Instale:
 
 ~~~bash
 npm install
 ~~~
 
-O projeto utiliza npm workspaces para organizar frontend e backend.
-
----
-
-## 3. Configure o ambiente
-
-Linux/macOS:
+Configure o ambiente:
 
 ~~~bash
 cp .env.example .env
 ~~~
 
-Windows PowerShell:
+No Windows PowerShell:
 
 ~~~powershell
 Copy-Item .env.example .env
 ~~~
 
-Exemplo:
+Configure pelo menos:
 
 ~~~env
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/idiomas_pro?schema=public"
+DATABASE_URL="postgresql://usuario:senha@localhost:5432/idiomas_pro?schema=public"
 PORT=3333
 CLIENT_ORIGIN=http://localhost:5173
 VITE_API_URL=http://localhost:3333/api
-
-GOOGLE_TTS_API_KEY=
-GOOGLE_TTS_VOICE=es-ES-Chirp3-HD-Zephyr
-
-ADMIN_EMAIL=administrador@adm.com
-ADMIN_PASSWORD=
 ~~~
 
-As variáveis relacionadas ao TTS são opcionais.
-
-> Nunca coloque senhas, tokens ou chaves reais em arquivos versionados.
-
-## Arquitetura de deploy
-
-O projeto usa uma única fonte de verdade para autenticação, avaliações e usuários:
-
-~~~text
-Vercel (frontend)
-      │
-      │ /api
-      ▼
-proxy serverless
-      │
-      ▼
-Render (Express API)
-      │
-      ▼
-PostgreSQL
-~~~
-
-O arquivo `client/api/index.ts` não implementa autenticação própria. Ele apenas encaminha as requisições para o backend real.
-
-Quando necessário, o endereço do backend pode ser sobrescrito com:
-
-~~~env
-BACKEND_API_URL=https://seu-backend.exemplo/api
-VITE_API_URL=https://seu-backend.exemplo/api
-~~~
-
-`BACKEND_API_URL` é usado pelo proxy serverless da Vercel.  
-`VITE_API_URL` permite ao frontend chamar diretamente uma API configurada.
-
----
-
-## 4. Suba o PostgreSQL
-
-~~~bash
-docker compose up -d
-~~~
-
----
-
-## 5. Gere o Prisma Client
+Depois:
 
 ~~~bash
 npm run db:generate
-~~~
-
----
-
-## 6. Aplique as migrations
-
-~~~bash
 npm run db:deploy
-~~~
-
----
-
-## 7. Execute o seed
-
-~~~bash
 npm run db:seed
-~~~
-
----
-
-## 8. Inicie frontend e backend
-
-~~~bash
 npm run dev
 ~~~
 
-Por padrão:
+Frontend:
 
 ~~~text
-Frontend: http://localhost:5173
-Backend:  http://localhost:3333
-Health:   http://localhost:3333/api/health
+http://localhost:5173
+~~~
+
+Backend:
+
+~~~text
+http://localhost:3333
 ~~~
 
 ---
 
-# 🏭 Executando a camada de Engenharia de Dados
+# 🧰 Scripts principais
 
-## 1. Crie um ambiente virtual
-
-~~~bash
-python -m venv .venv
-~~~
-
-### Windows PowerShell
-
-~~~powershell
-.\.venv\Scripts\Activate.ps1
-~~~
-
-### Linux/macOS
-
-~~~bash
-source .venv/bin/activate
-~~~
-
----
-
-## 2. Instale as dependências
-
-~~~bash
-pip install -r data-engineering/requirements.txt
-~~~
-
----
-
-## 3. Inicialize a arquitetura analítica
-
-~~~bash
-npm run data:init
-~~~
-
----
-
-## 4. Execute a ingestão
-
-~~~bash
-npm run data:extract
-~~~
-
----
-
-## 5. Atualize Warehouse e Data Marts
-
-~~~bash
-npm run data:transform
-~~~
-
----
-
-## 6. Execute Data Quality
-
-~~~bash
-npm run data:quality
-~~~
-
----
-
-## Executar tudo
-
-~~~bash
-npm run data:run
-~~~
-
----
-
-# 📜 Principais comandos
-
-| Comando | Função |
+| Comando | Uso |
 |---|---|
-| npm run dev | Frontend + backend |
-| npm run build | Build completo |
-| npm start | Backend compilado |
-| npm run db:generate | Gera Prisma Client |
-| npm run db:deploy | Aplica migrations |
-| npm run db:migrate | Migration de desenvolvimento |
-| npm run db:seed | Seed |
-| npm run db:studio | Prisma Studio |
-| npm run test:unit | Testes unitários/componentes |
-| npm run test:api | Integração da API |
-| npm run test:e2e | Testes E2E |
-| npm run test:all | Todas as suítes |
-| npm run data:init | Cria arquitetura analítica |
-| npm run data:extract | Ingestão incremental |
-| npm run data:transform | Warehouse + marts |
-| npm run data:quality | Data Quality |
-| npm run data:run | Pipeline analítico completo |
-| npm run data:synthetic | Gera dataset sintético padrão |
-| npm run admin:ensure | Aplica migrations e garante a conta administrativa |
+| `npm run dev` | Frontend + backend |
+| `npm run build` | Build completo |
+| `npm run db:generate` | Gerar Prisma Client |
+| `npm run db:migrate` | Criar migration local |
+| `npm run db:deploy` | Aplicar migrations |
+| `npm run db:seed` | Popular dados base |
+| `npm run db:studio` | Abrir Prisma Studio |
+| `npm run admin:ensure` | Garantir administrador |
+| `npm run data:init` | Criar arquitetura analítica |
+| `npm run data:extract` | Ingestão incremental |
+| `npm run data:transform` | Atualizar Warehouse e marts |
+| `npm run data:quality` | Validar qualidade |
+| `npm run data:run` | Executar pipeline completo |
+| `npm run test:unit` | Testes unitários |
+| `npm run test:api` | Testes da API |
+| `npm run test:e2e` | Playwright |
+| `npm run test:all` | Suíte completa |
 
 ---
 
-# 🔌 Principais rotas da API
+# 🧭 Correções e evolução recente
 
-## Aluno
+Algumas das correções realizadas durante a evolução do projeto:
 
-~~~http
-POST /api/auth/anonymous
-POST /api/auth/register
-POST /api/auth/login
-GET  /api/auth/me
-POST /api/auth/logout
-~~~
+### Banco e backend
 
-## Professores
-
-~~~http
-GET /api/teachers
-~~~
-
-## Autenticação do professor
-
-~~~http
-GET  /api/teacher/auth/bootstrap-status
-POST /api/teacher/auth/bootstrap
-POST /api/teacher/auth/login
-GET  /api/teacher/auth/me
-POST /api/teacher/auth/logout
-~~~
-
-## Painel do professor
-
-~~~http
-GET    /api/teacher/dashboard
-DELETE /api/teacher/attempts
-GET    /api/teacher/attempts/:attemptId
-PATCH  /api/teacher/attempts/:attemptId
-DELETE /api/teacher/attempts/:attemptId
-~~~
-
-## Avaliação
-
-~~~http
-POST /api/test/start
-POST /api/test/:attemptId/submit
-~~~
-
-## Resultados
-
-~~~http
-GET /api/results/history
-GET /api/results/:attemptId
-~~~
-
-## Listening
-
-~~~http
-GET /api/tts/:questionId
-~~~
-
----
-
-# ☁️ Deploy
-
-O repositório possui configurações usadas durante estudos de deploy em:
-
-- Vercel;
-- Render.
-
-O objetivo foi compreender:
-
-- build em ambiente cloud;
-- variáveis de ambiente;
-- rotas da API;
-- PostgreSQL remoto;
+- persistência completa em PostgreSQL;
+- modelagem com Prisma;
 - migrations;
-- Prisma Client;
-- arquivos estáticos;
-- diferenças entre desenvolvimento e produção.
+- índices;
+- preferências em JSON;
+- papéis `TEACHER` e `ADMIN`;
+- CRUD administrativo;
+- cancelamento de avaliação em andamento;
+- separação de responsabilidades entre administrador e professor;
+- proteção das rotas pedagógicas;
+- administrador removido da lista de professores disponíveis para o aluno.
 
-A presença dessas configurações faz parte do histórico de aprendizado do projeto.
+### Segurança
+
+- senhas com bcrypt;
+- administrador sem senha fixa no código;
+- seed sem conta demo pública;
+- validação de sessão no backend;
+- sessões privilegiadas separadas das sessões do aluno;
+- remoção de tokens privilegiados do `localStorage`;
+- uso de `sessionStorage` para equipe;
+- invalidação de sessão privilegiada anterior em novo login;
+- bloqueio de acesso administrativo herdado entre contextos de navegador;
+- permissões verificadas também pela API.
+
+### Frontend e experiência
+
+- nova arquitetura visual;
+- navegação unificada;
+- página inicial revisada;
+- identidade Idiomas Pro;
+- layout do aluno;
+- tela de progresso;
+- portal pedagógico;
+- administração;
+- perfil e preferências;
+- desktop;
+- Android;
+- iPhone/WebKit;
+- safe areas;
+- ações de voltar e sair disponíveis conforme o contexto;
+- seletor de idioma preservado em mobile.
+
+### Deploy
+
+- Render configurado para servir o backend;
+- servidor preparado para `0.0.0.0:$PORT`;
+- smoke test de porta na CI;
+- Vercel sem backend paralelo;
+- proxy para a API real;
+- uma única fonte de verdade para autenticação e banco.
+
+### Testes
+
+- testes de componentes;
+- testes de API;
+- E2E;
+- testes responsivos;
+- testes de papéis;
+- testes de cancelamento;
+- testes de isolamento de sessão.
 
 ---
 
-# 📚 Documentação adicional
+# 🚧 Limitações atuais
 
-A parte específica de Engenharia de Dados possui documentação própria:
+Este ainda é um projeto de estudos.
 
-~~~text
-data-engineering/README.md
-~~~
+Alguns pontos que poderiam ser aprofundados em uma aplicação de produção:
 
-Ela contém detalhes sobre:
+- auditoria completa de alterações;
+- RBAC mais granular;
+- refresh tokens;
+- MFA;
+- rate limiting mais avançado;
+- filas;
+- backups automatizados;
+- criptografia adicional;
+- políticas de retenção;
+- LGPD;
+- governança de dados;
+- catálogo de dados;
+- lineage;
+- monitoramento;
+- alertas;
+- gerenciamento de segredos mais completo;
+- infraestrutura como código.
 
-- schemas;
-- pipeline;
-- Data Warehouse;
-- Data Marts;
-- dados sintéticos;
-- dbt;
-- Airflow;
-- Metabase;
-- Power BI;
-- performance;
-- privacidade.
-
----
-
-# 🔭 Possíveis próximos estudos
-
-Algumas evoluções possíveis:
-
-- ampliar os idiomas disponíveis;
-- ampliar o banco de questões;
-- criar turmas;
-- adicionar relatórios pedagógicos;
-- exportar resultados;
-- estudar CDC;
-- estudar filas e processamento assíncrono;
-- implementar uma estratégia mais robusta de incrementalidade para registros mutáveis;
-- aprofundar dbt;
-- executar Airflow em ambiente containerizado;
-- adicionar testes específicos do pipeline;
-- estudar Great Expectations ou Soda;
-- implementar métricas de SLA/SLO do pipeline;
-- estudar observabilidade com Prometheus/Grafana;
-- experimentar PostgreSQL logical replication;
-- estudar armazenamento em objeto;
-- criar uma camada lake/lakehouse;
-- explorar Spark ou Databricks em uma evolução futura;
-- conectar os marts a um dashboard completo no Power BI;
-- estudar governança, catálogo, lineage e LGPD.
+Esses pontos são possibilidades de estudo futuro, não funcionalidades que o projeto afirma possuir hoje.
 
 ---
 
-# ⚠️ Limitações
+# 📌 Próximos estudos com banco de dados
 
-Como este é um projeto de estudos:
+Algumas evoluções que fazem sentido para o objetivo deste repositório:
 
-- não é uma plataforma oficial de certificação;
-- não substitui uma avaliação pedagógica profissional;
-- não possui garantia de disponibilidade;
-- algumas integrações dependem de serviços externos;
-- dbt e Airflow são trilhas complementares e não são necessários para o funcionamento principal;
-- os laboratórios de escala foram criados para aprendizado e não significam que a aplicação atual necessite dessa complexidade;
-- a arquitetura pode mudar conforme novos conceitos forem estudados.
+1. criar consultas SQL analíticas mais complexas;
+2. comparar consultas com e sem índices;
+3. estudar CTEs e Window Functions;
+4. aprofundar `EXPLAIN ANALYZE`;
+5. estudar locks e concorrência;
+6. praticar transações e níveis de isolamento;
+7. aprofundar particionamento;
+8. implementar auditoria de mudanças;
+9. estudar backup e restore;
+10. criar novas dimensões e fatos;
+11. aprofundar SCD Type 2;
+12. adicionar testes de qualidade com dbt;
+13. estudar CDC;
+14. estudar mensageria e processamento assíncrono;
+15. conectar os Data Marts a dashboards do Power BI.
 
 ---
 
 # 👨‍💻 O que este repositório representa
 
-Este repositório representa um processo de aprendizado através da prática.
+Este repositório representa minha evolução durante os estudos.
 
-A intenção não é afirmar experiência profissional com todas as tecnologias presentes.
+A intenção não é afirmar experiência profissional com todas as tecnologias utilizadas.
 
-O objetivo é registrar o contato prático com diferentes partes do ciclo de software e dados:
+O objetivo é mostrar que, durante o aprendizado, busquei ir além da teoria e construir um ambiente em que pudesse praticar:
 
 ~~~text
-Necessidade
-    ↓
-Aplicação
-    ↓
-Geração de dados
-    ↓
+Modelagem
+   ↓
 PostgreSQL
-    ↓
-Pipeline
-    ↓
-Tratamento
-    ↓
+   ↓
+SQL
+   ↓
+Aplicação
+   ↓
+Dados transacionais
+   ↓
+ETL
+   ↓
 Data Warehouse
-    ↓
+   ↓
 Data Marts
-    ↓
+   ↓
+Qualidade
+   ↓
 Análise
-    ↓
-Aprendizado
 ~~~
+
+A aplicação de idiomas é o contexto.
+
+**Os dados são o principal objeto de estudo.**
 
 ---
 
-<div align="center">
+## 📖 Forma de aprendizado
 
-### 📚 Projeto criado para estudar, praticar e documentar evolução em desenvolvimento, Ciência de Dados e Engenharia de Dados.
+~~~text
+Estudar
+   ↓
+Construir
+   ↓
+Gerar dados
+   ↓
+Consultar
+   ↓
+Encontrar problemas
+   ↓
+Corrigir
+   ↓
+Testar
+   ↓
+Analisar
+   ↓
+Aprender
+   ↓
+Evoluir
+~~~
 
-</div>
+Esse é o objetivo do **Idiomas Pro**.
