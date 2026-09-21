@@ -324,7 +324,7 @@ export function ReviewPage() {
   const answered = draft.questions.length - pending.length;
 
   function editQuestion(index: number) {
-    const next = { ...draft, currentIndex: index };
+    const next: ExamDraft = { ...draft!, currentIndex: index };
     setDraft(next);
     saveExamDraft(next);
     navigate('/test');
@@ -340,18 +340,18 @@ export function ReviewPage() {
       setSubmitting(true);
       setMessage('');
       const result = await api.submitTest(
-        token,
-        draft.attemptId,
-        draft.questions.map((question) => ({
+        token!,
+        draft!.attemptId,
+        draft!.questions.map((question) => ({
           questionId: question.id,
-          selectedAnswer: draft.answers[question.id],
+          selectedAnswer: draft!.answers[question.id],
         })),
       );
 
-      saveResult({ ...result, id: draft.attemptId, attemptId: draft.attemptId });
+      saveResult({ ...result, id: draft!.attemptId, attemptId: draft!.attemptId });
       clearExamDraft();
       clearTestProfile();
-      navigate(`/result/${draft.attemptId}`);
+      navigate(`/result/${draft!.attemptId}`);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Não foi possível finalizar a avaliação.');
       setSubmitting(false);
