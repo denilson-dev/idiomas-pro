@@ -100,6 +100,7 @@ export async function login(req: Request, res: Response) {
   const session = await prisma.session.create({
     data: {
       token: randomUUID(),
+      clientId,
       userId: user.id,
       isAnonymous: false,
       expiresAt: sessionExpiry(),
