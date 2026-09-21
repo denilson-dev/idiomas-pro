@@ -1,0 +1,2 @@
+-r requirements-core.txt
+prefect>=3,<4

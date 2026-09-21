@@ -116,6 +116,7 @@ model TestAttempt {
   cefrLevel      CEFRLevel?
   breakdown      Json?
   createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
   completedAt    DateTime?
   session        Session        @relation(fields: [sessionId], references: [id], onDelete: Cascade)
   user           User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
@@ -125,6 +126,7 @@ model TestAttempt {
   @@index([sessionId])
   @@index([userId, createdAt])
   @@index([teacherId, completedAt])
+  @@index([updatedAt])
 }
 
 model AttemptAnswer {
