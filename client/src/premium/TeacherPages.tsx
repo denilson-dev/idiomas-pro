@@ -214,7 +214,9 @@ export function TeacherDashboard() {
   const [searchParams] = useSearchParams();
   const [data, setData] = useState<TeacherDashboardData | null>(null);
   const [query, setQuery] = useState('');
+  const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
+  const [messageTone, setMessageTone] = useState<'success' | 'error'>('success');
 
   const requestedView = searchParams.get('view');
   const view =
@@ -224,16 +226,22 @@ export function TeacherDashboard() {
 
   async function reloadDashboard() {
     if (!teacherToken) return;
-    const next = await api.getTeacherDashboard(teacherToken);
-    setData(next);
+    setLoading(true);
+    try {
+      const next = await api.getTeacherDashboard(teacherToken);
+      setData(next);
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => {
     if (!teacherToken) return;
 
-    reloadDashboard().catch((error) =>
-      setMessage(error instanceof Error ? error.message : 'Não foi possível carregar o painel.'),
-    );
+    reloadDashboard().catch((error) => {
+      setMessageTone('error');
+      setMessage(error instanceof Error ? error.message : 'Não foi possível carregar o painel.');
+    });
 
     api
       .getTeacherPreferences(teacherToken)
@@ -332,8 +340,10 @@ export function TeacherDashboard() {
     try {
       const result = await api.clearTeacherAttempts(teacherToken);
       await reloadDashboard();
+      setMessageTone('success');
       setMessage(result.message);
     } catch (error) {
+      setMessageTone('error');
       setMessage(error instanceof Error ? error.message : 'Não foi possível limpar as avaliações.');
     }
   }
@@ -356,6 +366,18 @@ export function TeacherDashboard() {
             title: 'Visão pedagógica',
             description: 'O essencial para acompanhar desempenho e decidir o próximo passo.',
           };
+
+  if (loading && !data) {
+    return (
+      <Workspace area="teacher">
+        <Surface className="empty workspace-loading">
+          <div className="empty__icon">✦</div>
+          <h3>Carregando acompanhamento</h3>
+          <p>Buscando alunos e avaliações vinculados ao seu perfil.</p>
+        </Surface>
+      </Workspace>
+    );
+  }
 
   return (
     <Workspace area="teacher">
@@ -595,7 +617,7 @@ export function TeacherDashboard() {
         </Surface>
       )}
 
-      {message && <Toast message={message} />}
+      {message && <Toast message={message} tone={messageTone} />}
     </Workspace>
   );
 }
