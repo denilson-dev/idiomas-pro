@@ -10,14 +10,7 @@ const prisma = new PrismaClient({ adapter: new PrismaPg({ connectionString }) })
 
 async function main() {
   const email = (process.env.ADMIN_EMAIL || 'administrador@adm.com').trim().toLowerCase();
-  const isProduction = process.env.NODE_ENV === 'production';
-  const password = process.env.ADMIN_PASSWORD || (isProduction ? '' : 'admin123');
-
-  if (!password) {
-    throw new Error(
-      'ADMIN_PASSWORD não configurada. Em produção, defina uma senha segura antes de executar npm run admin:ensure.',
-    );
-  }
+  const password = process.env.ADMIN_PASSWORD || 'admin123';
 
   if (password.length < 8) {
     throw new Error('A senha do administrador precisa ter pelo menos 8 caracteres.');
@@ -51,8 +44,9 @@ async function main() {
 
   console.log('Administrador garantido com sucesso:');
   console.log(admin);
-  if (!isProduction && !process.env.ADMIN_PASSWORD) {
-    console.log('Credenciais de desenvolvimento: administrador@adm.com / admin123');
+  if (!process.env.ADMIN_PASSWORD) {
+    console.warn('AVISO: usando a senha padrão do projeto de estudos para o administrador.');
+    console.log('Credenciais: administrador@adm.com / admin123');
   }
 }
 
