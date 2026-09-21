@@ -5,6 +5,7 @@ import os
 import random
 import uuid
 from datetime import datetime, timedelta, timezone
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 import psycopg
 from faker import Faker
@@ -18,7 +19,10 @@ def db_url() -> str:
     value = os.getenv("ANALYTICS_DATABASE_URL") or os.getenv("DATABASE_URL")
     if not value:
         raise RuntimeError("Defina ANALYTICS_DATABASE_URL ou DATABASE_URL.")
-    return value
+
+    parts = urlsplit(value)
+    query = [(key, val) for key, val in parse_qsl(parts.query) if key != "schema"]
+    return urlunsplit((parts.scheme, parts.netloc, parts.path, urlencode(query), parts.fragment))
 
 
 def cefr(score: int) -> str:
