@@ -11,6 +11,7 @@ import {
   UsersRound,
 } from 'lucide-react';
 import { Brand } from './Brand';
+import { LanguageMenu } from './LanguageMenu';
 import { api } from '../services/api';
 import { useAppStore } from '../store/useAppStore';
 
@@ -19,9 +20,7 @@ export function PublicHeader() {
     <header className="topbar">
       <Brand compact />
       <div className="topbar__actions">
-        <button className="language-pill" type="button" aria-label="Idioma da interface">
-          🇧🇷 PT-BR
-        </button>
+        <LanguageMenu />
       </div>
     </header>
   );
@@ -128,9 +127,7 @@ export function Workspace({
             <strong>{account?.name ?? 'Usuário'}</strong>
           </div>
           <div className="workspace__top-actions">
-            <button className="language-pill" type="button">
-              🇧🇷 PT-BR
-            </button>
+            <LanguageMenu />
             <span className="avatar">{initials}</span>
           </div>
         </header>
