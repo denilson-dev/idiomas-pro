@@ -38,8 +38,16 @@ jobs:
         with:
           node-version: 22
 
-      - name: Install dependencies
+      - name: Use Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Node dependencies
         run: npm install
+
+      - name: Install data pipeline runtime
+        run: pip install "psycopg[binary]==3.2.10"
 
       - name: Generate Prisma Client
         run: npm run db:generate
@@ -49,6 +57,15 @@ jobs:
 
       - name: Seed test database
         run: npm run db:seed
+
+      - name: Validate data engineering Python
+        run: |
+          python -m py_compile data-engineering/pipeline.py
+          python -m py_compile data-engineering/synthetic/generate.py
+          python -m py_compile data-engineering/airflow/dags/idiomas_pro_analytics.py
+
+      - name: Run PostgreSQL analytics pipeline
+        run: python data-engineering/pipeline.py run-all
 
       - name: Unit and component tests
         run: npm run test:unit
