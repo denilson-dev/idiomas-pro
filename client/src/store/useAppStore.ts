@@ -15,6 +15,7 @@ type AppState = {
   selectedLanguage: 'ES';
   testProfile: StudentTestProfile | null;
   activeTest: ActiveTest | null;
+  currentQuestionIndex: number;
   setSession: (token: string, user: User | null) => void;
   updateUser: (user: User) => void;
   clearSession: () => void;
@@ -25,6 +26,7 @@ type AppState = {
   setTestProfile: (profile: StudentTestProfile) => void;
   clearTestProfile: () => void;
   setActiveTest: (test: ActiveTest) => void;
+  setCurrentQuestionIndex: (index: number) => void;
   setTestAnswer: (questionId: string, selectedAnswer: string) => void;
   clearActiveTest: () => void;
 };
@@ -39,6 +41,7 @@ export const useAppStore = create<AppState>()(
       selectedLanguage: 'ES',
       testProfile: null,
       activeTest: null,
+      currentQuestionIndex: 0,
       setSession: (token, user) => set({ token, user }),
       updateUser: (user) => set({ user }),
       clearSession: () => set({
@@ -46,6 +49,7 @@ export const useAppStore = create<AppState>()(
         user: null,
         testProfile: null,
         activeTest: null,
+        currentQuestionIndex: 0,
       }),
       setTeacherSession: (teacherToken, teacher) => set({ teacherToken, teacher }),
       updateTeacher: (teacher) => set({ teacher }),
@@ -53,7 +57,8 @@ export const useAppStore = create<AppState>()(
       setSelectedLanguage: (selectedLanguage) => set({ selectedLanguage }),
       setTestProfile: (testProfile) => set({ testProfile }),
       clearTestProfile: () => set({ testProfile: null }),
-      setActiveTest: (activeTest) => set({ activeTest }),
+      setActiveTest: (activeTest) => set({ activeTest, currentQuestionIndex: 0 }),
+      setCurrentQuestionIndex: (currentQuestionIndex) => set({ currentQuestionIndex }),
       setTestAnswer: (questionId, selectedAnswer) => set((state) => ({
         activeTest: state.activeTest
           ? {
@@ -65,7 +70,7 @@ export const useAppStore = create<AppState>()(
             }
           : null,
       })),
-      clearActiveTest: () => set({ activeTest: null }),
+      clearActiveTest: () => set({ activeTest: null, currentQuestionIndex: 0 }),
     }),
     {
       name: 'idiomas-pro-session',
@@ -77,6 +82,7 @@ export const useAppStore = create<AppState>()(
         selectedLanguage: state.selectedLanguage,
         testProfile: state.testProfile,
         activeTest: state.activeTest,
+        currentQuestionIndex: state.currentQuestionIndex,
       }),
     },
   ),
