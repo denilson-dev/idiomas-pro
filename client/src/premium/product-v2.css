@@ -20,9 +20,11 @@
   --v2-content:1240px;
 }
 
-html{background:var(--v2-bg)}
+html{background:var(--v2-bg);min-height:100%}
 body{
   color:var(--v2-ink);
+  min-height:100vh;
+  min-height:100dvh;
   background:
     linear-gradient(180deg,#fcfbfd 0,#f7f4fb 480px,#f7f4fb 100%);
 }
@@ -281,6 +283,7 @@ body{
 
 .route-loading{
   min-height:100vh;
+  min-height:100dvh;
   display:grid;
   place-items:center;
   align-content:center;
@@ -309,6 +312,7 @@ body{
 .workspace{
   display:block;
   min-height:100vh;
+  min-height:100dvh;
   background:var(--v2-bg);
 }
 .workspace__main{min-width:0}
