@@ -113,6 +113,11 @@ def parse_args():
     return parser.parse_args()
 
 
+def executemany(conn, query: str, rows) -> None:
+    with conn.cursor() as cur:
+        cur.executemany(query, rows)
+
+
 def main():
     args = parse_args()
     now = datetime.now(timezone.utc)
@@ -126,7 +131,7 @@ def main():
             sid = str(uuid.uuid4())
             created = fake.date_time_between(start_date=start, end_date=now, tzinfo=timezone.utc)
             students.append((sid, fake.name(), fake.unique.email(), created, created))
-        conn.executemany(
+        executemany(conn,
             'INSERT INTO synthetic."User" ("id","name","email","createdAt","updatedAt") VALUES (%s,%s,%s,%s,%s)',
             students,
         )
@@ -136,7 +141,7 @@ def main():
             tid = str(uuid.uuid4())
             created = fake.date_time_between(start_date=start, end_date=now, tzinfo=timezone.utc)
             teachers.append((tid, fake.name(), fake.unique.email(), True, created, created))
-        conn.executemany(
+        executemany(conn,
             'INSERT INTO synthetic."Teacher" ("id","name","email","isActive","createdAt","updatedAt") VALUES (%s,%s,%s,%s,%s,%s)',
             teachers,
         )
@@ -163,7 +168,7 @@ def main():
                     created,
                 )
             )
-        conn.executemany(
+        executemany(conn,
             """
             INSERT INTO synthetic."Question"
             ("id","prompt","options","correctAnswer","explanation","category","level","mediaType","mediaUrl","isActive","createdAt","updatedAt")
@@ -230,7 +235,7 @@ def main():
                         )
                     )
 
-            conn.executemany(
+            executemany(conn,
                 """
                 INSERT INTO synthetic."TestAttempt"
                 ("id","sessionId","userId","teacherId","studentName","studentEmail","language","status","totalQuestions","questionIds","score","cefrLevel","breakdown","createdAt","updatedAt","completedAt")
@@ -238,7 +243,7 @@ def main():
                 """,
                 attempts,
             )
-            conn.executemany(
+            executemany(conn,
                 """
                 INSERT INTO synthetic."AttemptAnswer"
                 ("id","attemptId","questionId","selectedAnswer","isCorrect","category","questionLevel","createdAt")
