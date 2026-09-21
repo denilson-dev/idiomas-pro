@@ -235,6 +235,8 @@ export function LanguagePage() {
             type="button"
             key={code}
             onClick={() => status === 'Disponível agora' && setLanguage(code)}
+            disabled={status !== 'Disponível agora'}
+            aria-disabled={status !== 'Disponível agora'}
             className={`language-card ${language === code ? 'selected' : ''} ${
               status !== 'Disponível agora' ? 'disabled' : ''
             }`}
