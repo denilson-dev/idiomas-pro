@@ -358,7 +358,7 @@ export function TeacherDashboard() {
           };
 
   return (
-    <Workspace area="teacher" backTo="/professor/painel?view=assessments" backLabel="Avaliações">
+    <Workspace area="teacher">
       <div className="workspace-heading">
         <div>
           <small>{heading.eyebrow}</small>
