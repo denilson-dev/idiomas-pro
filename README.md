@@ -923,3 +923,71 @@ Evoluir
 ### 📚 Projeto criado para estudar, praticar e registrar evolução técnica.
 
 </div>
+
+
+---
+
+# 🏭 Engenharia de Dados com PostgreSQL
+
+Além da aplicação full stack, o repositório agora possui uma trilha prática de **Engenharia de Dados** construída sobre os próprios dados gerados pelo Idiomas Pro.
+
+O objetivo é estudar o ciclo completo:
+
+```text
+Aplicação (OLTP / public)
+        ↓
+Ingestão incremental em Python
+        ↓
+raw
+        ↓
+staging (dbt)
+        ↓
+warehouse / Star Schema
+        ↓
+marts
+        ↓
+Power BI / Metabase
+```
+
+Schemas utilizados:
+
+- `public`: dados operacionais da aplicação;
+- `raw`: cópia técnica incremental dos dados de origem;
+- `staging`: limpeza e padronização;
+- `warehouse`: dimensões e fatos;
+- `marts`: tabelas/views prontas para análise;
+- `monitoring`: controle e observabilidade dos pipelines;
+- `data_quality`: registros rejeitados;
+- `synthetic`: dados fictícios para testes de volume.
+
+### Conceitos implementados
+
+- ETL/ELT;
+- carga incremental com watermark;
+- controle de batches;
+- Data Warehouse;
+- Star Schema;
+- dimensões e fatos;
+- SCD Type 2 com dbt Snapshot;
+- Data Marts;
+- testes de qualidade;
+- observabilidade do pipeline;
+- materialized views;
+- índices;
+- particionamento por data para estudo;
+- dados sintéticos para testes de volume;
+- dbt;
+- Python + psycopg;
+- Prefect;
+- CI de Engenharia de Dados;
+- preparação para Power BI e Metabase.
+
+A implementação está isolada em:
+
+```text
+data-engineering/
+```
+
+Para instruções completas, arquitetura e comandos consulte `data-engineering/README.md`.
+
+> Esta camada também é parte do **projeto de estudos**. Alguns recursos, como particionamento e geração de grandes volumes sintéticos, foram adicionados para aprendizado e simulação de cenários maiores do que a necessidade atual da aplicação.
