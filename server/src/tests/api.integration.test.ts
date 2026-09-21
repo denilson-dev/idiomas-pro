@@ -218,6 +218,108 @@ describe.sequential('API integration', () => {
     expect(removal.status).toBe(404);
   });
 
+
+  it('restringe a gestão de contas ao administrador', async () => {
+    const forbidden = await request(app)
+      .get('/api/teacher/admin/accounts')
+      .set('x-teacher-token', teacherToken);
+
+    expect(forbidden.status).toBe(403);
+
+    const admin = await prisma.teacher.create({
+      data: {
+        name: 'Administrador Integração',
+        email: 'admin.integration@example.com',
+        passwordHash: randomUUID(),
+        role: 'ADMIN',
+      },
+    });
+
+    const adminSession = await prisma.teacherSession.create({
+      data: {
+        token: randomUUID(),
+        teacherId: admin.id,
+        expiresAt: new Date(Date.now() + 60 * 60 * 1000),
+      },
+    });
+
+    const list = await request(app)
+      .get('/api/teacher/admin/accounts')
+      .set('x-teacher-token', adminSession.token);
+
+    expect(list.status).toBe(200);
+    expect(list.body.currentAdminId).toBe(admin.id);
+    expect(list.body.teachers).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: admin.id,
+          role: 'ADMIN',
+        }),
+      ]),
+    );
+
+    const createdUser = await request(app)
+      .post('/api/teacher/admin/users')
+      .set('x-teacher-token', adminSession.token)
+      .send({
+        name: 'Usuário Gerenciado',
+        email: 'managed.user@example.com',
+        password: 'Senha123!',
+      });
+
+    expect(createdUser.status).toBe(201);
+
+    const updatedUser = await request(app)
+      .patch(`/api/teacher/admin/users/${createdUser.body.user.id}`)
+      .set('x-teacher-token', adminSession.token)
+      .send({ name: 'Usuário Atualizado' });
+
+    expect(updatedUser.status).toBe(200);
+    expect(updatedUser.body.user.name).toBe('Usuário Atualizado');
+
+    const createdTeacher = await request(app)
+      .post('/api/teacher/admin/teachers')
+      .set('x-teacher-token', adminSession.token)
+      .send({
+        name: 'Professor Gerenciado',
+        email: 'managed.teacher@example.com',
+        password: 'Senha123!',
+      });
+
+    expect(createdTeacher.status).toBe(201);
+    expect(createdTeacher.body.teacher.role).toBe('TEACHER');
+
+    const disabledTeacher = await request(app)
+      .patch(`/api/teacher/admin/teachers/${createdTeacher.body.teacher.id}`)
+      .set('x-teacher-token', adminSession.token)
+      .send({ isActive: false });
+
+    expect(disabledTeacher.status).toBe(200);
+    expect(disabledTeacher.body.teacher.isActive).toBe(false);
+
+    const cannotDeleteSelf = await request(app)
+      .delete(`/api/teacher/admin/teachers/${admin.id}`)
+      .set('x-teacher-token', adminSession.token);
+
+    expect(cannotDeleteSelf.status).toBe(400);
+
+    expect(
+      (
+        await request(app)
+          .delete(`/api/teacher/admin/users/${createdUser.body.user.id}`)
+          .set('x-teacher-token', adminSession.token)
+      ).status,
+    ).toBe(204);
+
+    expect(
+      (
+        await request(app)
+          .delete(`/api/teacher/admin/teachers/${createdTeacher.body.teacher.id}`)
+          .set('x-teacher-token', adminSession.token)
+      ).status,
+    ).toBe(204);
+  });
+
   it('permite excluir uma prova individual', async () => {
     const response = await request(app)
       .delete(`/api/teacher/attempts/${attemptId}`)
