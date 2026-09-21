@@ -142,7 +142,9 @@ export function PublicHeader({
   backLabel?: string;
 }) {
   return (
-    <header className="topbar product-public-header">
+    <header
+      className={`topbar product-public-header ${backTo ? 'product-public-header--with-back' : 'product-public-header--home'}`}
+    >
       <div className="product-public-header__side">
         {backTo ? (
           <Link to={backTo} className="text-action" aria-label={backLabel}>
