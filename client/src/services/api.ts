@@ -3,7 +3,7 @@ const API_URL =
     ? (import.meta.env.VITE_API_URL ?? 'http://localhost:3333/api')
     : '/api';
 
-export type User = { id: string; name: string; email: string };
+export type User = { id: string; name: string; email: string; isActive?: boolean };
 export type Teacher = { id: string; name: string; email: string; role: 'TEACHER' | 'ADMIN' };
 export type TeacherOption = { id: string; name: string };
 
@@ -11,6 +11,8 @@ export type AdminUser = {
   id: string;
   name: string;
   email: string;
+  isActive: boolean;
+  assessmentCount: number;
   createdAt: string;
   updatedAt: string;
 };
@@ -21,12 +23,20 @@ export type AdminTeacher = {
   email: string;
   role: 'TEACHER' | 'ADMIN';
   isActive: boolean;
+  assessmentCount: number;
   createdAt: string;
   updatedAt: string;
 };
 
 export type AdminAccounts = {
   currentAdminId: string;
+  summary: {
+    students: number;
+    activeStudents: number;
+    teachers: number;
+    activeTeachers: number;
+    administrators: number;
+  };
   users: AdminUser[];
   teachers: AdminTeacher[];
 };
@@ -231,7 +241,10 @@ export const api = {
   getAdminAccounts: (token: string) =>
     request<AdminAccounts>('/teacher/admin/accounts', {}, token, 'x-teacher-token'),
 
-  adminCreateUser: (token: string, payload: { name: string; email: string; password: string }) =>
+  adminCreateUser: (
+    token: string,
+    payload: { name: string; email: string; password: string; isActive?: boolean },
+  ) =>
     request<{ user: AdminUser }>(
       '/teacher/admin/users',
       { method: 'POST', body: JSON.stringify(payload) },
@@ -241,7 +254,7 @@ export const api = {
   adminUpdateUser: (
     token: string,
     userId: string,
-    payload: { name?: string; email?: string; password?: string },
+    payload: { name?: string; email?: string; password?: string; isActive?: boolean },
   ) =>
     request<{ user: AdminUser }>(
       `/teacher/admin/users/${userId}`,
