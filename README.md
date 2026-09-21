@@ -388,6 +388,12 @@ A tabela abaixo explica de forma simples o papel de cada tecnologia.
 | GitHub Actions | Pipeline automatizada de testes e build |
 | Vercel | Ambiente estudado para deploy |
 | Render | Ambiente estudado para deploy full stack |
+| Python | Pipeline incremental de dados |
+| psycopg | Comunicação do pipeline com PostgreSQL |
+| dbt | Estudos de transformação, testes e lineage |
+| Apache Airflow | Orquestração do pipeline analítico |
+| Faker | Geração de dados sintéticos para testes de volume |
+| Metabase / Power BI | Consumo dos data marts |
 
 ---
 
@@ -633,12 +639,22 @@ idiomas-pro/
 │
 ├── e2e/
 │
+├── data-engineering/
+│   ├── airflow/
+│   ├── dbt/
+│   ├── sql/
+│   ├── synthetic/
+│   ├── pipeline.py
+│   ├── requirements.txt
+│   └── README.md
+│
 ├── .github/
 │   └── workflows/
 │       └── ci.yml
 │
 ├── api/
 ├── docker-compose.yml
+├── docker-compose.analytics.yml
 ├── playwright.config.ts
 ├── render.yaml
 ├── vercel.json
@@ -852,6 +868,76 @@ O `render.yaml` configura uma aplicação Node.js com PostgreSQL.
 O `vercel.json` contém a configuração utilizada durante os estudos de deploy serverless/full stack.
 
 Esses arquivos permanecem no repositório porque fazem parte do histórico de aprendizado do projeto.
+
+---
+
+# 🏭 Engenharia de Dados com PostgreSQL
+
+O projeto também possui uma camada de Engenharia de Dados criada para estudar o ciclo completo do dado.
+
+A aplicação continua utilizando o schema `public` como banco transacional. A partir dele, um pipeline incremental em Python leva os dados para uma arquitetura analítica dentro do PostgreSQL:
+
+```text
+Aplicação
+   ↓
+PostgreSQL / public (OLTP)
+   ↓
+Pipeline Python incremental
+   ↓
+raw
+   ↓
+staging
+   ↓
+warehouse
+   ↓
+marts
+   ↓
+Power BI / Metabase
+```
+
+A implementação está em:
+
+```text
+data-engineering/
+```
+
+Foram adicionados:
+
+- controle de cargas e watermarks em `meta`;
+- ingestão incremental;
+- camada `raw`;
+- camada `staging`;
+- anonimização de e-mails para uso analítico;
+- Data Warehouse em modelo dimensional;
+- dimensões de aluno, professor, questão, data, idioma e nível CEFR;
+- fatos de avaliações e respostas;
+- SCD Type 2 para histórico de professores;
+- data marts com materialized views;
+- testes de qualidade de dados;
+- armazenamento de registros rejeitados;
+- observabilidade em `meta.pipeline_runs`;
+- gerador de dados sintéticos para testes de volume;
+- índices para estudos de performance;
+- exemplos com `EXPLAIN ANALYZE`;
+- projeto dbt;
+- DAG de Apache Airflow;
+- serviço opcional do Metabase via Docker Compose;
+- validação do pipeline no GitHub Actions.
+
+Comandos principais:
+
+```bash
+npm run data:init
+npm run data:extract
+npm run data:transform
+npm run data:quality
+npm run data:run
+npm run data:synthetic
+```
+
+A documentação completa está em `data-engineering/README.md`.
+
+> Os dados gerados pelo script sintético são identificados como `source_system = 'synthetic'` e existem somente para estudo de volume e performance. Eles não representam alunos ou avaliações reais.
 
 ---
 
