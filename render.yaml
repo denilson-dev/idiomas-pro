@@ -4,8 +4,7 @@ services:
     runtime: node
     plan: free
     region: virginia
-    buildCommand: npm install --include=dev && npm run build:render
-    preDeployCommand: npm run admin:ensure && npm run db:seed
+    buildCommand: npm install --include=dev && npm run build:render && npm run admin:ensure && npm run db:seed
     startCommand: npm start
     healthCheckPath: /api/health
     autoDeployTrigger: commit
