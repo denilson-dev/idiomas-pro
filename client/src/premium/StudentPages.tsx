@@ -415,10 +415,34 @@ export function StudentProfile() {
 
   async function togglePreference(key: keyof AccountPreferences) {
     const next = { ...preferences, [key]: !preferences[key] };
+
+    if (key === 'notifications' && next.notifications) {
+      if (!('Notification' in window)) {
+        setTone('error');
+        setMessage('Este navegador não oferece suporte a notificações.');
+        return;
+      }
+
+      const permission = await Notification.requestPermission();
+      if (permission !== 'granted') {
+        setPreferences((current) => ({ ...current, notifications: false }));
+        await api.updatePreferences(token!, { notifications: false }).catch(() => undefined);
+        setTone('error');
+        setMessage('Permissão de notificações não foi concedida.');
+        return;
+      }
+
+      new Notification('Idiomas Pro', {
+        body: 'Notificações ativadas. Sua preferência foi salva.',
+      });
+    }
+
     setPreferences(next);
     try {
       const response = await api.updatePreferences(token!, { [key]: next[key] });
       setPreferences((current) => ({ ...current, ...response.preferences }));
+      setTone('success');
+      setMessage('Preferência atualizada.');
     } catch (error) {
       setTone('error');
       setMessage(error instanceof Error ? error.message : 'Não foi possível salvar a preferência.');
@@ -499,8 +523,8 @@ export function StudentProfile() {
             <div>
               <Bell size={19} />
               <span>
-                <b>Notificações de progresso</b>
-                <small>Salva sua preferência para lembretes e novidades.</small>
+                <b>Notificações do navegador</b>
+                <small>Solicita permissão real e salva sua preferência.</small>
               </span>
             </div>
             <button
