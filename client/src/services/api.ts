@@ -19,7 +19,7 @@ export type User = {
   preferences?: AccountPreferences;
 };
 export type Teacher = { id: string; name: string; email: string; role: 'TEACHER' | 'ADMIN' };
-export type TeacherOption = { id: string; name: string };
+export type TeacherOption = { id: string; name: string; role: 'TEACHER' };
 
 export type AdminUser = {
   id: string;
