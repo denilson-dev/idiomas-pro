@@ -30,7 +30,7 @@
     "data:quality": "python data-engineering/pipeline.py quality",
     "data:run": "python data-engineering/pipeline.py run-all",
     "data:synthetic": "python data-engineering/synthetic/generate.py",
-    "admin:ensure": "npm run db:generate && tsx scripts/ensure-admin.ts"
+    "admin:ensure": "npm run db:deploy && npm run db:generate && tsx scripts/ensure-admin.ts"
   },
   "devDependencies": {
     "@playwright/test": "^1.55.0",
