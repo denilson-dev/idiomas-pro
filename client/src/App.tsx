@@ -74,6 +74,48 @@ function StudentGate({ children }: { children: ReactNode }) {
   return children;
 }
 
+function StaffGate({ children }: { children: ReactNode }) {
+  const teacherToken = useAppStore((state) => state.teacherToken);
+  const setTeacherSession = useAppStore((state) => state.setTeacherSession);
+  const clearTeacherSession = useAppStore((state) => state.clearTeacherSession);
+  const [status, setStatus] = useState<'checking' | 'valid' | 'invalid'>(
+    teacherToken ? 'checking' : 'invalid',
+  );
+
+  useEffect(() => {
+    let active = true;
+
+    if (!teacherToken) {
+      setStatus('invalid');
+      return () => {
+        active = false;
+      };
+    }
+
+    setStatus('checking');
+    api
+      .teacherMe(teacherToken)
+      .then(({ teacher }) => {
+        if (!active) return;
+        setTeacherSession(teacherToken, teacher);
+        setStatus('valid');
+      })
+      .catch(() => {
+        if (!active) return;
+        clearTeacherSession();
+        setStatus('invalid');
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [teacherToken, setTeacherSession, clearTeacherSession]);
+
+  if (!teacherToken || status === 'invalid') return <Navigate to="/professor" replace />;
+  if (status === 'checking') return <RouteLoading />;
+  return children;
+}
+
 function TeacherGate({ children }: { children: ReactNode }) {
   const teacherToken = useAppStore((state) => state.teacherToken);
   const setTeacherSession = useAppStore((state) => state.setTeacherSession);
@@ -244,9 +286,9 @@ export default function App() {
         <Route
           path="/professor/settings"
           element={
-            <TeacherGate>
+            <StaffGate>
               <TeacherSettings />
-            </TeacherGate>
+            </StaffGate>
           }
         />
         <Route
