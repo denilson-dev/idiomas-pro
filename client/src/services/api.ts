@@ -200,6 +200,8 @@ export const api = {
     request<SessionResponse>('/auth/register', { method: 'POST', body: JSON.stringify(payload) }),
   login: (payload: { email: string; password: string }) =>
     request<SessionResponse>('/auth/login', { method: 'POST', body: JSON.stringify(payload) }),
+  me: (token: string) =>
+    request<{ user: User | null; expiresAt: string }>('/auth/me', {}, token),
   logout: (token: string) => request<void>('/auth/logout', { method: 'POST' }, token),
   updateProfile: (token: string, payload: { name: string; email: string }) =>
     request<{ user: User }>('/auth/profile', { method: 'PATCH', body: JSON.stringify(payload) }, token),
@@ -236,6 +238,13 @@ export const api = {
     request<TeacherSessionResponse>('/teacher/auth/bootstrap', { method: 'POST', body: JSON.stringify(payload) }),
   teacherLogin: (payload: { email: string; password: string }) =>
     request<TeacherSessionResponse>('/teacher/auth/login', { method: 'POST', body: JSON.stringify(payload) }),
+  teacherMe: (token: string) =>
+    request<{ teacher: Teacher; expiresAt: string }>(
+      '/teacher/auth/me',
+      {},
+      token,
+      'x-teacher-token',
+    ),
   teacherLogout: (token: string) =>
     request<void>('/teacher/auth/logout', { method: 'POST' }, token, 'x-teacher-token'),
   updateTeacherProfile: (token: string, payload: { name: string; email: string }) =>
