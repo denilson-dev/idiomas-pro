@@ -1,3 +1,12 @@
+import {
+  adminAccounts,
+  adminCreateTeacher,
+  adminCreateUser,
+  adminDeleteTeacher,
+  adminDeleteUser,
+  adminUpdateTeacher,
+  adminUpdateUser,
+} from '../controllers/adminController.js';
 import { Router } from 'express';
 import { createAnonymousSession, login, logout, me, register } from '../controllers/authController.js';
 import { getHistory, getResult } from '../controllers/resultController.js';
@@ -37,6 +46,14 @@ router.delete('/teacher/attempts', clearTeacherAttempts);
 router.get('/teacher/attempts/:attemptId', teacherAttemptDetail);
 router.patch('/teacher/attempts/:attemptId', updateTeacherAttempt);
 router.delete('/teacher/attempts/:attemptId', deleteTeacherAttempt);
+
+router.get('/teacher/admin/accounts', adminAccounts);
+router.post('/teacher/admin/users', adminCreateUser);
+router.patch('/teacher/admin/users/:userId', adminUpdateUser);
+router.delete('/teacher/admin/users/:userId', adminDeleteUser);
+router.post('/teacher/admin/teachers', adminCreateTeacher);
+router.patch('/teacher/admin/teachers/:teacherId', adminUpdateTeacher);
+router.delete('/teacher/admin/teachers/:teacherId', adminDeleteTeacher);
 
 router.post('/test/start', startTest);
 router.post('/test/:attemptId/submit', submitTest);
