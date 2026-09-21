@@ -1,0 +1,12 @@
+idiomas_pro_analytics:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: localhost
+      port: 5432
+      user: postgres
+      password: postgres
+      dbname: idiomas_pro
+      schema: analytics
+      threads: 4
