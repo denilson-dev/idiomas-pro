@@ -9,9 +9,10 @@ import {
   ShieldCheck,
   Sparkles,
 } from 'lucide-react';
-import { Owl } from './Brand';
+import { Brand, Owl } from './Brand';
 import { Button, Field, Pill, Surface, Toast } from './UI';
 import { PublicHeader, StudentFlowHeader } from './Shell';
+import { LanguageMenu } from './LanguageMenu';
 import { api, type TeacherOption } from '../services/api';
 import { useAppStore } from '../store/useAppStore';
 import { clearExamDraft } from './examDraft';
@@ -37,66 +38,88 @@ export function WelcomePage() {
   }
 
   return (
-    <div className="public-page">
-      <PublicHeader />
-      <section className="hero-grid">
-        <div className="hero-copy">
+    <div className="welcome-page">
+      <header className="welcome-header">
+        <Brand />
+        <div className="welcome-header__actions">
+          <span className="welcome-header__note">Nivelamento de idiomas</span>
+          <LanguageMenu />
+        </div>
+      </header>
+
+      <main className="welcome-main">
+        <section className="welcome-copy">
           <Pill tone="purple">
-            <BookOpen size={14} /> Teste de nivelamento
+            <BookOpen size={14} /> Avaliação de nivelamento
           </Pill>
+
           <h1>
-            <span>Descubra seu</span>
-            <span className="accent-teal">próximo nível</span>
+            Descubra seu nível.
+            <span>Entenda o próximo passo.</span>
           </h1>
-          <p>
-            Uma experiência moderna e acolhedora para descobrir seu nível, entender seu desempenho
-            e transformar resultado em próximo passo.
+
+          <p className="welcome-lead">
+            Uma avaliação simples de espanhol com gramática, vocabulário e listening para mostrar
+            onde você está e ajudar a organizar o que estudar depois.
           </p>
 
-          <div className="feature-row">
-            <Surface className="feature-card">
-              <ShieldCheck />
-              <b>Resultado na hora</b>
-              <span>Seu nível ao finalizar.</span>
-            </Surface>
-            <Surface className="feature-card">
-              <Headphones />
-              <b>Listening guiado</b>
-              <span>Ouça no seu ritmo.</span>
-            </Surface>
-            <Surface className="feature-card">
-              <Sparkles />
-              <b>A1 até C2</b>
-              <span>Leitura clara do nível.</span>
-            </Surface>
+          <div className="welcome-benefits" aria-label="O que você encontra na avaliação">
+            <div>
+              <ShieldCheck size={19} />
+              <span>
+                <b>Resultado imediato</b>
+                <small>Nível e desempenho ao finalizar.</small>
+              </span>
+            </div>
+            <div>
+              <Headphones size={19} />
+              <span>
+                <b>Listening integrado</b>
+                <small>Áudio dentro da própria avaliação.</small>
+              </span>
+            </div>
+            <div>
+              <Sparkles size={19} />
+              <span>
+                <b>Leitura de A1 a C2</b>
+                <small>Uma referência de estudo, não uma certificação oficial.</small>
+              </span>
+            </div>
           </div>
 
-          <div className="hero-actions">
+          <div className="welcome-actions">
             <Button onClick={startAnonymous} disabled={loading}>
               {loading ? 'Preparando...' : 'Começar avaliação'} <ArrowRight size={18} />
             </Button>
             <Button variant="secondary" onClick={() => navigate('/login')}>
-              <LogIn size={18} /> Entrar na conta
+              <LogIn size={18} /> Entrar como aluno
             </Button>
           </div>
 
-          <Button variant="ghost" className="teacher-link" onClick={() => navigate('/professor')}>
-            <School size={18} /> Área exclusiva do professor
-          </Button>
-        </div>
+          <div className="welcome-staff-entry">
+            <span>Professor ou administrador?</span>
+            <button type="button" onClick={() => navigate('/professor')}>
+              <School size={17} />
+              Acessar área da equipe
+              <ArrowRight size={15} />
+            </button>
+          </div>
+        </section>
 
-        <div className="hero-visual">
-          <div className="hero-glow" />
-          <div className="scribble">Vamos descobrir juntos? ♡</div>
+        <section className="welcome-visual" aria-label="Visão da avaliação">
+          <div className="welcome-visual__halo" />
+          <div className="welcome-visual__levels" aria-hidden="true">
+            <span>A1</span>
+            <span>B1</span>
+            <span>C2</span>
+          </div>
           <Owl mode="celebrate" />
-          <Surface className="level-strip">
-            <b>A1</b>
-            <b>B1</b>
-            <b>C2</b>
-            <span>Seu próximo passo começa aqui.</span>
-          </Surface>
-        </div>
-      </section>
+          <div className="welcome-visual__caption">
+            <strong>Gramática • Vocabulário • Listening</strong>
+            <span>Uma experiência curta, clara e guiada.</span>
+          </div>
+        </section>
+      </main>
 
       {message && <Toast message={message} tone="error" />}
     </div>
