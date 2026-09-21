@@ -1,4 +1,12 @@
 import {
+  studentPreferences,
+  teacherPreferences,
+  updateStudentPassword,
+  updateStudentProfile,
+  updateTeacherPassword,
+  updateTeacherProfile,
+} from '../controllers/profileController.js';
+import {
   adminAccounts,
   adminCreateTeacher,
   adminCreateUser,
@@ -33,6 +41,10 @@ router.post('/auth/register', register);
 router.post('/auth/login', login);
 router.get('/auth/me', me);
 router.post('/auth/logout', logout);
+router.patch('/auth/profile', updateStudentProfile);
+router.patch('/auth/password', updateStudentPassword);
+router.get('/auth/preferences', studentPreferences);
+router.patch('/auth/preferences', studentPreferences);
 
 router.get('/teachers', listTeachers);
 
@@ -41,6 +53,10 @@ router.post('/teacher/auth/bootstrap', bootstrapTeacher);
 router.post('/teacher/auth/login', teacherLogin);
 router.get('/teacher/auth/me', teacherMe);
 router.post('/teacher/auth/logout', teacherLogout);
+router.patch('/teacher/auth/profile', updateTeacherProfile);
+router.patch('/teacher/auth/password', updateTeacherPassword);
+router.get('/teacher/auth/preferences', teacherPreferences);
+router.patch('/teacher/auth/preferences', teacherPreferences);
 router.get('/teacher/dashboard', teacherDashboard);
 router.delete('/teacher/attempts', clearTeacherAttempts);
 router.get('/teacher/attempts/:attemptId', teacherAttemptDetail);
