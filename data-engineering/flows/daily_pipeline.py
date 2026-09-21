@@ -26,7 +26,7 @@ def ingest():
 
 @task
 def dbt_staging():
-    run(["dbt", "run", "--select", "staging", "--project-dir", str(DBT_DIR), "--profiles-dir", str(DBT_DIR)])
+    run(["dbt", "run", "--select", "path:models/staging", "--project-dir", str(DBT_DIR), "--profiles-dir", str(DBT_DIR)])
 
 
 @task
