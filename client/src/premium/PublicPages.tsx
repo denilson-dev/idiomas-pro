@@ -14,6 +14,7 @@ import { Button, Field, Pill, Surface, Toast } from './UI';
 import { PublicHeader } from './Shell';
 import { api, type TeacherOption } from '../services/api';
 import { useAppStore } from '../store/useAppStore';
+import { clearExamDraft } from './examDraft';
 
 export function WelcomePage() {
   const navigate = useNavigate();
@@ -300,6 +301,7 @@ export function SetupPage() {
       return;
     }
 
+    clearExamDraft();
     setTestProfile({
       count: 18,
       studentName: name.trim(),
