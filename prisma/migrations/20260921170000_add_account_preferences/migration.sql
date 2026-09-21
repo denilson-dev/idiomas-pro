@@ -1,0 +1,2 @@
+ALTER TABLE "User" ADD COLUMN "preferences" JSONB NOT NULL DEFAULT '{}';
+ALTER TABLE "Teacher" ADD COLUMN "preferences" JSONB NOT NULL DEFAULT '{}';
