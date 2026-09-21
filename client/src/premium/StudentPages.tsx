@@ -379,8 +379,8 @@ export function StudentProfile() {
 
   async function saveProfile() {
     try {
-      const { user: updated } = await api.updateProfile(token, { name, email });
-      setSession(token, updated);
+      const { user: updated } = await api.updateProfile(token!, { name, email });
+      setSession(token!, updated);
       setTone('success');
       setMessage('Informações pessoais atualizadas.');
     } catch (error) {
@@ -397,7 +397,7 @@ export function StudentProfile() {
     }
 
     try {
-      await api.updatePassword(token, { currentPassword, newPassword });
+      await api.updatePassword(token!, { currentPassword, newPassword });
       setCurrentPassword('');
       setNewPassword('');
       setTone('success');
@@ -412,7 +412,7 @@ export function StudentProfile() {
     const next = { ...preferences, [key]: !preferences[key] };
     setPreferences(next);
     try {
-      const response = await api.updatePreferences(token, { [key]: next[key] });
+      const response = await api.updatePreferences(token!, { [key]: next[key] });
       setPreferences((current) => ({ ...current, ...response.preferences }));
     } catch (error) {
       setTone('error');
@@ -422,7 +422,7 @@ export function StudentProfile() {
 
   async function logout() {
     try {
-      await api.logout(token);
+      await api.logout(token!);
     } catch {
       // local cleanup
     }
