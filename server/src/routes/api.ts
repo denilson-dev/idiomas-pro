@@ -1,4 +1,15 @@
 import {
+  changeStudentPassword,
+  changeTeacherPassword,
+  studentProfile,
+  teacherProfile,
+  updateStudentPreferences,
+  updateStudentProfile,
+  updateTeacherPreferences,
+  updateTeacherProfile,
+} from '../controllers/accountController.js';
+import { exportTeacherCsv, teacherReports } from '../controllers/reportController.js';
+import {
   adminAccounts,
   adminCreateTeacher,
   adminCreateUser,
@@ -33,6 +44,10 @@ router.post('/auth/register', register);
 router.post('/auth/login', login);
 router.get('/auth/me', me);
 router.post('/auth/logout', logout);
+router.get('/auth/profile', studentProfile);
+router.patch('/auth/profile', updateStudentProfile);
+router.patch('/auth/password', changeStudentPassword);
+router.patch('/auth/preferences', updateStudentPreferences);
 
 router.get('/teachers', listTeachers);
 
@@ -41,7 +56,13 @@ router.post('/teacher/auth/bootstrap', bootstrapTeacher);
 router.post('/teacher/auth/login', teacherLogin);
 router.get('/teacher/auth/me', teacherMe);
 router.post('/teacher/auth/logout', teacherLogout);
+router.get('/teacher/profile', teacherProfile);
+router.patch('/teacher/profile', updateTeacherProfile);
+router.patch('/teacher/password', changeTeacherPassword);
+router.patch('/teacher/preferences', updateTeacherPreferences);
 router.get('/teacher/dashboard', teacherDashboard);
+router.get('/teacher/reports', teacherReports);
+router.get('/teacher/export.csv', exportTeacherCsv);
 router.delete('/teacher/attempts', clearTeacherAttempts);
 router.get('/teacher/attempts/:attemptId', teacherAttemptDetail);
 router.patch('/teacher/attempts/:attemptId', updateTeacherAttempt);
