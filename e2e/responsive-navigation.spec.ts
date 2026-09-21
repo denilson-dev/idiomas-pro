@@ -16,6 +16,20 @@ async function expectNoHorizontalOverflow(page: import('@playwright/test').Page)
   expect(sizes.scrollWidth).toBeLessThanOrEqual(sizes.clientWidth + 2);
 }
 
+test('homepage mantém composição, ações e largura corretas em qualquer viewport', async ({ page }) => {
+  await page.goto('/');
+
+  await expect(page.getByText('Descubra seu nível.')).toBeVisible();
+  await expect(page.getByRole('button', { name: /começar avaliação/i })).toBeVisible();
+  await expect(page.getByRole('button', { name: /entrar como aluno/i })).toBeVisible();
+  await expect(page.getByRole('button', { name: /acessar área da equipe/i })).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: 'Idioma da interface: Português do Brasil' }),
+  ).toBeVisible();
+
+  await expectNoHorizontalOverflow(page);
+});
+
 test('fluxo do aluno mantém voltar, sair e idioma em qualquer viewport', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: /começar avaliação/i }).click();
