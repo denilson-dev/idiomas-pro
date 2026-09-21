@@ -127,10 +127,9 @@ export function TeacherLogin() {
   useEffect(() => {
     if (!teacherToken) return;
 
-    api
-      .teacherLogout(teacherToken)
-      .catch(() => undefined)
-      .finally(() => clearTeacherSession());
+    const staleToken = teacherToken;
+    clearTeacherSession();
+    void api.teacherLogout(staleToken).catch(() => undefined);
   }, [teacherToken, clearTeacherSession]);
 
   async function submit(event: FormEvent) {
