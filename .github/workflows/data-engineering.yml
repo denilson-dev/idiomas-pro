@@ -76,7 +76,7 @@ jobs:
         run: python data-engineering/src/ingest.py
 
       - name: Build dbt staging
-        run: dbt run --select staging --project-dir data-engineering/dbt --profiles-dir data-engineering/dbt
+        run: dbt run --select path:models/staging --project-dir data-engineering/dbt --profiles-dir data-engineering/dbt
 
       - name: Update SCD snapshots
         run: dbt snapshot --project-dir data-engineering/dbt --profiles-dir data-engineering/dbt
