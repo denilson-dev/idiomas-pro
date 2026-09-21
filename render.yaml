@@ -5,7 +5,8 @@ services:
     plan: free
     region: virginia
     buildCommand: npm install --include=dev && npm run build:render
-    startCommand: npm run render:start
+    preDeployCommand: npm run admin:ensure && npm run db:seed
+    startCommand: npm start
     healthCheckPath: /api/health
     autoDeployTrigger: commit
     envVars:
