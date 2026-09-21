@@ -1,0 +1,15 @@
+name: idiomas_pro_analytics
+version: '1.0.0'
+config-version: 2
+profile: idiomas_pro_analytics
+model-paths: ["models"]
+clean-targets: ["target", "dbt_packages"]
+
+models:
+  idiomas_pro_analytics:
+    staging:
+      +schema: dbt_staging
+      +materialized: view
+    marts:
+      +schema: dbt_marts
+      +materialized: table
