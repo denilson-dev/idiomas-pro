@@ -216,6 +216,9 @@ export const api = {
 
   getTeachers: () => request<{ teachers: TeacherOption[] }>('/teachers'),
 
+  abandonTest: (token: string, attemptId: string) =>
+    request<void>(`/test/${attemptId}`, { method: 'DELETE' }, token),
+
   startTest: (token: string, payload: Omit<StudentTestProfile, 'teacherName'>) =>
     request<{ attemptId: string; totalQuestions: number; studentName: string; teacher: TeacherOption; questions: Question[] }>(
       '/test/start',
