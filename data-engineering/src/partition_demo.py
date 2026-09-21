@@ -24,7 +24,8 @@ if __name__ == "__main__":
         ).fetchone()
 
         if not bounds or bounds[0] is None:
-            raise SystemExit("warehouse.fact_answer ainda não possui dados.")
+            print("Particionamento ignorado: warehouse.fact_answer ainda não possui dados.")
+            raise SystemExit(0)
 
         start = month_start(bounds[0])
         end = next_month(month_start(bounds[1]))
