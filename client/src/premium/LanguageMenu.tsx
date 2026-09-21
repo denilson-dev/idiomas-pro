@@ -23,7 +23,9 @@ export function LanguageMenu() {
         aria-haspopup="menu"
         onClick={() => setOpen((value) => !value)}
       >
-        🇧🇷 PT-BR <ChevronDown size={13} />
+        <span className="language-pill__flag" aria-hidden="true">🇧🇷</span>
+        <span className="language-pill__code">PT-BR</span>
+        <ChevronDown size={13} />
       </button>
 
       {open && (
