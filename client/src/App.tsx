@@ -1,16 +1,30 @@
-import { useEffect } from 'react';
+import { useEffect, type ReactNode } from 'react';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
-import DashboardPage from './pages/DashboardPage';
-import LanguageSelectPage from './pages/LanguageSelectPage';
-import LoginPage from './pages/LoginPage';
-import ResultPage from './pages/ResultPage';
-import StudentSetupPage from './pages/StudentSetupPage';
-import TeacherAdminPage from './pages/TeacherAdminPage';
-import TeacherDashboardPage from './pages/TeacherDashboardPage';
-import TeacherLoginPage from './pages/TeacherLoginPage';
-import TeacherStudentDetailPage from './pages/TeacherStudentDetailPage';
-import TestPage from './pages/TestPage';
-import WelcomePage from './pages/WelcomePage';
+import {
+  AuthPage,
+  LanguagePage,
+  SetupPage,
+  WelcomePage,
+} from './pages/PremiumPublicPages';
+import { ReviewPage, TestPage } from './pages/PremiumTestPages';
+import {
+  HelpPage,
+  ResultPage,
+  StudentDashboard,
+  StudentHistory,
+  StudentProfile,
+} from './pages/PremiumStudentPages';
+import {
+  TeacherAssessments,
+  TeacherDashboard,
+  TeacherLogin,
+  TeacherReports,
+  TeacherSettings,
+  TeacherStudentDetail,
+  TeacherStudents,
+} from './pages/PremiumTeacherPages';
+import { AdminPage } from './pages/PremiumAdminPage';
+import { useAppStore } from './store/useAppStore';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -22,23 +36,52 @@ function ScrollToTop() {
   return null;
 }
 
+function SessionGate({ children }: { children: ReactNode }) {
+  const token = useAppStore((state) => state.token);
+  return token ? children : <Navigate to="/" replace />;
+}
+
+function TeacherGate({ children }: { children: ReactNode }) {
+  const token = useAppStore((state) => state.teacherToken);
+  return token ? children : <Navigate to="/professor" replace />;
+}
+
+function AdminGate({ children }: { children: ReactNode }) {
+  const token = useAppStore((state) => state.teacherToken);
+  const teacher = useAppStore((state) => state.teacher);
+
+  if (!token) return <Navigate to="/professor" replace />;
+  if (teacher?.role !== 'ADMIN') return <Navigate to="/professor/painel" replace />;
+  return children;
+}
+
 export default function App() {
   return (
     <>
       <ScrollToTop />
       <Routes>
         <Route path="/" element={<WelcomePage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/language" element={<LanguageSelectPage />} />
-        <Route path="/setup" element={<StudentSetupPage />} />
-        <Route path="/test" element={<TestPage />} />
-        <Route path="/result/:attemptId" element={<ResultPage />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/login" element={<AuthPage />} />
 
-        <Route path="/professor" element={<TeacherLoginPage />} />
-        <Route path="/professor/painel" element={<TeacherDashboardPage />} />
-        <Route path="/professor/administracao" element={<TeacherAdminPage />} />
-        <Route path="/professor/aluno/:attemptId" element={<TeacherStudentDetailPage />} />
+        <Route path="/language" element={<SessionGate><LanguagePage /></SessionGate>} />
+        <Route path="/setup" element={<SessionGate><SetupPage /></SessionGate>} />
+        <Route path="/test" element={<SessionGate><TestPage /></SessionGate>} />
+        <Route path="/review" element={<SessionGate><ReviewPage /></SessionGate>} />
+        <Route path="/result/:attemptId" element={<SessionGate><ResultPage /></SessionGate>} />
+
+        <Route path="/dashboard" element={<SessionGate><StudentDashboard /></SessionGate>} />
+        <Route path="/student/history" element={<SessionGate><StudentHistory /></SessionGate>} />
+        <Route path="/student/profile" element={<SessionGate><StudentProfile /></SessionGate>} />
+        <Route path="/help" element={<SessionGate><HelpPage /></SessionGate>} />
+
+        <Route path="/professor" element={<TeacherLogin />} />
+        <Route path="/professor/painel" element={<TeacherGate><TeacherDashboard /></TeacherGate>} />
+        <Route path="/professor/alunos" element={<TeacherGate><TeacherStudents /></TeacherGate>} />
+        <Route path="/professor/avaliacoes" element={<TeacherGate><TeacherAssessments /></TeacherGate>} />
+        <Route path="/professor/relatorios" element={<TeacherGate><TeacherReports /></TeacherGate>} />
+        <Route path="/professor/settings" element={<TeacherGate><TeacherSettings /></TeacherGate>} />
+        <Route path="/professor/aluno/:attemptId" element={<TeacherGate><TeacherStudentDetail /></TeacherGate>} />
+        <Route path="/professor/administracao" element={<AdminGate><AdminPage /></AdminGate>} />
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
