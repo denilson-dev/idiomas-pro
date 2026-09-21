@@ -321,6 +321,7 @@ export function Workspace({
                 key={item.to}
                 to={item.to}
                 className={`product-navigation__item ${active ? 'is-active' : ''}`}
+                aria-label={item.label}
                 aria-current={active ? 'page' : undefined}
               >
                 <Icon size={18} />
