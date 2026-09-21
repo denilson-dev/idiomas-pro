@@ -53,6 +53,7 @@ model User {
 model Session {
   id          String        @id @default(uuid())
   token       String        @unique
+  clientId    String?
   userId      String?
   isAnonymous Boolean       @default(true)
   expiresAt   DateTime
@@ -61,6 +62,7 @@ model Session {
   attempts    TestAttempt[]
 
   @@index([token])
+  @@index([clientId])
   @@index([userId])
 }
 
@@ -83,12 +85,14 @@ model Teacher {
 model TeacherSession {
   id        String   @id @default(uuid())
   token     String   @unique
+  clientId  String?
   teacherId String
   expiresAt DateTime
   createdAt DateTime @default(now())
   teacher   Teacher  @relation(fields: [teacherId], references: [id], onDelete: Cascade)
 
   @@index([token])
+  @@index([clientId])
   @@index([teacherId])
 }
 

@@ -2,6 +2,29 @@ const API_URL =
   import.meta.env.VITE_API_URL ??
   (import.meta.env.MODE === 'development' ? 'http://localhost:3333/api' : '/api');
 
+const CLIENT_ID_STORAGE_KEY = 'idiomas-pro-client-id';
+let memoryClientId: string | null = null;
+
+function getClientId() {
+  if (memoryClientId) return memoryClientId;
+
+  try {
+    const existing = window.localStorage.getItem(CLIENT_ID_STORAGE_KEY);
+    if (existing) {
+      memoryClientId = existing;
+      return existing;
+    }
+
+    const created = crypto.randomUUID();
+    window.localStorage.setItem(CLIENT_ID_STORAGE_KEY, created);
+    memoryClientId = created;
+    return created;
+  } catch {
+    memoryClientId = memoryClientId ?? crypto.randomUUID();
+    return memoryClientId;
+  }
+}
+
 export type AccountPreferences = {
   notifications?: boolean;
   compactTables?: boolean;
@@ -166,6 +189,7 @@ async function request<T>(
     ...options,
     headers: {
       'Content-Type': 'application/json',
+      'x-client-id': getClientId(),
       ...(token ? { [tokenHeader]: token } : {}),
       ...(options.headers ?? {}),
     },

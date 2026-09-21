@@ -33,7 +33,7 @@ function requestBody(req: Req) {
 function forwardedHeaders(req: Req) {
   const headers = new Headers();
 
-  for (const name of ['content-type', 'accept', 'x-session-token', 'x-teacher-token']) {
+  for (const name of ['content-type', 'accept', 'x-session-token', 'x-teacher-token', 'x-client-id']) {
     const value = req.headers[name];
     if (typeof value === 'string') headers.set(name, value);
   }

@@ -105,8 +105,9 @@ function printReport(detail: TeacherAttemptDetail) {
 export function TeacherLogin() {
   const navigate = useNavigate();
   const setTeacherSession = useAppStore((state) => state.setTeacherSession);
+  const clearTeacherSession = useAppStore((state) => state.clearTeacherSession);
+  const clearSession = useAppStore((state) => state.clearSession);
   const teacherToken = useAppStore((state) => state.teacherToken);
-  const teacher = useAppStore((state) => state.teacher);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -123,14 +124,13 @@ export function TeacherLogin() {
       .catch(() => undefined);
   }, []);
 
-  if (teacherToken && teacher) {
-    return (
-      <Navigate
-        to={teacher.role === 'ADMIN' ? '/professor/administracao' : '/professor/painel'}
-        replace
-      />
-    );
-  }
+  useEffect(() => {
+    if (!teacherToken) return;
+
+    const staleToken = teacherToken;
+    clearTeacherSession();
+    void api.teacherLogout(staleToken).catch(() => undefined);
+  }, [teacherToken, clearTeacherSession]);
 
   async function submit(event: FormEvent) {
     event.preventDefault();
@@ -142,6 +142,7 @@ export function TeacherLogin() {
         ? await api.bootstrapTeacher({ name: bootstrapName, email, password })
         : await api.teacherLogin({ email, password });
 
+      clearSession();
       setTeacherSession(session.token, session.teacher);
       navigate(
         session.teacher.role === 'ADMIN' ? '/professor/administracao' : '/professor/painel',

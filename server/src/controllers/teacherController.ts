@@ -4,6 +4,7 @@ import bcrypt from 'bcryptjs';
 import { z } from 'zod';
 import { prisma } from '../lib/prisma.js';
 import { getTeacherSessionFromRequest } from '../lib/teacherSession.js';
+import { requireClientId } from '../lib/clientIdentity.js';
 
 const credentialsSchema = z.object({
   email: z.string().email().transform((value) => value.trim().toLowerCase()),
@@ -66,6 +67,11 @@ export async function teacherBootstrapStatus(_req: Request, res: Response) {
 }
 
 export async function bootstrapTeacher(req: Request, res: Response) {
+  const clientId = requireClientId(req);
+  if (!clientId) {
+    return res.status(400).json({ message: 'Identificação segura do navegador ausente.' });
+  }
+
   const parsed = bootstrapSchema.safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({ message: 'Dados inválidos.', issues: parsed.error.flatten() });
@@ -88,6 +94,7 @@ export async function bootstrapTeacher(req: Request, res: Response) {
   const session = await prisma.teacherSession.create({
     data: {
       token: randomUUID(),
+      clientId,
       teacherId: teacher.id,
       expiresAt: expiry(),
     },
@@ -101,6 +108,11 @@ export async function bootstrapTeacher(req: Request, res: Response) {
 }
 
 export async function teacherLogin(req: Request, res: Response) {
+  const clientId = requireClientId(req);
+  if (!clientId) {
+    return res.status(400).json({ message: 'Identificação segura do navegador ausente.' });
+  }
+
   const parsed = credentialsSchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ message: 'E-mail ou senha inválidos.' });
 
@@ -112,6 +124,7 @@ export async function teacherLogin(req: Request, res: Response) {
   const session = await prisma.teacherSession.create({
     data: {
       token: randomUUID(),
+      clientId,
       teacherId: teacher.id,
       expiresAt: expiry(),
     },
@@ -141,7 +154,12 @@ export async function teacherMe(req: Request, res: Response) {
 
 export async function teacherLogout(req: Request, res: Response) {
   const token = req.header('x-teacher-token');
-  if (token) await prisma.teacherSession.deleteMany({ where: { token } });
+  const clientId = requireClientId(req);
+
+  if (token && clientId) {
+    await prisma.teacherSession.deleteMany({ where: { token, clientId } });
+  }
+
   return res.status(204).send();
 }
 
