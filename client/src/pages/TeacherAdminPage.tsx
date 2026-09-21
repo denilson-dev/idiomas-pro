@@ -13,7 +13,7 @@ import {
   UsersRound,
   X,
 } from 'lucide-react';
-import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import { FormEvent, type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import BrandHeader from '../components/BrandHeader';
 import {
@@ -653,7 +653,7 @@ function ActionButton({
   danger = false,
   disabled = false,
 }: {
-  icon: React.ReactNode;
+  icon: ReactNode;
   label: string;
   onClick: () => void;
   danger?: boolean;
