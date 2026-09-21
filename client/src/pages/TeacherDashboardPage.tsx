@@ -218,6 +218,32 @@ export default function TeacherDashboardPage() {
           </p>
         </section>
 
+        {data.teacher.role === 'ADMIN' && (
+          <section className="mt-5 rounded-[1.5rem] border border-[#cbeee7] bg-[#effbf8]/90 p-4 sm:mt-6 sm:p-5">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-start gap-3">
+                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white text-[#008f81] shadow-sm">
+                  <ShieldCheck size={21}/>
+                </span>
+                <div>
+                  <p className="text-xs font-black uppercase tracking-[.14em] text-[#008f81]">Acesso administrativo</p>
+                  <h2 className="mt-1 text-lg font-black text-[#2b0d71] sm:text-xl">Gerenciar alunos e professores</h2>
+                  <p className="mt-1 text-xs leading-5 text-[#7656a7] sm:text-sm">
+                    Cadastre contas, edite nome e e-mail, redefina senhas, ative, desative ou exclua usuários.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => navigate('/professor/administracao')}
+                className="primary-cta min-h-11 shrink-0 rounded-2xl px-5 text-sm font-black"
+              >
+                Abrir administração
+              </button>
+            </div>
+          </section>
+        )}
+
         <section className="mt-5 grid grid-cols-2 gap-2.5 sm:mt-6 sm:gap-3 lg:grid-cols-4">
           {[
             { Icon: BookOpenCheck, label: 'Avaliações', value: data.metrics.totalAssessments, className: 'bg-[#fff0f4] text-[#ff2d5f]' },
