@@ -338,7 +338,7 @@ export function TeacherDashboard() {
     if (!confirmed) return;
 
     try {
-      const result = await api.clearTeacherAttempts(teacherToken);
+      const result = await api.clearTeacherAttempts(teacherToken!);
       await reloadDashboard();
       setMessageTone('success');
       setMessage(result.message);
