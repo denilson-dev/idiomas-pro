@@ -31,7 +31,7 @@ function firstParam(value: string | string[] | undefined) {
 
 export async function listTeachers(_req: Request, res: Response) {
   const teachers = await prisma.teacher.findMany({
-    where: { isActive: true },
+    where: { isActive: true, role: 'TEACHER' },
     orderBy: { name: 'asc' },
     select: { id: true, name: true },
   });
