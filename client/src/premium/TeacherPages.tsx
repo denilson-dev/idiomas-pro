@@ -105,6 +105,7 @@ function printReport(detail: TeacherAttemptDetail) {
 export function TeacherLogin() {
   const navigate = useNavigate();
   const setTeacherSession = useAppStore((state) => state.setTeacherSession);
+  const clearTeacherSession = useAppStore((state) => state.clearTeacherSession);
   const teacherToken = useAppStore((state) => state.teacherToken);
   const teacher = useAppStore((state) => state.teacher);
 
@@ -122,15 +123,6 @@ export function TeacherLogin() {
       .then(({ canCreateFirstTeacher }) => setCanBootstrap(canCreateFirstTeacher))
       .catch(() => undefined);
   }, []);
-
-  if (teacherToken && teacher) {
-    return (
-      <Navigate
-        to={teacher.role === 'ADMIN' ? '/professor/administracao' : '/professor/painel'}
-        replace
-      />
-    );
-  }
 
   async function submit(event: FormEvent) {
     event.preventDefault();
@@ -168,6 +160,41 @@ export function TeacherLogin() {
         </div>
 
         <Surface className="auth-card">
+          {teacherToken && teacher ? (
+            <div className="staff-session-resume">
+              <Pill tone={teacher.role === 'ADMIN' ? 'pink' : 'teal'}>
+                Sessão ativa neste navegador
+              </Pill>
+              <h2>{teacher.name}</h2>
+              <p className="muted">
+                Por segurança, esta sessão é válida somente neste navegador. Escolha continuar ou
+                entrar com outra conta.
+              </p>
+              <Button
+                className="full"
+                onClick={() =>
+                  navigate(
+                    teacher.role === 'ADMIN'
+                      ? '/professor/administracao'
+                      : '/professor/painel',
+                  )
+                }
+              >
+                Continuar nesta sessão <ArrowRight size={17} />
+              </Button>
+              <Button
+                variant="secondary"
+                className="full"
+                onClick={() => {
+                  clearTeacherSession();
+                  setMessage('');
+                }}
+              >
+                Entrar com outra conta
+              </Button>
+            </div>
+          ) : (
+            <>
           <h2>{bootstrap ? 'Criar primeiro acesso' : 'Entrar no painel'}</h2>
           <p className="muted">
             {bootstrap
@@ -198,6 +225,8 @@ export function TeacherLogin() {
             >
               {bootstrap ? 'Já tenho acesso' : 'Criar primeiro professor'}
             </Button>
+          )}
+            </>
           )}
         </Surface>
       </section>
