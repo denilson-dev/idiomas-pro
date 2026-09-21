@@ -12,19 +12,30 @@ async function main() {
   const email = (process.env.ADMIN_EMAIL || 'administrador@adm.com').trim().toLowerCase();
   const configuredPassword = process.env.ADMIN_PASSWORD?.trim();
 
-  if (!configuredPassword || configuredPassword.length < 8) {
+  const existing = await prisma.teacher.findUnique({
+    where: { email },
+    select: { id: true, passwordHash: true },
+  });
+
+  if (!configuredPassword && !existing) {
     throw new Error(
-      'ADMIN_PASSWORD precisa estar configurada com pelo menos 8 caracteres.',
+      'ADMIN_PASSWORD precisa estar configurada para criar o primeiro administrador.',
     );
   }
 
-  const passwordHash = await bcrypt.hash(configuredPassword, 12);
+  if (configuredPassword && configuredPassword.length < 8) {
+    throw new Error('ADMIN_PASSWORD precisa ter pelo menos 8 caracteres.');
+  }
+
+  const passwordHash = configuredPassword
+    ? await bcrypt.hash(configuredPassword, 12)
+    : existing!.passwordHash;
 
   const admin = await prisma.teacher.upsert({
     where: { email },
     update: {
       name: 'Administrador',
-      passwordHash,
+      ...(configuredPassword ? { passwordHash } : {}),
       role: TeacherRole.ADMIN,
       isActive: true,
     },
@@ -44,6 +55,12 @@ async function main() {
   });
 
   console.log('Administrador validado com sucesso:', admin);
+
+  if (!configuredPassword) {
+    console.warn(
+      'ADMIN_PASSWORD não configurada: a credencial existente foi preservada sem alteração.',
+    );
+  }
 }
 
 main()
