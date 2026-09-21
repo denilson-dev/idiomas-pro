@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 import { Owl } from './Brand';
 import { Button, Field, Pill, Surface, Toast } from './UI';
-import { PublicHeader } from './Shell';
+import { PublicHeader, StudentFlowHeader } from './Shell';
 import { api, type TeacherOption } from '../services/api';
 import { useAppStore } from '../store/useAppStore';
 import { clearExamDraft } from './examDraft';
@@ -149,7 +149,7 @@ export function AuthPage() {
 
   return (
     <div className="public-page">
-      <PublicHeader />
+      <PublicHeader backTo="/" backLabel="Início" />
       <section className="auth-layout">
         <div className="auth-story">
           <Pill tone="teal">Experiência do aluno</Pill>
@@ -222,7 +222,7 @@ export function LanguagePage() {
 
   return (
     <div className="public-page">
-      <PublicHeader />
+      <StudentFlowHeader backTo="/" backLabel="Início" />
       <section className="page-intro">
         <Pill tone="purple">Etapa 1 de 2</Pill>
         <h1>Qual idioma você quer avaliar?</h1>
@@ -319,7 +319,7 @@ export function SetupPage() {
 
   return (
     <div className="public-page">
-      <PublicHeader />
+      <StudentFlowHeader backTo="/language" backLabel="Idiomas" />
       <section className="page-intro">
         <Pill tone="teal">Etapa 2 de 2</Pill>
         <h1>Antes de começar</h1>
