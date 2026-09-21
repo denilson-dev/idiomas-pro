@@ -106,6 +106,7 @@ export function TeacherLogin() {
   const navigate = useNavigate();
   const setTeacherSession = useAppStore((state) => state.setTeacherSession);
   const clearTeacherSession = useAppStore((state) => state.clearTeacherSession);
+  const clearSession = useAppStore((state) => state.clearSession);
   const teacherToken = useAppStore((state) => state.teacherToken);
 
   const [email, setEmail] = useState('');
@@ -142,6 +143,7 @@ export function TeacherLogin() {
         ? await api.bootstrapTeacher({ name: bootstrapName, email, password })
         : await api.teacherLogin({ email, password });
 
+      clearSession();
       setTeacherSession(session.token, session.teacher);
       navigate(
         session.teacher.role === 'ADMIN' ? '/professor/administracao' : '/professor/painel',
