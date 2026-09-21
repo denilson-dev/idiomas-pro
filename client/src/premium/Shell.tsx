@@ -144,12 +144,7 @@ export function PublicHeader({
   return (
     <header className="topbar product-public-header">
       <div className="product-public-header__side">
-        {onBack ? (
-          <button type="button" className="text-action" onClick={() => void onBack()}>
-            <ArrowLeft size={17} />
-            <span>{backLabel}</span>
-          </button>
-        ) : backTo ? (
+        {backTo ? (
           <Link to={backTo} className="text-action">
             <ArrowLeft size={17} />
             <span>{backLabel}</span>
@@ -204,7 +199,12 @@ export function StudentFlowHeader({
   return (
     <header className="topbar product-public-header">
       <div className="product-public-header__side">
-        {backTo ? (
+        {onBack ? (
+          <button type="button" className="text-action" onClick={() => void onBack()}>
+            <ArrowLeft size={17} />
+            <span>{backLabel}</span>
+          </button>
+        ) : backTo ? (
           <Link to={backTo} className="text-action">
             <ArrowLeft size={17} />
             <span>{backLabel}</span>
