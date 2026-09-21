@@ -123,7 +123,7 @@ export function SetupPage(){
     try{
       setLoading(true);setMessage('');
       const teacher=teachers.find(item=>item.id===teacherId);
-      const response=await api.startTest(token,{
+      const response=await api.startTest(token!,{
         count:18,
         studentName:name.trim(),
         studentEmail:email.trim(),
