@@ -194,6 +194,7 @@ async function request<T>(
 }
 
 export const api = {
+  getListeningAudioUrl: (questionId: string) => `${API_URL}/tts/${questionId}`,
   createAnonymousSession: () => request<SessionResponse>('/auth/anonymous', { method: 'POST' }),
   register: (payload: { name: string; email: string; password: string }) =>
     request<SessionResponse>('/auth/register', { method: 'POST', body: JSON.stringify(payload) }),
