@@ -23,7 +23,13 @@
     "test:api": "vitest run --config vitest.api.config.ts",
     "test:e2e": "npm run build && playwright test",
     "test:all": "npm run test:unit && npm run test:api && npm run test:e2e",
-    "test": "npm run test:unit && npm run test:api"
+    "test": "npm run test:unit && npm run test:api",
+    "data:init": "python data-engineering/pipeline.py init",
+    "data:extract": "python data-engineering/pipeline.py extract",
+    "data:transform": "python data-engineering/pipeline.py transform",
+    "data:quality": "python data-engineering/pipeline.py quality",
+    "data:run": "python data-engineering/pipeline.py run-all",
+    "data:synthetic": "python data-engineering/synthetic/generate.py"
   },
   "devDependencies": {
     "@playwright/test": "^1.55.0",
