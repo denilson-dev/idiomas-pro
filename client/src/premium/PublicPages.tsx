@@ -189,7 +189,7 @@ export function AuthPage() {
             {mode === 'register' && (
               <Field label="Nome completo" value={name} onChange={setName} placeholder="Seu nome" />
             )}
-            <Field label="E-mail" value={email} onChange={setEmail} type="email" />
+            <Field label="E-mail" value={email} onChange={setEmail} type="email" placeholder="seuemail@exemplo.com" />
             <Field label="Senha" value={password} onChange={setPassword} type="password" />
             <Button type="submit" className="full" disabled={loading}>
               {loading ? 'Aguarde...' : mode === 'login' ? 'Entrar na conta' : 'Criar conta'}
@@ -325,7 +325,7 @@ export function SetupPage() {
       <div className="setup-grid">
         <Surface className="form-card">
           <form onSubmit={submit}>
-            <Field label="Seu nome" value={name} onChange={setName} />
+            <Field label="Seu nome" value={name} onChange={setName} placeholder="Digite seu nome completo" />
             <Field label="E-mail" value={email} onChange={setEmail} type="email" />
             <label className="field">
               <span>Professor responsável</span>
