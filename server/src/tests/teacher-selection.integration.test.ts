@@ -68,6 +68,23 @@ describe.sequential('Teacher selection rules', () => {
     );
   });
 
+  it('administrador não acessa o painel pedagógico do professor', async () => {
+    const adminSession = await prisma.teacherSession.create({
+      data: {
+        token: randomUUID(),
+        teacherId: adminId,
+        expiresAt: new Date(Date.now() + 60 * 60 * 1000),
+      },
+    });
+
+    const dashboard = await request(app)
+      .get('/api/teacher/dashboard')
+      .set('x-teacher-token', adminSession.token);
+
+    expect(dashboard.status).toBe(403);
+    expect(dashboard.body.message).toMatch(/exclusiva de professores/i);
+  });
+
   it('recusa administrador mesmo quando o ID é enviado manualmente', async () => {
     const response = await request(app)
       .post('/api/test/start')
