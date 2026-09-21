@@ -98,11 +98,19 @@ export async function startTest(req: Request, res: Response) {
   }
 
   const teacher = await prisma.teacher.findFirst({
-    where: { id: parsed.data.teacherId, isActive: true },
+    where: {
+      id: parsed.data.teacherId,
+      isActive: true,
+      role: 'TEACHER',
+    },
     select: { id: true, name: true },
   });
 
-  if (!teacher) return res.status(400).json({ message: 'Professor selecionado não está disponível.' });
+  if (!teacher) {
+    return res.status(400).json({
+      message: 'Selecione um professor ativo. Contas administrativas não podem receber avaliações.',
+    });
+  }
 
   const questions = await prisma.question.findMany({ where: { isActive: true } });
   if (questions.length < 15) {

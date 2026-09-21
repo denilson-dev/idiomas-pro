@@ -278,7 +278,9 @@ export function SetupPage() {
   useEffect(() => {
     api
       .getTeachers()
-      .then(({ teachers }) => setTeachers(teachers))
+      .then(({ teachers }) =>
+        setTeachers(teachers.filter((teacher) => teacher.role === 'TEACHER')),
+      )
       .catch((error) =>
         setMessage(error instanceof Error ? error.message : 'Não foi possível carregar os professores.'),
       )
@@ -325,7 +327,14 @@ export function SetupPage() {
       </section>
 
       <div className="setup-grid">
-        <Surface className="form-card">
+        <Surface className="form-card setup-form-card">
+          <div className="setup-card-heading">
+            <div>
+              <span>Dados da avaliação</span>
+              <h2>Quem vai realizar o teste?</h2>
+              <p>Preencha seus dados e escolha apenas um professor responsável pela correção e acompanhamento.</p>
+            </div>
+          </div>
           <form onSubmit={submit}>
             <Field label="Seu nome" value={name} onChange={setName} placeholder="Digite seu nome completo" />
             <Field label="E-mail" value={email} onChange={setEmail} type="email" />
@@ -337,7 +346,11 @@ export function SetupPage() {
                 onChange={(event) => setTeacherId(event.target.value)}
               >
                 <option value="">
-                  {loading ? 'Carregando professores...' : 'Selecione um professor'}
+                  {loading
+                    ? 'Carregando professores...'
+                    : teachers.length
+                      ? 'Selecione um professor'
+                      : 'Nenhum professor disponível'}
                 </option>
                 {teachers.map((teacher) => (
                   <option key={teacher.id} value={teacher.id}>
@@ -347,16 +360,28 @@ export function SetupPage() {
               </select>
             </label>
 
-            <Button type="submit" className="full" disabled={loading || teachers.length === 0}>
+            {!loading && teachers.length === 0 && (
+              <div className="setup-warning" role="status">
+                Nenhum professor ativo está disponível no momento. Peça ao administrador para cadastrar ou ativar uma conta de professor.
+              </div>
+            )}
+
+            <Button type="submit" className="full setup-submit" disabled={loading || teachers.length === 0}>
               Começar avaliação <ArrowRight size={18} />
             </Button>
           </form>
         </Surface>
 
         <Surface className="setup-summary">
-          <Owl mode="study" />
-          <h3>Sua avaliação</h3>
-          <dl>
+          <div className="setup-summary__hero">
+            <Owl mode="study" />
+            <div>
+              <span>Resumo</span>
+              <h3>Sua avaliação</h3>
+              <p>Confira os detalhes antes de iniciar.</p>
+            </div>
+          </div>
+          <dl className="setup-facts">
             <div>
               <dt>Idioma</dt>
               <dd>Espanhol</dd>
