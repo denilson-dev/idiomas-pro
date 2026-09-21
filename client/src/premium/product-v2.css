@@ -1373,3 +1373,57 @@ body{
     width:195px;
   }
 }
+
+
+@media (max-width:720px){
+  .product-public-header--home{
+    grid-template-columns:auto 1fr auto;
+  }
+  .product-public-header--home>.product-public-header__side:first-child{
+    display:none;
+  }
+  .product-public-header--home>.brand{
+    grid-column:1;
+    justify-self:start;
+  }
+  .product-public-header--home>.product-public-header__side--end{
+    grid-column:3;
+    display:flex;
+  }
+  .product-public-header--home .language-menu{
+    display:block;
+  }
+  .product-public-header--home .language-pill{
+    width:42px;
+    min-height:40px;
+    padding:0;
+    justify-content:center;
+  }
+  .product-public-header--home .language-pill__code{
+    display:none;
+  }
+
+  .product-public-header--with-back{
+    grid-template-columns:42px 1fr auto;
+  }
+  .product-public-header--with-back>.product-public-header__side:first-child{
+    display:flex;
+    grid-column:1;
+    order:initial;
+  }
+  .product-public-header--with-back>.brand{
+    grid-column:2;
+    justify-self:center;
+    order:initial;
+  }
+  .product-public-header--with-back>.brand>div:last-child{
+    display:none;
+  }
+  .product-public-header--with-back>.product-public-header__side--end{
+    grid-column:3;
+    display:flex;
+  }
+  .product-public-header--with-back .language-menu{
+    display:block;
+  }
+}
