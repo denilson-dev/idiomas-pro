@@ -5,6 +5,7 @@ import LanguageSelectPage from './pages/LanguageSelectPage';
 import LoginPage from './pages/LoginPage';
 import ResultPage from './pages/ResultPage';
 import StudentSetupPage from './pages/StudentSetupPage';
+import TeacherAdminPage from './pages/TeacherAdminPage';
 import TeacherDashboardPage from './pages/TeacherDashboardPage';
 import TeacherLoginPage from './pages/TeacherLoginPage';
 import TeacherStudentDetailPage from './pages/TeacherStudentDetailPage';
@@ -36,6 +37,7 @@ export default function App() {
 
         <Route path="/professor" element={<TeacherLoginPage />} />
         <Route path="/professor/painel" element={<TeacherDashboardPage />} />
+        <Route path="/professor/administracao" element={<TeacherAdminPage />} />
         <Route path="/professor/aluno/:attemptId" element={<TeacherStudentDetailPage />} />
 
         <Route path="*" element={<Navigate to="/" replace />} />

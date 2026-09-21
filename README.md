@@ -349,6 +349,59 @@ O portal do professor permite:
 
 O backend verifica o professor autenticado antes de permitir operações sobre os registros.
 
+## 🛡️ Administrador
+
+O modelo de professores possui dois papéis:
+
+~~~text
+TEACHER
+ADMIN
+~~~
+
+Professores comuns continuam com acesso apenas às funcionalidades pedagógicas vinculadas à própria conta.
+
+O administrador possui uma área exclusiva em:
+
+~~~text
+/professor/administracao
+~~~
+
+Nela é possível:
+
+- cadastrar usuários;
+- editar usuários;
+- redefinir senha de usuários;
+- remover usuários;
+- cadastrar professores;
+- editar professores;
+- redefinir senha de professores;
+- ativar ou desativar professores;
+- remover professores.
+
+O papel `ADMIN` não pode ser atribuído pela interface. A conta administrativa também não pode ser removida nem desativada pela própria tela de administração.
+
+Para garantir a conta administrativa no banco local:
+
+~~~bash
+npm run admin:ensure
+~~~
+
+Em desenvolvimento, quando `ADMIN_PASSWORD` não estiver configurada, o script utiliza:
+
+~~~text
+E-mail: administrador@adm.com
+Senha: admin123
+~~~
+
+Em produção, configure:
+
+~~~env
+ADMIN_EMAIL=administrador@adm.com
+ADMIN_PASSWORD=uma-senha-segura
+~~~
+
+> A senha `admin123` existe apenas como conveniência para o ambiente de estudos. Não utilize essa senha em um ambiente público.
+
 ---
 
 # 🌐 Idiomas
@@ -1252,6 +1305,7 @@ npm run data:run
 | npm run data:quality | Data Quality |
 | npm run data:run | Pipeline analítico completo |
 | npm run data:synthetic | Gera dataset sintético padrão |
+| npm run admin:ensure | Aplica migrations e garante a conta administrativa |
 
 ---
 

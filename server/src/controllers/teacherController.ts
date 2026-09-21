@@ -75,7 +75,7 @@ export async function bootstrapTeacher(req: Request, res: Response) {
   return res.status(201).json({
     token: session.token,
     expiresAt: session.expiresAt,
-    teacher: { id: teacher.id, name: teacher.name, email: teacher.email },
+    teacher: { id: teacher.id, name: teacher.name, email: teacher.email, role: teacher.role },
   });
 }
 
@@ -99,7 +99,7 @@ export async function teacherLogin(req: Request, res: Response) {
   return res.json({
     token: session.token,
     expiresAt: session.expiresAt,
-    teacher: { id: teacher.id, name: teacher.name, email: teacher.email },
+    teacher: { id: teacher.id, name: teacher.name, email: teacher.email, role: teacher.role },
   });
 }
 
@@ -112,6 +112,7 @@ export async function teacherMe(req: Request, res: Response) {
       id: session.teacher.id,
       name: session.teacher.name,
       email: session.teacher.email,
+      role: session.teacher.role,
     },
     expiresAt: session.expiresAt,
   });
@@ -155,7 +156,7 @@ export async function teacherDashboard(req: Request, res: Response) {
   }));
 
   return res.json({
-    teacher: { id: session.teacher.id, name: session.teacher.name, email: session.teacher.email },
+    teacher: { id: session.teacher.id, name: session.teacher.name, email: session.teacher.email, role: session.teacher.role },
     metrics: {
       totalAssessments: attempts.length,
       uniqueStudents,

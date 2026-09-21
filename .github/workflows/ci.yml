@@ -58,6 +58,9 @@ jobs:
       - name: Seed test database
         run: npm run db:seed
 
+      - name: Validate administrator bootstrap
+        run: npm run admin:ensure
+
       - name: Validate data engineering Python
         run: |
           python -m py_compile data-engineering/pipeline.py

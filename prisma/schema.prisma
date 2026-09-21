@@ -32,6 +32,11 @@ enum AttemptStatus {
   COMPLETED
 }
 
+enum TeacherRole {
+  TEACHER
+  ADMIN
+}
+
 model User {
   id           String        @id @default(uuid())
   name         String
@@ -62,6 +67,7 @@ model Teacher {
   name         String
   email        String           @unique
   passwordHash String
+  role         TeacherRole      @default(TEACHER)
   isActive     Boolean          @default(true)
   createdAt    DateTime         @default(now())
   updatedAt    DateTime         @updatedAt
