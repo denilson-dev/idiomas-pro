@@ -82,7 +82,7 @@ export function ReviewPage(){
   if(!token)return <Navigate to="/" replace/>;
   if(!activeTest)return <Navigate to="/setup" replace/>;
 
-  const answered=activeTest.questions.filter(q=>Boolean(activeTest.answers[q.id])).length;
+  const answered=activeTest.questions.filter(q=>Boolean(activeTest!.answers[q.id])).length;
   const pending=activeTest.totalQuestions-answered;
   const progress=Math.round(answered/activeTest.totalQuestions*100);
 
@@ -95,17 +95,17 @@ export function ReviewPage(){
     if(pending>0){setMessage('Responda todas as questões antes de finalizar.');return}
     try{
       setLoading(true);setMessage('');
-      const answers=activeTest.questions.map(question=>({
+      const answers=activeTest!.questions.map(question=>({
         questionId:question.id,
-        selectedAnswer:activeTest.answers[question.id],
+        selectedAnswer:activeTest!.answers[question.id],
       }));
-      const result=await api.submitTest(token,activeTest.attemptId,answers);
-      const id=result.attemptId??activeTest.attemptId;
+      const result=await api.submitTest(token!,activeTest!.attemptId,answers);
+      const id=result.attemptId??activeTest!.attemptId;
       nav('/result/'+id);
       clearActiveTest();
     }catch(err){setMessage(err instanceof Error?err.message:'Não foi possível finalizar a avaliação.')}
     finally{setLoading(false)}
   }
 
-  return <div className="public-page"><PublicHeader/><section className="page-intro"><Pill tone="purple">Revisão</Pill><h1>Revise antes de finalizar</h1><p>Veja rapidamente o que já foi respondido e volte onde quiser antes de enviar a avaliação.</p></section><div className="review-grid"><Surface className="review-map"><h3>Questões</h3><div className="question-map">{activeTest.questions.map((q,i)=>{const isPending=!activeTest.answers[q.id];return <button key={q.id} className={isPending?'pending':''} onClick={()=>goTo(i)}><b>{i+1}</b><span>{isPending?'Pendente':'Respondida'}</span></button>})}</div></Surface><Surface className="review-summary"><h3>Resumo</h3><p><strong>{answered} de {activeTest.totalQuestions} respondidas</strong></p><dl><div><dt>Respondidas</dt><dd>{answered}</dd></div><div><dt>Pendentes</dt><dd>{pending}</dd></div><div><dt>Progresso</dt><dd>{progress}%</dd></div></dl><p>{pending?'Clique em uma questão pendente para voltar diretamente até ela.':'Tudo pronto para finalizar.'}</p><Button disabled={loading||pending>0} className="full" onClick={submit}>{loading?'Enviando...':'Finalizar avaliação'} <CheckCircle2 size={18}/></Button></Surface></div>{message&&<Toast message={message} tone="error"/>}</div>
+  return <div className="public-page"><PublicHeader/><section className="page-intro"><Pill tone="purple">Revisão</Pill><h1>Revise antes de finalizar</h1><p>Veja rapidamente o que já foi respondido e volte onde quiser antes de enviar a avaliação.</p></section><div className="review-grid"><Surface className="review-map"><h3>Questões</h3><div className="question-map">{activeTest!.questions.map((q,i)=>{const isPending=!activeTest!.answers[q.id];return <button key={q.id} className={isPending?'pending':''} onClick={()=>goTo(i)}><b>{i+1}</b><span>{isPending?'Pendente':'Respondida'}</span></button>})}</div></Surface><Surface className="review-summary"><h3>Resumo</h3><p><strong>{answered} de {activeTest.totalQuestions} respondidas</strong></p><dl><div><dt>Respondidas</dt><dd>{answered}</dd></div><div><dt>Pendentes</dt><dd>{pending}</dd></div><div><dt>Progresso</dt><dd>{progress}%</dd></div></dl><p>{pending?'Clique em uma questão pendente para voltar diretamente até ela.':'Tudo pronto para finalizar.'}</p><Button disabled={loading||pending>0} className="full" onClick={submit}>{loading?'Enviando...':'Finalizar avaliação'} <CheckCircle2 size={18}/></Button></Surface></div>{message&&<Toast message={message} tone="error"/>}</div>
 }
