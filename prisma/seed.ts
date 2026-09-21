@@ -1,5 +1,4 @@
 import 'dotenv/config';
-import bcrypt from 'bcryptjs';
 import { PrismaPg } from '@prisma/adapter-pg';
 import {
   CEFRLevel,
@@ -72,27 +71,14 @@ const questions: Prisma.QuestionCreateManyInput[] = [
 ];
 
 async function main() {
-  const demoHash = await bcrypt.hash('Teste123!', 12);
-
-  await prisma.user.upsert({
-    where: { email: 'aluno@idiomaspro.com' },
-    update: { name: 'Aluno Demonstração', passwordHash: demoHash },
-    create: {
-      name: 'Aluno Demonstração',
-      email: 'aluno@idiomaspro.com',
-      passwordHash: demoHash,
-    },
-  });
-
   const count = await prisma.question.count();
+
   if (count === 0) {
     await prisma.question.createMany({ data: questions });
   }
 
   console.log(`Seed concluído. Questões disponíveis: ${await prisma.question.count()}`);
-  console.log('Usuário demo: aluno@idiomaspro.com / Teste123!');
 }
-
 main()
   .catch((error) => {
     console.error(error);

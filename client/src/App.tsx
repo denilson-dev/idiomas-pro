@@ -1,5 +1,6 @@
-import { useEffect, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { api } from './services/api';
 import { useAppStore } from './store/useAppStore';
 import { WelcomePage, AuthPage, LanguagePage, SetupPage } from './premium/PublicPages';
 import { ReviewPage, TestPage } from './premium/TestPages';
@@ -13,34 +14,192 @@ import {
 import { AdminPage } from './premium/AdminPage';
 
 function ScrollToTop() {
-  const { pathname } = useLocation();
+  const { pathname, search } = useLocation();
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-  }, [pathname]);
+  }, [pathname, search]);
 
   return null;
 }
 
+function RouteLoading() {
+  return (
+    <div className="route-loading" role="status" aria-live="polite">
+      <span />
+      <strong>Validando sua sessão...</strong>
+    </div>
+  );
+}
+
 function StudentGate({ children }: { children: ReactNode }) {
   const token = useAppStore((state) => state.token);
-  return token ? children : <Navigate to="/login" replace />;
+  const setSession = useAppStore((state) => state.setSession);
+  const clearSession = useAppStore((state) => state.clearSession);
+  const [status, setStatus] = useState<'checking' | 'valid' | 'invalid'>(
+    token ? 'checking' : 'invalid',
+  );
+
+  useEffect(() => {
+    let active = true;
+
+    if (!token) {
+      setStatus('invalid');
+      return () => {
+        active = false;
+      };
+    }
+
+    setStatus('checking');
+    api
+      .me(token)
+      .then(({ user }) => {
+        if (!active) return;
+        setSession(token, user);
+        setStatus('valid');
+      })
+      .catch(() => {
+        if (!active) return;
+        clearSession();
+        setStatus('invalid');
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [token, setSession, clearSession]);
+
+  if (!token || status === 'invalid') return <Navigate to="/login" replace />;
+  if (status === 'checking') return <RouteLoading />;
+  return children;
+}
+
+function StaffGate({ children }: { children: ReactNode }) {
+  const teacherToken = useAppStore((state) => state.teacherToken);
+  const setTeacherSession = useAppStore((state) => state.setTeacherSession);
+  const clearTeacherSession = useAppStore((state) => state.clearTeacherSession);
+  const [status, setStatus] = useState<'checking' | 'valid' | 'invalid'>(
+    teacherToken ? 'checking' : 'invalid',
+  );
+
+  useEffect(() => {
+    let active = true;
+
+    if (!teacherToken) {
+      setStatus('invalid');
+      return () => {
+        active = false;
+      };
+    }
+
+    setStatus('checking');
+    api
+      .teacherMe(teacherToken)
+      .then(({ teacher }) => {
+        if (!active) return;
+        setTeacherSession(teacherToken, teacher);
+        setStatus('valid');
+      })
+      .catch(() => {
+        if (!active) return;
+        clearTeacherSession();
+        setStatus('invalid');
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [teacherToken, setTeacherSession, clearTeacherSession]);
+
+  if (!teacherToken || status === 'invalid') return <Navigate to="/professor" replace />;
+  if (status === 'checking') return <RouteLoading />;
+  return children;
 }
 
 function TeacherGate({ children }: { children: ReactNode }) {
   const teacherToken = useAppStore((state) => state.teacherToken);
-  return teacherToken ? children : <Navigate to="/professor" replace />;
+  const setTeacherSession = useAppStore((state) => state.setTeacherSession);
+  const clearTeacherSession = useAppStore((state) => state.clearTeacherSession);
+  const [status, setStatus] = useState<'checking' | 'valid' | 'admin' | 'invalid'>(
+    teacherToken ? 'checking' : 'invalid',
+  );
+
+  useEffect(() => {
+    let active = true;
+
+    if (!teacherToken) {
+      setStatus('invalid');
+      return () => {
+        active = false;
+      };
+    }
+
+    setStatus('checking');
+    api
+      .teacherMe(teacherToken)
+      .then(({ teacher }) => {
+        if (!active) return;
+        setTeacherSession(teacherToken, teacher);
+        setStatus(teacher.role === 'ADMIN' ? 'admin' : 'valid');
+      })
+      .catch(() => {
+        if (!active) return;
+        clearTeacherSession();
+        setStatus('invalid');
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [teacherToken, setTeacherSession, clearTeacherSession]);
+
+  if (!teacherToken || status === 'invalid') return <Navigate to="/professor" replace />;
+  if (status === 'admin') return <Navigate to="/professor/administracao" replace />;
+  if (status === 'checking') return <RouteLoading />;
+  return children;
 }
 
 function AdminGate({ children }: { children: ReactNode }) {
   const teacherToken = useAppStore((state) => state.teacherToken);
-  const teacher = useAppStore((state) => state.teacher);
-
-  return teacherToken && teacher?.role === 'ADMIN' ? (
-    children
-  ) : (
-    <Navigate to="/professor" replace />
+  const setTeacherSession = useAppStore((state) => state.setTeacherSession);
+  const clearTeacherSession = useAppStore((state) => state.clearTeacherSession);
+  const [status, setStatus] = useState<'checking' | 'valid' | 'teacher' | 'invalid'>(
+    teacherToken ? 'checking' : 'invalid',
   );
+
+  useEffect(() => {
+    let active = true;
+
+    if (!teacherToken) {
+      setStatus('invalid');
+      return () => {
+        active = false;
+      };
+    }
+
+    setStatus('checking');
+    api
+      .teacherMe(teacherToken)
+      .then(({ teacher }) => {
+        if (!active) return;
+        setTeacherSession(teacherToken, teacher);
+        setStatus(teacher.role === 'ADMIN' ? 'valid' : 'teacher');
+      })
+      .catch(() => {
+        if (!active) return;
+        clearTeacherSession();
+        setStatus('invalid');
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [teacherToken, setTeacherSession, clearTeacherSession]);
+
+  if (!teacherToken || status === 'invalid') return <Navigate to="/professor" replace />;
+  if (status === 'teacher') return <Navigate to="/professor/painel" replace />;
+  if (status === 'checking') return <RouteLoading />;
+  return children;
 }
 
 export default function App() {
@@ -127,9 +286,9 @@ export default function App() {
         <Route
           path="/professor/settings"
           element={
-            <TeacherGate>
+            <StaffGate>
               <TeacherSettings />
-            </TeacherGate>
+            </StaffGate>
           }
         />
         <Route

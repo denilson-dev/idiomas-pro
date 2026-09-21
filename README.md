@@ -386,38 +386,24 @@ Quando uma senha é redefinida ou uma conta é desativada, sessões existentes s
 
 O papel `ADMIN` não pode ser atribuído pela interface. A conta administrativa também não pode ser removida nem desativada pela própria tela de administração.
 
-Para garantir a conta administrativa no banco local:
+Para garantir a conta administrativa:
 
 ~~~bash
 npm run admin:ensure
 ~~~
 
-Em desenvolvimento, quando `ADMIN_PASSWORD` não estiver configurada, o script utiliza:
-
-~~~text
-E-mail: administrador@adm.com
-Senha: admin123
-~~~
-
-Por padrão, o projeto também provisiona essa conta durante o deploy usando:
-
-~~~text
-E-mail: administrador@adm.com
-Senha: admin123
-~~~
-
-Isso foi mantido porque este repositório é um projeto de estudos e essas foram as credenciais solicitadas para teste.
-
-Para trocar a senha no ambiente publicado sem alterar o código, configure:
+A senha administrativa **não fica armazenada no código**. Para criar o primeiro administrador, configure:
 
 ~~~env
 ADMIN_EMAIL=administrador@adm.com
-ADMIN_PASSWORD=uma-senha-segura
+ADMIN_PASSWORD=<defina-uma-senha-segura-no-ambiente>
 ~~~
 
-Depois faça um novo deploy.
+Em produção, `ADMIN_PASSWORD` deve ser configurada como segredo do provedor de hospedagem.
 
-> Como o repositório é público, a senha padrão é conhecida. Use `ADMIN_PASSWORD` antes de tratar a aplicação como um ambiente real ou expô-la para uso de terceiros.
+Se uma conta administrativa já existir e o segredo não estiver disponível durante um deploy, o script preserva a credencial existente sem exibi-la nem redefini-la.
+
+> O repositório não publica senhas administrativas nem credenciais de demonstração.
 
 ---
 
@@ -1174,11 +1160,44 @@ VITE_API_URL=http://localhost:3333/api
 
 GOOGLE_TTS_API_KEY=
 GOOGLE_TTS_VOICE=es-ES-Chirp3-HD-Zephyr
+
+ADMIN_EMAIL=administrador@adm.com
+ADMIN_PASSWORD=
 ~~~
 
 As variáveis relacionadas ao TTS são opcionais.
 
 > Nunca coloque senhas, tokens ou chaves reais em arquivos versionados.
+
+## Arquitetura de deploy
+
+O projeto usa uma única fonte de verdade para autenticação, avaliações e usuários:
+
+~~~text
+Vercel (frontend)
+      │
+      │ /api
+      ▼
+proxy serverless
+      │
+      ▼
+Render (Express API)
+      │
+      ▼
+PostgreSQL
+~~~
+
+O arquivo `client/api/index.ts` não implementa autenticação própria. Ele apenas encaminha as requisições para o backend real.
+
+Quando necessário, o endereço do backend pode ser sobrescrito com:
+
+~~~env
+BACKEND_API_URL=https://seu-backend.exemplo/api
+VITE_API_URL=https://seu-backend.exemplo/api
+~~~
+
+`BACKEND_API_URL` é usado pelo proxy serverless da Vercel.  
+`VITE_API_URL` permite ao frontend chamar diretamente uma API configurada.
 
 ---
 

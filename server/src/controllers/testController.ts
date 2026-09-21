@@ -226,3 +226,30 @@ export async function submitTest(req: Request, res: Response) {
     recommendations: getRecommendations(result.cefrLevel),
   });
 }
+
+
+export async function abandonTest(req: Request, res: Response) {
+  const session = await getSessionFromRequest(req);
+  if (!session) return res.status(401).json({ message: 'Sessão inválida ou expirada.' });
+
+  const attemptId = firstParam(req.params.attemptId);
+  if (!attemptId) return res.status(400).json({ message: 'Identificador da tentativa inválido.' });
+
+  const attempt = await prisma.testAttempt.findFirst({
+    where: {
+      id: attemptId,
+      sessionId: session.id,
+      status: 'IN_PROGRESS',
+    },
+    select: { id: true },
+  });
+
+  if (!attempt) {
+    return res.status(404).json({
+      message: 'Tentativa em andamento não encontrada ou já finalizada.',
+    });
+  }
+
+  await prisma.testAttempt.delete({ where: { id: attempt.id } });
+  return res.status(204).send();
+}

@@ -13,7 +13,7 @@ import { api, type Question } from '../services/api';
 import { saveResult } from '../services/resultStorage';
 import { useAppStore } from '../store/useAppStore';
 import { Button, Pill, Surface, Toast } from './UI';
-import { PublicHeader } from './Shell';
+import { StudentFlowHeader } from './Shell';
 import {
   clearExamDraft,
   loadExamDraft,
@@ -37,6 +37,7 @@ export function TestPage() {
   const navigate = useNavigate();
   const token = useAppStore((state) => state.token);
   const testProfile = useAppStore((state) => state.testProfile);
+  const clearTestProfile = useAppStore((state) => state.clearTestProfile);
   const started = useRef(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -158,10 +159,29 @@ export function TestPage() {
     }
   }
 
+  async function cancelAssessment(destination = '/setup') {
+    const confirmed = window.confirm(
+      'Sair desta avaliação? As respostas desta tentativa serão descartadas.',
+    );
+    if (!confirmed) return;
+
+    if (draft && token) {
+      try {
+        await api.abandonTest(token, draft.attemptId);
+      } catch {
+        // Se a tentativa já tiver sido removida/finalizada, a limpeza local ainda precisa ocorrer.
+      }
+    }
+
+    clearExamDraft();
+    clearTestProfile();
+    navigate(destination);
+  }
+
   if (loading) {
     return (
       <div className="exam-page">
-        <PublicHeader />
+        <StudentFlowHeader backTo="/setup" backLabel="Preparação" />
         <Surface className="empty">
           <div className="empty__icon">✦</div>
           <h3>Preparando sua avaliação</h3>
@@ -174,7 +194,7 @@ export function TestPage() {
   if (!draft || !current) {
     return (
       <div className="exam-page">
-        <PublicHeader />
+        <StudentFlowHeader backTo="/setup" backLabel="Preparação" />
         <Surface className="empty">
           <h3>Não foi possível carregar a prova</h3>
           <p>{message || 'Tente iniciar uma nova avaliação.'}</p>
@@ -186,7 +206,15 @@ export function TestPage() {
 
   return (
     <div className="exam-page">
-      <PublicHeader />
+      <StudentFlowHeader
+        backLabel="Cancelar prova"
+        onBack={() => cancelAssessment('/setup')}
+        onExit={async () => {
+          if (draft && token) {
+            await api.abandonTest(token, draft.attemptId).catch(() => undefined);
+          }
+        }}
+      />
 
       <div className="exam-progress">
         <div>
@@ -358,9 +386,18 @@ export function ReviewPage() {
     }
   }
 
+  async function abandonOnExit() {
+    if (!draft || !token) return;
+    await api.abandonTest(token, draft.attemptId).catch(() => undefined);
+  }
+
   return (
     <div className="public-page">
-      <PublicHeader />
+      <StudentFlowHeader
+        backTo="/test"
+        backLabel="Voltar à prova"
+        onExit={abandonOnExit}
+      />
       <section className="page-intro">
         <Pill tone="purple">Revisão</Pill>
         <h1>Revise antes de finalizar</h1>

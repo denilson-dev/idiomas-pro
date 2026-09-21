@@ -31,7 +31,7 @@ import {
   teacherMe,
   updateTeacherAttempt,
 } from '../controllers/teacherController.js';
-import { startTest, submitTest } from '../controllers/testController.js';
+import { abandonTest, startTest, submitTest } from '../controllers/testController.js';
 import { getListeningAudio } from '../controllers/ttsController.js';
 
 const router = Router();
@@ -72,6 +72,7 @@ router.patch('/teacher/admin/teachers/:teacherId', adminUpdateTeacher);
 router.delete('/teacher/admin/teachers/:teacherId', adminDeleteTeacher);
 
 router.post('/test/start', startTest);
+router.delete('/test/:attemptId', abandonTest);
 router.post('/test/:attemptId/submit', submitTest);
 router.get('/tts/:questionId', getListeningAudio);
 

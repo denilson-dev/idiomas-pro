@@ -87,6 +87,8 @@ export function AdminPage() {
   );
   const [data, setData] = useState<AdminAccounts | null>(null);
   const [query, setQuery] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [editor, setEditor] = useState<Editor | null>(null);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -96,7 +98,8 @@ export function AdminPage() {
     api
       .getAdminAccounts(teacherToken)
       .then(setData)
-      .catch((err) => setError(err instanceof Error ? err.message : 'Não foi possível carregar as contas.'));
+      .catch((err) => setError(err instanceof Error ? err.message : 'Não foi possível carregar as contas.'))
+      .finally(() => setLoading(false));
   }, [teacherToken]);
 
   useEffect(() => {
@@ -125,6 +128,25 @@ export function AdminPage() {
         .includes(search),
     );
   }, [tab, query, users, teachers]);
+
+  const heading =
+    tab === 'students'
+      ? {
+          eyebrow: 'Pessoas',
+          title: 'Alunos da plataforma',
+          description: 'Cadastre, atualize, bloqueie ou remova contas de alunos.',
+        }
+      : tab === 'teachers'
+        ? {
+            eyebrow: 'Equipe pedagógica',
+            title: 'Professores',
+            description: 'Gerencie apenas contas que recebem e acompanham avaliações.',
+          }
+        : {
+            eyebrow: 'Administração',
+            title: 'Organização da plataforma',
+            description: 'Contas, acessos e ações essenciais em uma visão objetiva.',
+          };
 
   function setTab(next: Tab) {
     setTabState(next);
@@ -182,6 +204,7 @@ export function AdminPage() {
     }
 
     try {
+      setSaving(true);
       setError('');
 
       if (editor.role === 'student') {
@@ -221,6 +244,8 @@ export function AdminPage() {
       setMessage(editor.id ? 'Conta atualizada com sucesso.' : 'Conta cadastrada com sucesso.');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Não foi possível salvar a conta.');
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -267,36 +292,36 @@ export function AdminPage() {
     }
   }
 
+  if (loading && !data) {
+    return (
+      <Workspace area="admin">
+        <Surface className="empty workspace-loading">
+          <div className="empty__icon">✦</div>
+          <h3>Carregando administração</h3>
+          <p>Buscando contas, permissões e status da plataforma.</p>
+        </Surface>
+      </Workspace>
+    );
+  }
+
   return (
     <Workspace area="admin">
       <div className="workspace-heading">
         <div>
-          <small>Administração</small>
-          <h1>Controle da plataforma</h1>
-          <p>Gestão completa de alunos, professores, status e credenciais.</p>
+          <small>{heading.eyebrow}</small>
+          <h1>{heading.title}</h1>
+          <p>{heading.description}</p>
         </div>
         <div className="heading-actions">
           <Button variant="secondary" disabled={!data} onClick={() => data && downloadAdminCsv(data)}>
-            <Download size={17} /> Exportar dados
+            <Download size={17} /> Exportar contas
           </Button>
         </div>
       </div>
 
-      <div className="admin-tabs">
-        <button className={tab === 'overview' ? 'active' : ''} onClick={() => setTab('overview')}>
-          <ShieldCheck size={17} /> Visão geral
-        </button>
-        <button className={tab === 'students' ? 'active' : ''} onClick={() => setTab('students')}>
-          <UserRound size={17} /> Alunos
-        </button>
-        <button className={tab === 'teachers' ? 'active' : ''} onClick={() => setTab('teachers')}>
-          <UsersRound size={17} /> Professores
-        </button>
-      </div>
-
       {tab === 'overview' ? (
         <>
-          <div className="stat-grid">
+          <div className="stat-grid product-metrics admin-metrics">
             <Stat label="Alunos" value={data?.summary.students ?? 0} tone="teal" />
             <Stat label="Professores" value={data?.summary.teachers ?? 0} tone="purple" />
             <Stat
@@ -411,21 +436,6 @@ export function AdminPage() {
       ) : (
         <>
           <Surface className="admin-toolbar">
-            <div className="segmented admin-segment">
-              <button
-                className={tab === 'students' ? 'active' : ''}
-                onClick={() => setTab('students')}
-              >
-                Alunos
-              </button>
-              <button
-                className={tab === 'teachers' ? 'active' : ''}
-                onClick={() => setTab('teachers')}
-              >
-                Professores
-              </button>
-            </div>
-
             <label className="search-box grow">
               <Search size={16} />
               <input
@@ -434,6 +444,10 @@ export function AdminPage() {
                 placeholder={`Buscar ${tab === 'students' ? 'aluno' : 'professor'} por nome, e-mail ou status`}
               />
             </label>
+
+            <Pill tone={tab === 'students' ? 'teal' : 'purple'}>
+              {filtered.length} {tab === 'students' ? 'alunos' : 'professores'}
+            </Pill>
 
             <Button onClick={() => openCreate(tab === 'students' ? 'student' : 'teacher')}>
               <Plus size={17} /> Novo {tab === 'students' ? 'aluno' : 'professor'}
@@ -586,8 +600,12 @@ export function AdminPage() {
               >
                 Cancelar
               </Button>
-              <Button type="submit">
-                {editor.id ? 'Salvar alterações' : 'Cadastrar conta'}
+              <Button type="submit" disabled={saving}>
+                {saving
+                  ? 'Salvando...'
+                  : editor.id
+                    ? 'Salvar alterações'
+                    : 'Cadastrar conta'}
               </Button>
             </div>
           </form>

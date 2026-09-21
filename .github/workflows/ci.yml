@@ -59,7 +59,11 @@ jobs:
         run: npm run db:seed
 
       - name: Validate administrator bootstrap in production mode
-        run: NODE_ENV=production npm run admin:ensure
+        run: |
+          ADMIN_EMAIL="admin.ci@example.com" \
+          ADMIN_PASSWORD="$(node -e "process.stdout.write(require('node:crypto').randomBytes(24).toString('hex'))")" \
+          NODE_ENV=production \
+          npm run admin:ensure
 
       - name: Validate data engineering Python
         run: |

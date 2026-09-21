@@ -1,13 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Navigate, useNavigate, useParams } from 'react-router-dom';
+import { Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import {
   ArrowRight,
   Bell,
   BookOpen,
   Headphones,
   KeyRound,
-  LogOut,
-  Save,
+   Save,
   Sparkles,
 } from 'lucide-react';
 import { api, type AccountPreferences, type TestResult } from '../services/api';
@@ -15,7 +14,7 @@ import { getStoredResult, saveResult } from '../services/resultStorage';
 import { useAppStore } from '../store/useAppStore';
 import { Owl } from './Brand';
 import { Button, Field, Pill, Stat, Surface, Toast } from './UI';
-import { PublicHeader, Workspace } from './Shell';
+import { StudentFlowHeader, Workspace } from './Shell';
 
 function average(values: number[]) {
   return values.length ? Math.round(values.reduce((sum, value) => sum + value, 0) / values.length) : 0;
@@ -56,7 +55,7 @@ export function ResultPage() {
   if (!result) {
     return (
       <div className="public-page result-page">
-        <PublicHeader />
+        <StudentFlowHeader backTo="/dashboard" backLabel="Painel" />
         <Surface className="empty">
           <div className="empty__icon">✦</div>
           <h3>{message || 'Calculando seu resultado...'}</h3>
@@ -68,7 +67,7 @@ export function ResultPage() {
 
   return (
     <div className="public-page result-page">
-      <PublicHeader />
+      <StudentFlowHeader backTo="/dashboard" backLabel="Painel" />
 
       <section className="result-hero">
         <div>
@@ -152,9 +151,12 @@ export function StudentDashboard() {
   const token = useAppStore((state) => state.token);
   const user = useAppStore((state) => state.user);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [attempts, setAttempts] = useState<TestResult[]>([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
+
+  const view = searchParams.get('view') === 'progress' ? 'progress' : 'home';
 
   useEffect(() => {
     if (!token) return;
@@ -173,176 +175,272 @@ export function StudentDashboard() {
   const avg = average(attempts.map((item) => item.score));
   const best = latest
     ? [
-        ['Gram.', latestBreakdownValue(latest, 'GRAMMAR')],
-        ['Vocab.', latestBreakdownValue(latest, 'VOCABULARY')],
-        ['Listen.', latestBreakdownValue(latest, 'LISTENING')],
+        ['Gramática', latestBreakdownValue(latest, 'GRAMMAR')],
+        ['Vocabulário', latestBreakdownValue(latest, 'VOCABULARY')],
+        ['Listening', latestBreakdownValue(latest, 'LISTENING')],
       ].sort((a, b) => Number(b[1]) - Number(a[1]))[0]
     : ['—', 0];
 
-  return (
-    <Workspace area="student">
-      <div className="workspace-heading">
-        <div>
-          <small>Seu progresso</small>
-          <h1>Olá, {user?.name?.split(' ')[0] || 'aluno'}</h1>
-          <p>Seu histórico e evolução em um só lugar.</p>
+  if (view === 'progress') {
+    return (
+      <Workspace area="student">
+        <div className="workspace-heading">
+          <div>
+            <small>Meu progresso</small>
+            <h1>Sua evolução</h1>
+            <p>Veja como seu desempenho mudou e quais habilidades merecem mais atenção.</p>
+          </div>
+          <Button onClick={() => navigate('/language')}>
+            Nova avaliação <ArrowRight size={17} />
+          </Button>
         </div>
-        <Button onClick={() => navigate('/language')}>
-          Nova avaliação <ArrowRight size={17} />
-        </Button>
-      </div>
 
-      <div className="stat-grid">
-        <Stat
-          label="Último nível"
-          value={latest?.cefrLevel ?? '—'}
-          sub="Avaliação mais recente"
-          tone="pink"
-        />
-        <Stat label="Média geral" value={`${avg}%`} sub="Todas as avaliações" tone="teal" />
-        <Stat label="Avaliações" value={attempts.length} sub="Histórico completo" tone="orange" />
-        <Stat
-          label="Melhor habilidade"
-          value={String(best[0])}
-          sub={latest ? `${best[1]}% de acerto` : 'Faça sua primeira avaliação'}
-          tone="purple"
-        />
-      </div>
+        <div className="progress-summary">
+          <div>
+            <span>Nível mais recente</span>
+            <strong>{latest?.cefrLevel ?? '—'}</strong>
+          </div>
+          <div>
+            <span>Média das avaliações</span>
+            <strong>{avg}%</strong>
+          </div>
+          <div>
+            <span>Avaliações concluídas</span>
+            <strong>{attempts.length}</strong>
+          </div>
+          <div>
+            <span>Habilidade mais forte</span>
+            <strong>{String(best[0])}</strong>
+            <small>{latest ? `${best[1]}% na última avaliação` : 'Sem dados ainda'}</small>
+          </div>
+        </div>
 
-      <div className="dashboard-grid">
-        <Surface className="chart-card">
+        <div className="dashboard-grid progress-grid">
+          <Surface className="chart-card">
+            <div className="section-title">
+              <div>
+                <small>Linha do tempo</small>
+                <h2>Evolução das notas</h2>
+              </div>
+            </div>
+
+            {attempts.length ? (
+              <div className="fake-chart">
+                <div className="chart-line">
+                  {attempts
+                    .slice(0, 6)
+                    .reverse()
+                    .map((attempt, index, array) => (
+                      <i
+                        key={attempt.attemptId ?? attempt.id ?? index}
+                        style={{
+                          left: `${8 + (index * 84) / Math.max(1, array.length - 1)}%`,
+                          bottom: `${Math.max(8, attempt.score * 0.72)}%`,
+                        }}
+                      />
+                    ))}
+                </div>
+                <div className="chart-axis">
+                  {attempts
+                    .slice(0, 6)
+                    .reverse()
+                    .map((_, index) => (
+                      <span key={index}>T{index + 1}</span>
+                    ))}
+                </div>
+              </div>
+            ) : (
+              <div className="empty empty--inline">
+                <h3>Ainda não existe uma linha do tempo</h3>
+                <p>Faça sua primeira avaliação para iniciar o acompanhamento.</p>
+              </div>
+            )}
+          </Surface>
+
+          <Surface className="skill-board">
+            <div className="section-title">
+              <div>
+                <small>Última avaliação</small>
+                <h2>Habilidades</h2>
+              </div>
+            </div>
+
+            {latest?.breakdown.map((item) => (
+              <div className="skill-board__item" key={item.category}>
+                <div>
+                  <span>{item.label}</span>
+                  <strong>{item.percentage}%</strong>
+                </div>
+                <div className="bar">
+                  <i style={{ width: `${item.percentage}%` }} />
+                </div>
+              </div>
+            ))}
+
+            {!latest && <p className="muted">Suas habilidades aparecerão depois da primeira avaliação.</p>}
+          </Surface>
+        </div>
+
+        <Surface className="history-table">
           <div className="section-title">
             <div>
               <small>Histórico</small>
-              <h2>Evolução das avaliações</h2>
-            </div>
-            <Pill tone="neutral">Últimas avaliações</Pill>
-          </div>
-
-          {attempts.length ? (
-            <div className="fake-chart">
-              <div className="chart-line">
-                {attempts
-                  .slice(0, 5)
-                  .reverse()
-                  .map((attempt, index, array) => (
-                    <i
-                      key={attempt.attemptId ?? attempt.id ?? index}
-                      style={{
-                        left: `${8 + (index * 84) / Math.max(1, array.length - 1)}%`,
-                        bottom: `${Math.max(8, attempt.score * 0.72)}%`,
-                      }}
-                    />
-                  ))}
-              </div>
-              <div className="chart-axis">
-                {attempts
-                  .slice(0, 5)
-                  .reverse()
-                  .map((_, index) => (
-                    <span key={index}>T{index + 1}</span>
-                  ))}
-              </div>
-            </div>
-          ) : (
-            <div className="empty" style={{ boxShadow: 'none' }}>
-              <h3>Nenhuma avaliação ainda</h3>
-              <p>Faça sua primeira avaliação para começar a acompanhar sua evolução.</p>
-            </div>
-          )}
-        </Surface>
-
-        <Surface className="recommendations">
-          <div className="section-title">
-            <div>
-              <small>Plano de estudo</small>
-              <h2>Próximos passos</h2>
+              <h2>Todas as avaliações</h2>
             </div>
           </div>
 
-          {(latest?.recommendations ?? []).slice(0, 3).map((item, index) => (
-            <button
-              type="button"
-              className="recommendation"
-              key={item.title}
-              onClick={() => navigate('/language')}
-            >
-              <span
-                className={`rec-dot ${
-                  index === 0 ? 'rec-dot--teal' : index === 1 ? 'rec-dot--pink' : 'rec-dot--orange'
-                }`}
-              />
-              <div>
-                <b>{item.title}</b>
-                <span>{item.tag}</span>
-              </div>
-              <ArrowRight size={16} />
-            </button>
-          ))}
+          <div className="table">
+            <div className="table__head">
+              <span>Data</span>
+              <span>Professor</span>
+              <span>Nível</span>
+              <span>Nota</span>
+              <span>Ação</span>
+            </div>
 
-          {!latest && (
-            <button type="button" className="recommendation" onClick={() => navigate('/language')}>
-              <span className="rec-dot rec-dot--teal" />
-              <div>
-                <b>Descubra seu nível</b>
-                <span>Começar agora</span>
+            {attempts.map((attempt) => (
+              <div className="table__row" key={attempt.attemptId ?? attempt.id}>
+                <span>
+                  <b>
+                    {attempt.completedAt
+                      ? new Date(attempt.completedAt).toLocaleDateString('pt-BR')
+                      : '—'}
+                  </b>
+                  <small>Espanhol</small>
+                </span>
+                <span>{attempt.teacher?.name ?? 'Professor'}</span>
+                <span>
+                  <Pill tone="teal">{attempt.cefrLevel}</Pill>
+                </span>
+                <strong>{attempt.score}%</strong>
+                <Button
+                  variant="ghost"
+                  onClick={() => navigate(`/result/${attempt.attemptId ?? attempt.id}`)}
+                >
+                  Ver resultado
+                </Button>
               </div>
-              <ArrowRight size={16} />
-            </button>
-          )}
+            ))}
+          </div>
         </Surface>
-      </div>
 
-      <Surface className="history-table">
-        <div className="section-title">
-          <div>
-            <small>Avaliações</small>
-            <h2>Histórico recente</h2>
+        {message && <Toast message={message} tone="error" />}
+      </Workspace>
+    );
+  }
+
+  return (
+    <Workspace area="student">
+      <section className="student-home-hero">
+        <div>
+          <small>Olá, {user?.name?.split(' ')[0] || 'aluno'}</small>
+          <h1>{latest ? 'Continue de onde você parou.' : 'Descubra seu nível de espanhol.'}</h1>
+          <p>
+            {latest
+              ? 'Seu resultado mais recente está aqui, junto com um próximo passo simples.'
+              : 'Faça sua primeira avaliação para montar seu histórico de aprendizagem.'}
+          </p>
+          <div className="hero-actions">
+            <Button onClick={() => navigate('/language')}>
+              {latest ? 'Fazer nova avaliação' : 'Começar avaliação'} <ArrowRight size={17} />
+            </Button>
+            {latest && (
+              <Button variant="secondary" onClick={() => navigate('/dashboard?view=progress')}>
+                Ver meu progresso
+              </Button>
+            )}
           </div>
         </div>
+        <Owl mode={latest ? 'study' : 'welcome'} />
+      </section>
 
-        <div className="table">
-          <div className="table__head">
-            <span>Data</span>
-            <span>Professor</span>
-            <span>Nível</span>
-            <span>Nota</span>
-            <span>Ação</span>
+      {latest ? (
+        <>
+          <div className="student-home-grid">
+            <Surface className="learning-snapshot">
+              <div className="learning-snapshot__level">
+                <span>Seu nível mais recente</span>
+                <strong>{latest.cefrLevel}</strong>
+                <b>{latest.score}%</b>
+              </div>
+
+              <div className="learning-snapshot__skills">
+                {latest.breakdown.map((item) => (
+                  <div key={item.category}>
+                    <span>{item.label}</span>
+                    <div className="bar">
+                      <i style={{ width: `${item.percentage}%` }} />
+                    </div>
+                    <strong>{item.percentage}%</strong>
+                  </div>
+                ))}
+              </div>
+
+              <Button
+                variant="secondary"
+                onClick={() => navigate(`/result/${latest.attemptId ?? latest.id}`)}
+              >
+                Abrir resultado completo
+              </Button>
+            </Surface>
+
+            <Surface className="next-learning-card">
+              <Sparkles />
+              <small>Próximo passo</small>
+              <h2>{latest.recommendations[0]?.title ?? 'Continue praticando'}</h2>
+              <p>
+                {latest.recommendations[0]?.description ??
+                  'Use seu resultado para escolher a próxima habilidade a praticar.'}
+              </p>
+              <Pill tone="teal">{latest.recommendations[0]?.tag ?? latest.cefrLevel}</Pill>
+            </Surface>
           </div>
 
-          {attempts.map((attempt) => (
-            <div className="table__row" key={attempt.attemptId ?? attempt.id}>
-              <span>
-                <b>
-                  {attempt.completedAt
-                    ? new Date(attempt.completedAt).toLocaleDateString('pt-BR')
-                    : '—'}
-                </b>
-                <small>Espanhol</small>
-              </span>
-              <span>{attempt.teacher?.name ?? 'Professor'}</span>
-              <span>
-                <Pill tone="teal">{attempt.cefrLevel}</Pill>
-              </span>
-              <strong>{attempt.score}%</strong>
-              <Button
-                variant="ghost"
-                onClick={() => navigate(`/result/${attempt.attemptId ?? attempt.id}`)}
-              >
-                Abrir
+          <Surface className="recent-activity">
+            <div className="section-title">
+              <div>
+                <small>Atividade recente</small>
+                <h2>Últimas avaliações</h2>
+              </div>
+              <Button variant="ghost" onClick={() => navigate('/dashboard?view=progress')}>
+                Ver histórico
               </Button>
             </div>
-          ))}
-        </div>
 
-        {!loading && !attempts.length && (
-          <p className="muted" style={{ textAlign: 'center', marginTop: 24 }}>
-            Seu histórico aparecerá aqui depois da primeira avaliação.
-          </p>
-        )}
-      </Surface>
+            <div className="recent-activity__list">
+              {attempts.slice(0, 3).map((attempt) => (
+                <button
+                  type="button"
+                  key={attempt.attemptId ?? attempt.id}
+                  onClick={() => navigate(`/result/${attempt.attemptId ?? attempt.id}`)}
+                >
+                  <span>
+                    {attempt.completedAt
+                      ? new Date(attempt.completedAt).toLocaleDateString('pt-BR')
+                      : 'Sem data'}
+                  </span>
+                  <b>{attempt.cefrLevel}</b>
+                  <strong>{attempt.score}%</strong>
+                  <ArrowRight size={16} />
+                </button>
+              ))}
+            </div>
+          </Surface>
+        </>
+      ) : (
+        <Surface className="empty student-first-step">
+          <Owl mode="study" />
+          <div>
+            <h3>Seu histórico começa com uma avaliação</h3>
+            <p>
+              A prova reúne gramática, vocabulário e listening para gerar um ponto de partida.
+            </p>
+            <Button onClick={() => navigate('/language')}>Começar agora</Button>
+          </div>
+        </Surface>
+      )}
 
-      {message && <Toast message={message} tone="error" />}
+      {!loading && message && <Toast message={message} tone="error" />}
     </Workspace>
   );
 }
@@ -351,8 +449,6 @@ export function StudentProfile() {
   const token = useAppStore((state) => state.token);
   const user = useAppStore((state) => state.user);
   const setSession = useAppStore((state) => state.setSession);
-  const clearSession = useAppStore((state) => state.clearSession);
-  const navigate = useNavigate();
 
   const [name, setName] = useState(user?.name ?? '');
   const [email, setEmail] = useState(user?.email ?? '');
@@ -449,16 +545,6 @@ export function StudentProfile() {
     }
   }
 
-  async function logout() {
-    try {
-      await api.logout(token!);
-    } catch {
-      // local cleanup
-    }
-    clearSession();
-    navigate('/');
-  }
-
   const initials =
     name
       .split(' ')
@@ -469,7 +555,7 @@ export function StudentProfile() {
       .toUpperCase() || 'AL';
 
   return (
-    <Workspace area="student">
+    <Workspace area="student" backTo="/dashboard" backLabel="Painel">
       <div className="workspace-heading">
         <div>
           <small>Perfil</small>
@@ -484,9 +570,7 @@ export function StudentProfile() {
           <h2>{name}</h2>
           <p>{email}</p>
           <Pill tone="teal">Aluno ativo</Pill>
-          <Button variant="danger" className="full" onClick={logout}>
-            <LogOut size={17} /> Sair da conta
-          </Button>
+          <p className="profile-card__hint">Use o botão Sair no cabeçalho para encerrar sua sessão com segurança.</p>
         </Surface>
 
         <Surface className="settings-card">

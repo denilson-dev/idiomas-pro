@@ -17,6 +17,10 @@ services:
         fromDatabase:
           name: idiomas-pro-db
           property: connectionString
+      - key: ADMIN_EMAIL
+        value: administrador@adm.com
+      - key: ADMIN_PASSWORD
+        sync: false
       - key: GOOGLE_TTS_API_KEY
         sync: false
       - key: GOOGLE_TTS_VOICE

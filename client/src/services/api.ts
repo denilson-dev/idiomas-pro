@@ -1,7 +1,6 @@
 const API_URL =
-  import.meta.env.MODE === 'development'
-    ? (import.meta.env.VITE_API_URL ?? 'http://localhost:3333/api')
-    : '/api';
+  import.meta.env.VITE_API_URL ??
+  (import.meta.env.MODE === 'development' ? 'http://localhost:3333/api' : '/api');
 
 export type AccountPreferences = {
   notifications?: boolean;
@@ -200,6 +199,8 @@ export const api = {
     request<SessionResponse>('/auth/register', { method: 'POST', body: JSON.stringify(payload) }),
   login: (payload: { email: string; password: string }) =>
     request<SessionResponse>('/auth/login', { method: 'POST', body: JSON.stringify(payload) }),
+  me: (token: string) =>
+    request<{ user: User | null; expiresAt: string }>('/auth/me', {}, token),
   logout: (token: string) => request<void>('/auth/logout', { method: 'POST' }, token),
   updateProfile: (token: string, payload: { name: string; email: string }) =>
     request<{ user: User }>('/auth/profile', { method: 'PATCH', body: JSON.stringify(payload) }, token),
@@ -215,6 +216,9 @@ export const api = {
     ),
 
   getTeachers: () => request<{ teachers: TeacherOption[] }>('/teachers'),
+
+  abandonTest: (token: string, attemptId: string) =>
+    request<void>(`/test/${attemptId}`, { method: 'DELETE' }, token),
 
   startTest: (token: string, payload: Omit<StudentTestProfile, 'teacherName'>) =>
     request<{ attemptId: string; totalQuestions: number; studentName: string; teacher: TeacherOption; questions: Question[] }>(
@@ -233,6 +237,13 @@ export const api = {
     request<TeacherSessionResponse>('/teacher/auth/bootstrap', { method: 'POST', body: JSON.stringify(payload) }),
   teacherLogin: (payload: { email: string; password: string }) =>
     request<TeacherSessionResponse>('/teacher/auth/login', { method: 'POST', body: JSON.stringify(payload) }),
+  teacherMe: (token: string) =>
+    request<{ teacher: Teacher; expiresAt: string }>(
+      '/teacher/auth/me',
+      {},
+      token,
+      'x-teacher-token',
+    ),
   teacherLogout: (token: string) =>
     request<void>('/teacher/auth/logout', { method: 'POST' }, token, 'x-teacher-token'),
   updateTeacherProfile: (token: string, payload: { name: string; email: string }) =>

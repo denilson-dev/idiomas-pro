@@ -29,6 +29,24 @@ function firstParam(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
 }
 
+async function requireTeacherRole(req: Request, res: Response) {
+  const session = await getTeacherSessionFromRequest(req);
+
+  if (!session) {
+    res.status(401).json({ message: 'Sessão de professor inválida ou expirada.' });
+    return null;
+  }
+
+  if (session.teacher.role !== 'TEACHER') {
+    res.status(403).json({
+      message: 'Esta área é exclusiva de professores. Administradores gerenciam a plataforma, mas não corrigem avaliações.',
+    });
+    return null;
+  }
+
+  return session;
+}
+
 export async function listTeachers(_req: Request, res: Response) {
   const teachers = await prisma.teacher.findMany({
     where: {
@@ -128,8 +146,8 @@ export async function teacherLogout(req: Request, res: Response) {
 }
 
 export async function teacherDashboard(req: Request, res: Response) {
-  const session = await getTeacherSessionFromRequest(req);
-  if (!session) return res.status(401).json({ message: 'Sessão de professor inválida ou expirada.' });
+  const session = await requireTeacherRole(req, res);
+  if (!session) return;
 
   const attempts = await prisma.testAttempt.findMany({
     where: { teacherId: session.teacherId, status: 'COMPLETED' },
@@ -172,8 +190,8 @@ export async function teacherDashboard(req: Request, res: Response) {
 }
 
 export async function teacherAttemptDetail(req: Request, res: Response) {
-  const session = await getTeacherSessionFromRequest(req);
-  if (!session) return res.status(401).json({ message: 'Sessão de professor inválida ou expirada.' });
+  const session = await requireTeacherRole(req, res);
+  if (!session) return;
 
   const attemptId = firstParam(req.params.attemptId);
   if (!attemptId) return res.status(400).json({ message: 'Identificador inválido.' });
@@ -220,8 +238,8 @@ export async function teacherAttemptDetail(req: Request, res: Response) {
 
 
 export async function updateTeacherAttempt(req: Request, res: Response) {
-  const session = await getTeacherSessionFromRequest(req);
-  if (!session) return res.status(401).json({ message: 'Sessão de professor inválida ou expirada.' });
+  const session = await requireTeacherRole(req, res);
+  if (!session) return;
 
   const attemptId = firstParam(req.params.attemptId);
   if (!attemptId) return res.status(400).json({ message: 'Identificador inválido.' });
@@ -261,8 +279,8 @@ export async function updateTeacherAttempt(req: Request, res: Response) {
 }
 
 export async function deleteTeacherAttempt(req: Request, res: Response) {
-  const session = await getTeacherSessionFromRequest(req);
-  if (!session) return res.status(401).json({ message: 'Sessão de professor inválida ou expirada.' });
+  const session = await requireTeacherRole(req, res);
+  if (!session) return;
 
   const attemptId = firstParam(req.params.attemptId);
   if (!attemptId) return res.status(400).json({ message: 'Identificador inválido.' });
@@ -279,8 +297,8 @@ export async function deleteTeacherAttempt(req: Request, res: Response) {
 }
 
 export async function clearTeacherAttempts(req: Request, res: Response) {
-  const session = await getTeacherSessionFromRequest(req);
-  if (!session) return res.status(401).json({ message: 'Sessão de professor inválida ou expirada.' });
+  const session = await requireTeacherRole(req, res);
+  if (!session) return;
 
   const result = await prisma.testAttempt.deleteMany({
     where: {

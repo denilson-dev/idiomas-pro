@@ -19,11 +19,14 @@ export function LanguageMenu() {
       <button
         className="language-pill"
         type="button"
+        aria-label="Idioma da interface: Português do Brasil"
         aria-expanded={open}
         aria-haspopup="menu"
         onClick={() => setOpen((value) => !value)}
       >
-        🇧🇷 PT-BR <ChevronDown size={13} />
+        <span className="language-pill__flag" aria-hidden="true">🇧🇷</span>
+        <span className="language-pill__code">PT-BR</span>
+        <ChevronDown size={13} />
       </button>
 
       {open && (

@@ -20,14 +20,31 @@ export default async function globalSetup() {
     secret: randomUUID(),
   };
 
+  const adminCredentials = {
+    name: 'Admin E2E',
+    email: 'admin.e2e@example.com',
+    secret: randomUUID(),
+  };
+
   await prisma.teacher.create({
     data: {
       name: credentials.name,
       email: credentials.email,
       passwordHash: await bcrypt.hash(credentials.secret, 4),
+      role: 'TEACHER',
+    },
+  });
+
+  await prisma.teacher.create({
+    data: {
+      name: adminCredentials.name,
+      email: adminCredentials.email,
+      passwordHash: await bcrypt.hash(adminCredentials.secret, 4),
+      role: 'ADMIN',
     },
   });
 
   writeFileSync('.e2e-teacher.json', JSON.stringify(credentials), 'utf8');
+  writeFileSync('.e2e-admin.json', JSON.stringify(adminCredentials), 'utf8');
   await prisma.$disconnect();
 }

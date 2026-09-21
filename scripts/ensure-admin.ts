@@ -10,19 +10,32 @@ const prisma = new PrismaClient({ adapter: new PrismaPg({ connectionString }) })
 
 async function main() {
   const email = (process.env.ADMIN_EMAIL || 'administrador@adm.com').trim().toLowerCase();
-  const password = process.env.ADMIN_PASSWORD || 'admin123';
+  const configuredPassword = process.env.ADMIN_PASSWORD?.trim();
 
-  if (password.length < 8) {
-    throw new Error('A senha do administrador precisa ter pelo menos 8 caracteres.');
+  const existing = await prisma.teacher.findUnique({
+    where: { email },
+    select: { id: true, passwordHash: true },
+  });
+
+  if (!configuredPassword && !existing) {
+    throw new Error(
+      'ADMIN_PASSWORD precisa estar configurada para criar o primeiro administrador.',
+    );
   }
 
-  const passwordHash = await bcrypt.hash(password, 12);
+  if (configuredPassword && configuredPassword.length < 8) {
+    throw new Error('ADMIN_PASSWORD precisa ter pelo menos 8 caracteres.');
+  }
+
+  const passwordHash = configuredPassword
+    ? await bcrypt.hash(configuredPassword, 12)
+    : existing!.passwordHash;
 
   const admin = await prisma.teacher.upsert({
     where: { email },
     update: {
       name: 'Administrador',
-      passwordHash,
+      ...(configuredPassword ? { passwordHash } : {}),
       role: TeacherRole.ADMIN,
       isActive: true,
     },
@@ -35,24 +48,24 @@ async function main() {
     },
     select: {
       id: true,
-      name: true,
       email: true,
       role: true,
       isActive: true,
     },
   });
 
-  console.log('Administrador garantido com sucesso:');
-  console.log(admin);
-  if (!process.env.ADMIN_PASSWORD) {
-    console.warn('AVISO: usando a senha padrão do projeto de estudos para o administrador.');
-    console.log('Credenciais: administrador@adm.com / admin123');
+  console.log('Administrador validado com sucesso:', admin);
+
+  if (!configuredPassword) {
+    console.warn(
+      'ADMIN_PASSWORD não configurada: a credencial existente foi preservada sem alteração.',
+    );
   }
 }
 
 main()
   .catch((error) => {
-    console.error(error);
+    console.error(error instanceof Error ? error.message : error);
     process.exitCode = 1;
   })
   .finally(async () => {
