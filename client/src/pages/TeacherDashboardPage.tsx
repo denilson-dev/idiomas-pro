@@ -7,6 +7,7 @@ import {
   Pencil,
   Save,
   Search,
+  ShieldCheck,
   Trash2,
   Trophy,
   UsersRound,
@@ -189,9 +190,22 @@ export default function TeacherDashboardPage() {
           <div className="min-w-0 flex-1">
             <BrandHeader subtitle="Painel do professor" compact />
           </div>
-          <button onClick={logout} className="secondary-cta grid h-10 w-10 shrink-0 place-items-center rounded-full sm:h-11 sm:w-11" aria-label="Sair">
-            <LogOut size={17}/>
-          </button>
+          <div className="flex shrink-0 items-center gap-2">
+            {data.teacher.role === 'ADMIN' && (
+              <button
+                type="button"
+                onClick={() => navigate('/professor/administracao')}
+                className="secondary-cta grid h-10 w-10 place-items-center rounded-full text-[#008f81] sm:h-11 sm:w-11"
+                aria-label="Administração"
+                title="Administração"
+              >
+                <ShieldCheck size={18}/>
+              </button>
+            )}
+            <button onClick={logout} className="secondary-cta grid h-10 w-10 place-items-center rounded-full sm:h-11 sm:w-11" aria-label="Sair">
+              <LogOut size={17}/>
+            </button>
+          </div>
         </div>
 
         <section className="mt-5 sm:mt-6">
