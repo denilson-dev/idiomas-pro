@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "concurrently \"npm run dev -w server\" \"npm run dev -w client\"",
     "build": "npm run db:generate && npm run build -w server && npm run build -w client",
-    "build:vercel": "npm run admin:ensure && npm run db:seed && npm run build -w server && npm run build -w client",
+    "build:vercel": "npm run build -w client",
     "build:render": "npm run build",
     "start": "npm run start -w server",
     "render:start": "npm run admin:ensure && npm run db:seed && npm run start",
