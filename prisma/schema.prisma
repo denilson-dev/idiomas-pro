@@ -43,6 +43,7 @@ model User {
   email        String        @unique
   passwordHash String
   isActive     Boolean       @default(true)
+  preferences  Json          @default("{}")
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   sessions     Session[]
@@ -70,6 +71,7 @@ model Teacher {
   passwordHash String
   role         TeacherRole      @default(TEACHER)
   isActive     Boolean          @default(true)
+  preferences  Json             @default("{}")
   createdAt    DateTime         @default(now())
   updatedAt    DateTime         @updatedAt
   sessions     TeacherSession[]

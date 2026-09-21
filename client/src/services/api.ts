@@ -3,7 +3,21 @@ const API_URL =
     ? (import.meta.env.VITE_API_URL ?? 'http://localhost:3333/api')
     : '/api';
 
-export type User = { id: string; name: string; email: string; isActive?: boolean };
+export type AccountPreferences = {
+  notifications?: boolean;
+  compactTables?: boolean;
+  rememberFilters?: boolean;
+  reducedMotion?: boolean;
+  preferredTheme?: 'system' | 'light';
+};
+
+export type User = {
+  id: string;
+  name: string;
+  email: string;
+  isActive?: boolean;
+  preferences?: AccountPreferences;
+};
 export type Teacher = { id: string; name: string; email: string; role: 'TEACHER' | 'ADMIN' };
 export type TeacherOption = { id: string; name: string };
 
@@ -180,12 +194,25 @@ async function request<T>(
 }
 
 export const api = {
+  getListeningAudioUrl: (questionId: string) => `${API_URL}/tts/${questionId}`,
   createAnonymousSession: () => request<SessionResponse>('/auth/anonymous', { method: 'POST' }),
   register: (payload: { name: string; email: string; password: string }) =>
     request<SessionResponse>('/auth/register', { method: 'POST', body: JSON.stringify(payload) }),
   login: (payload: { email: string; password: string }) =>
     request<SessionResponse>('/auth/login', { method: 'POST', body: JSON.stringify(payload) }),
   logout: (token: string) => request<void>('/auth/logout', { method: 'POST' }, token),
+  updateProfile: (token: string, payload: { name: string; email: string }) =>
+    request<{ user: User }>('/auth/profile', { method: 'PATCH', body: JSON.stringify(payload) }, token),
+  updatePassword: (token: string, payload: { currentPassword: string; newPassword: string }) =>
+    request<void>('/auth/password', { method: 'PATCH', body: JSON.stringify(payload) }, token),
+  getPreferences: (token: string) =>
+    request<{ preferences: AccountPreferences }>('/auth/preferences', {}, token),
+  updatePreferences: (token: string, payload: AccountPreferences) =>
+    request<{ preferences: AccountPreferences }>(
+      '/auth/preferences',
+      { method: 'PATCH', body: JSON.stringify(payload) },
+      token,
+    ),
 
   getTeachers: () => request<{ teachers: TeacherOption[] }>('/teachers'),
 
@@ -208,6 +235,37 @@ export const api = {
     request<TeacherSessionResponse>('/teacher/auth/login', { method: 'POST', body: JSON.stringify(payload) }),
   teacherLogout: (token: string) =>
     request<void>('/teacher/auth/logout', { method: 'POST' }, token, 'x-teacher-token'),
+  updateTeacherProfile: (token: string, payload: { name: string; email: string }) =>
+    request<{ teacher: Teacher }>(
+      '/teacher/auth/profile',
+      { method: 'PATCH', body: JSON.stringify(payload) },
+      token,
+      'x-teacher-token',
+    ),
+  updateTeacherPassword: (
+    token: string,
+    payload: { currentPassword: string; newPassword: string },
+  ) =>
+    request<void>(
+      '/teacher/auth/password',
+      { method: 'PATCH', body: JSON.stringify(payload) },
+      token,
+      'x-teacher-token',
+    ),
+  getTeacherPreferences: (token: string) =>
+    request<{ preferences: AccountPreferences }>(
+      '/teacher/auth/preferences',
+      {},
+      token,
+      'x-teacher-token',
+    ),
+  updateTeacherPreferences: (token: string, payload: AccountPreferences) =>
+    request<{ preferences: AccountPreferences }>(
+      '/teacher/auth/preferences',
+      { method: 'PATCH', body: JSON.stringify(payload) },
+      token,
+      'x-teacher-token',
+    ),
   getTeacherDashboard: (token: string) =>
     request<TeacherDashboard>('/teacher/dashboard', {}, token, 'x-teacher-token'),
   getTeacherAttempt: (token: string, attemptId: string) =>

@@ -1,16 +1,16 @@
-import { useEffect } from 'react';
+import { useEffect, type ReactNode } from 'react';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
-import DashboardPage from './pages/DashboardPage';
-import LanguageSelectPage from './pages/LanguageSelectPage';
-import LoginPage from './pages/LoginPage';
-import ResultPage from './pages/ResultPage';
-import StudentSetupPage from './pages/StudentSetupPage';
-import TeacherAdminPage from './pages/TeacherAdminPage';
-import TeacherDashboardPage from './pages/TeacherDashboardPage';
-import TeacherLoginPage from './pages/TeacherLoginPage';
-import TeacherStudentDetailPage from './pages/TeacherStudentDetailPage';
-import TestPage from './pages/TestPage';
-import WelcomePage from './pages/WelcomePage';
+import { useAppStore } from './store/useAppStore';
+import { WelcomePage, AuthPage, LanguagePage, SetupPage } from './premium/PublicPages';
+import { ReviewPage, TestPage } from './premium/TestPages';
+import { ResultPage, StudentDashboard, StudentProfile } from './premium/StudentPages';
+import {
+  TeacherDashboard,
+  TeacherLogin,
+  TeacherSettings,
+  TeacherStudentDetail,
+} from './premium/TeacherPages';
+import { AdminPage } from './premium/AdminPage';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -22,23 +22,124 @@ function ScrollToTop() {
   return null;
 }
 
+function StudentGate({ children }: { children: ReactNode }) {
+  const token = useAppStore((state) => state.token);
+  return token ? children : <Navigate to="/login" replace />;
+}
+
+function TeacherGate({ children }: { children: ReactNode }) {
+  const teacherToken = useAppStore((state) => state.teacherToken);
+  return teacherToken ? children : <Navigate to="/professor" replace />;
+}
+
+function AdminGate({ children }: { children: ReactNode }) {
+  const teacherToken = useAppStore((state) => state.teacherToken);
+  const teacher = useAppStore((state) => state.teacher);
+
+  return teacherToken && teacher?.role === 'ADMIN' ? (
+    children
+  ) : (
+    <Navigate to="/professor" replace />
+  );
+}
+
 export default function App() {
   return (
     <>
       <ScrollToTop />
       <Routes>
         <Route path="/" element={<WelcomePage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/language" element={<LanguageSelectPage />} />
-        <Route path="/setup" element={<StudentSetupPage />} />
-        <Route path="/test" element={<TestPage />} />
-        <Route path="/result/:attemptId" element={<ResultPage />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/login" element={<AuthPage />} />
+        <Route
+          path="/language"
+          element={
+            <StudentGate>
+              <LanguagePage />
+            </StudentGate>
+          }
+        />
+        <Route
+          path="/setup"
+          element={
+            <StudentGate>
+              <SetupPage />
+            </StudentGate>
+          }
+        />
+        <Route
+          path="/test"
+          element={
+            <StudentGate>
+              <TestPage />
+            </StudentGate>
+          }
+        />
+        <Route
+          path="/review"
+          element={
+            <StudentGate>
+              <ReviewPage />
+            </StudentGate>
+          }
+        />
+        <Route
+          path="/result/:attemptId"
+          element={
+            <StudentGate>
+              <ResultPage />
+            </StudentGate>
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={
+            <StudentGate>
+              <StudentDashboard />
+            </StudentGate>
+          }
+        />
+        <Route
+          path="/student/profile"
+          element={
+            <StudentGate>
+              <StudentProfile />
+            </StudentGate>
+          }
+        />
 
-        <Route path="/professor" element={<TeacherLoginPage />} />
-        <Route path="/professor/painel" element={<TeacherDashboardPage />} />
-        <Route path="/professor/administracao" element={<TeacherAdminPage />} />
-        <Route path="/professor/aluno/:attemptId" element={<TeacherStudentDetailPage />} />
+        <Route path="/professor" element={<TeacherLogin />} />
+        <Route
+          path="/professor/painel"
+          element={
+            <TeacherGate>
+              <TeacherDashboard />
+            </TeacherGate>
+          }
+        />
+        <Route
+          path="/professor/aluno/:attemptId"
+          element={
+            <TeacherGate>
+              <TeacherStudentDetail />
+            </TeacherGate>
+          }
+        />
+        <Route
+          path="/professor/settings"
+          element={
+            <TeacherGate>
+              <TeacherSettings />
+            </TeacherGate>
+          }
+        />
+        <Route
+          path="/professor/administracao"
+          element={
+            <AdminGate>
+              <AdminPage />
+            </AdminGate>
+          }
+        />
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
