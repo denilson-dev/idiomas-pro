@@ -113,12 +113,16 @@ export async function teacherLogin(req: Request, res: Response) {
     return res.status(401).json({ message: 'E-mail ou senha incorretos.' });
   }
 
-  const session = await prisma.teacherSession.create({
-    data: {
-      token: randomUUID(),
-      teacherId: teacher.id,
-      expiresAt: teacherExpiry(),
-    },
+  const session = await prisma.$transaction(async (tx) => {
+    await tx.teacherSession.deleteMany({ where: { teacherId: teacher.id } });
+
+    return tx.teacherSession.create({
+      data: {
+        token: randomUUID(),
+        teacherId: teacher.id,
+        expiresAt: teacherExpiry(),
+      },
+    });
   });
 
   return res.json({
