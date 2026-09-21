@@ -145,7 +145,7 @@ export function PublicHeader({
     <header className="topbar product-public-header">
       <div className="product-public-header__side">
         {backTo ? (
-          <Link to={backTo} className="text-action">
+          <Link to={backTo} className="text-action" aria-label={backLabel}>
             <ArrowLeft size={17} />
             <span>{backLabel}</span>
           </Link>
@@ -200,12 +200,12 @@ export function StudentFlowHeader({
     <header className="topbar product-public-header">
       <div className="product-public-header__side">
         {onBack ? (
-          <button type="button" className="text-action" onClick={() => void onBack()}>
+          <button type="button" className="text-action" aria-label={backLabel} onClick={() => void onBack()}>
             <ArrowLeft size={17} />
             <span>{backLabel}</span>
           </button>
         ) : backTo ? (
-          <Link to={backTo} className="text-action">
+          <Link to={backTo} className="text-action" aria-label={backLabel}>
             <ArrowLeft size={17} />
             <span>{backLabel}</span>
           </Link>
@@ -218,7 +218,7 @@ export function StudentFlowHeader({
 
       <div className="product-public-header__side product-public-header__side--end">
         <LanguageMenu />
-        <button type="button" className="text-action text-action--danger" onClick={exitFlow}>
+        <button type="button" className="text-action text-action--danger" aria-label="Sair da conta" onClick={exitFlow}>
           <LogOut size={17} />
           <span>Sair</span>
         </button>
@@ -292,7 +292,7 @@ export function Workspace({
 
           <div className="product-header__actions">
             {backTo && (
-              <Link to={backTo} className="text-action product-header__back">
+              <Link to={backTo} className="text-action product-header__back" aria-label={backLabel}>
                 <ArrowLeft size={17} />
                 <span>{backLabel}</span>
               </Link>
@@ -304,7 +304,7 @@ export function Workspace({
               {initials}
             </span>
 
-            <button type="button" className="text-action text-action--danger" onClick={logout}>
+            <button type="button" className="text-action text-action--danger" aria-label="Sair da conta" onClick={logout}>
               <LogOut size={17} />
               <span>Sair</span>
             </button>
