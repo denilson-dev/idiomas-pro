@@ -58,8 +58,8 @@ jobs:
       - name: Seed test database
         run: npm run db:seed
 
-      - name: Validate administrator bootstrap
-        run: npm run admin:ensure
+      - name: Validate administrator bootstrap in production mode
+        run: NODE_ENV=production npm run admin:ensure
 
       - name: Validate data engineering Python
         run: |
