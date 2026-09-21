@@ -1,16 +1,18 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
-import { Navigate, useNavigate, useParams } from 'react-router-dom';
+import { Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import {
   ArrowRight,
   Download,
   FileText,
   Filter,
   KeyRound,
+  ListChecks,
   Pencil,
   Search,
   ShieldCheck,
   Trash2,
   UserCog,
+  UserRound,
 } from 'lucide-react';
 import {
   api,
@@ -153,7 +155,7 @@ export function TeacherLogin() {
 
   return (
     <div className="public-page">
-      <PublicHeader />
+      <PublicHeader backTo="/" backLabel="Início" />
 
       <section className="teacher-auth">
         <div>
@@ -209,18 +211,29 @@ export function TeacherDashboard() {
   const teacherToken = useAppStore((state) => state.teacherToken);
   const teacher = useAppStore((state) => state.teacher);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [data, setData] = useState<TeacherDashboardData | null>(null);
   const [query, setQuery] = useState('');
   const [message, setMessage] = useState('');
 
+  const requestedView = searchParams.get('view');
+  const view =
+    requestedView === 'students' || requestedView === 'assessments'
+      ? requestedView
+      : 'overview';
+
+  async function reloadDashboard() {
+    if (!teacherToken) return;
+    const next = await api.getTeacherDashboard(teacherToken);
+    setData(next);
+  }
+
   useEffect(() => {
     if (!teacherToken) return;
-    api
-      .getTeacherDashboard(teacherToken)
-      .then(setData)
-      .catch((error) =>
-        setMessage(error instanceof Error ? error.message : 'Não foi possível carregar o painel.'),
-      );
+
+    reloadDashboard().catch((error) =>
+      setMessage(error instanceof Error ? error.message : 'Não foi possível carregar o painel.'),
+    );
 
     api
       .getTeacherPreferences(teacherToken)
@@ -250,6 +263,51 @@ export function TeacherDashboard() {
       .includes(query.toLowerCase()),
   );
 
+  const students = useMemo(() => {
+    const grouped = new Map<
+      string,
+      {
+        name: string;
+        email: string;
+        assessmentCount: number;
+        scores: number[];
+        latest: TeacherAttempt;
+      }
+    >();
+
+    for (const attempt of attempts) {
+      const key = (attempt.studentEmail || attempt.studentName || attempt.id).toLowerCase();
+      const current = grouped.get(key);
+
+      if (!current) {
+        grouped.set(key, {
+          name: attempt.studentName || 'Aluno',
+          email: attempt.studentEmail || 'Sem e-mail',
+          assessmentCount: 1,
+          scores: [attempt.score ?? 0],
+          latest: attempt,
+        });
+        continue;
+      }
+
+      current.assessmentCount += 1;
+      current.scores.push(attempt.score ?? 0);
+    }
+
+    return Array.from(grouped.values())
+      .map((student) => ({
+        ...student,
+        average: student.scores.length
+          ? Math.round(student.scores.reduce((sum, score) => sum + score, 0) / student.scores.length)
+          : 0,
+      }))
+      .filter((student) =>
+        `${student.name} ${student.email} ${student.latest.cefrLevel ?? ''}`
+          .toLowerCase()
+          .includes(query.toLowerCase()),
+      );
+  }, [attempts, query]);
+
   function exportDashboard() {
     downloadCsv('idiomas-pro-avaliacoes.csv', [
       ['Aluno', 'E-mail', 'Data', 'Nível', 'Nota', 'Questões'],
@@ -264,132 +322,280 @@ export function TeacherDashboard() {
     ]);
   }
 
+  async function clearAssessments() {
+    if (!attempts.length) return;
+    const confirmed = window.confirm(
+      'Remover todas as avaliações vinculadas ao seu perfil? Esta ação não pode ser desfeita.',
+    );
+    if (!confirmed) return;
+
+    try {
+      const result = await api.clearTeacherAttempts(teacherToken);
+      await reloadDashboard();
+      setMessage(result.message);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'Não foi possível limpar as avaliações.');
+    }
+  }
+
+  const heading =
+    view === 'students'
+      ? {
+          eyebrow: 'Acompanhamento',
+          title: 'Seus alunos',
+          description: 'Uma visão por aluno, sem misturar avaliações repetidas.',
+        }
+      : view === 'assessments'
+        ? {
+            eyebrow: 'Avaliações',
+            title: 'Histórico de avaliações',
+            description: 'Pesquise, abra, exporte ou remova avaliações já concluídas.',
+          }
+        : {
+            eyebrow: 'Portal do professor',
+            title: 'Visão pedagógica',
+            description: 'O essencial para acompanhar desempenho e decidir o próximo passo.',
+          };
+
   return (
-    <Workspace area="teacher">
+    <Workspace area="teacher" backTo="/professor/painel?view=assessments" backLabel="Avaliações">
       <div className="workspace-heading">
         <div>
-          <small>Portal do professor</small>
-          <h1>Visão pedagógica</h1>
-          <p>Resultados e evolução dos alunos vinculados ao seu acesso.</p>
+          <small>{heading.eyebrow}</small>
+          <h1>{heading.title}</h1>
+          <p>{heading.description}</p>
         </div>
 
         <div className="heading-actions">
-          {teacher.role === 'ADMIN' && (
-            <Button variant="secondary" onClick={() => navigate('/professor/administracao')}>
-              <ShieldCheck size={17} /> Administração
+          <Button variant="secondary" onClick={exportDashboard} disabled={!attempts.length}>
+            <Download size={17} /> Exportar
+          </Button>
+          {view === 'assessments' && (
+            <Button variant="danger" onClick={clearAssessments} disabled={!attempts.length}>
+              <Trash2 size={17} /> Limpar avaliações
             </Button>
           )}
-          <Button variant="secondary" onClick={exportDashboard}>
-            <Download size={17} /> Exportar CSV
-          </Button>
         </div>
       </div>
 
-      <div className="stat-grid">
-        <Stat label="Avaliações" value={data?.metrics.totalAssessments ?? 0} tone="pink" />
-        <Stat label="Alunos" value={data?.metrics.uniqueStudents ?? 0} tone="teal" />
-        <Stat label="Média geral" value={`${data?.metrics.averageScore ?? 0}%`} tone="purple" />
-        <Stat label="Último nível" value={data?.metrics.latestLevel ?? '—'} tone="orange" />
-      </div>
-
-      <div className="dashboard-grid">
-        <Surface className="chart-card">
-          <div className="section-title">
-            <div>
-              <small>Distribuição</small>
-              <h2>Níveis dos alunos</h2>
-            </div>
+      {view === 'overview' && (
+        <>
+          <div className="stat-grid product-metrics">
+            <Stat label="Avaliações" value={data?.metrics.totalAssessments ?? 0} tone="pink" />
+            <Stat label="Alunos" value={data?.metrics.uniqueStudents ?? 0} tone="teal" />
+            <Stat label="Média geral" value={`${data?.metrics.averageScore ?? 0}%`} tone="purple" />
+            <Stat label="Último nível" value={data?.metrics.latestLevel ?? '—'} tone="orange" />
           </div>
 
-          <div className="bar-chart">
-            {(data?.levelDistribution ?? []).map((item) => {
-              const max = Math.max(1, ...(data?.levelDistribution ?? []).map((entry) => entry.count));
-              return (
-                <div key={item.level}>
-                  <i style={{ height: `${Math.max(10, (item.count / max) * 100)}%` }} />
-                  <b>{item.level}</b>
-                  <span>{item.count}</span>
+          <div className="dashboard-grid teacher-overview-grid">
+            <Surface className="chart-card">
+              <div className="section-title">
+                <div>
+                  <small>Mapa de nível</small>
+                  <h2>Distribuição dos alunos</h2>
                 </div>
-              );
-            })}
-          </div>
-        </Surface>
+              </div>
 
-        <Surface className="recommendations">
-          <div className="section-title">
-            <div>
-              <small>Insights</small>
-              <h2>Atenção pedagógica</h2>
-            </div>
-          </div>
+              <div className="bar-chart">
+                {(data?.levelDistribution ?? []).map((item) => {
+                  const max = Math.max(
+                    1,
+                    ...(data?.levelDistribution ?? []).map((entry) => entry.count),
+                  );
+                  return (
+                    <div key={item.level}>
+                      <i style={{ height: `${Math.max(10, (item.count / max) * 100)}%` }} />
+                      <b>{item.level}</b>
+                      <span>{item.count}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </Surface>
 
-          <div className="insight">
-            <b>Média da turma</b>
-            <span>Acompanhe a tendência geral das últimas avaliações.</span>
-            <Pill tone="teal">{data?.metrics.averageScore ?? 0}%</Pill>
-          </div>
-          <div className="insight">
-            <b>{data?.metrics.uniqueStudents ?? 0} alunos</b>
-            <span>Participaram das avaliações vinculadas ao seu acesso.</span>
-            <Pill tone="purple">Turma</Pill>
-          </div>
-          <div className="insight">
-            <b>{data?.metrics.latestLevel ?? '—'}</b>
-            <span>É o nível da avaliação mais recente.</span>
-            <Pill tone="orange">Recente</Pill>
-          </div>
-        </Surface>
-      </div>
+            <Surface className="recommendations teacher-guidance">
+              <div className="section-title">
+                <div>
+                  <small>Leitura rápida</small>
+                  <h2>O que observar</h2>
+                </div>
+              </div>
 
-      <Surface className="history-table">
-        <div className="section-title">
-          <div>
-            <small>Alunos</small>
-            <h2>Avaliações recentes</h2>
-          </div>
-          <label className="search-box">
-            <Search size={16} />
-            <input
-              placeholder="Buscar aluno, e-mail ou nível"
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-            />
-          </label>
-        </div>
-
-        <div className="table">
-          <div className="table__head">
-            <span>Aluno</span>
-            <span>Data</span>
-            <span>Nível</span>
-            <span>Nota</span>
-            <span>Ações</span>
+              <div className="insight">
+                <b>Média atual: {data?.metrics.averageScore ?? 0}%</b>
+                <span>Use a média como sinal geral, não como único critério pedagógico.</span>
+              </div>
+              <div className="insight">
+                <b>{data?.metrics.uniqueStudents ?? 0} alunos acompanhados</b>
+                <span>Abra a área de alunos para enxergar recorrência e evolução individual.</span>
+              </div>
+              <div className="insight">
+                <b>Último nível: {data?.metrics.latestLevel ?? '—'}</b>
+                <span>O nível mais recente ajuda a orientar a próxima atividade.</span>
+              </div>
+            </Surface>
           </div>
 
-          {filtered.map((attempt) => (
-            <div className="table__row" key={attempt.id}>
-              <span>
-                <b>{attempt.studentName || 'Aluno'}</b>
-                <small>{attempt.studentEmail || 'Sem e-mail'}</small>
-              </span>
-              <span>
-                {attempt.completedAt
-                  ? new Date(attempt.completedAt).toLocaleDateString('pt-BR')
-                  : '—'}
-              </span>
-              <span>
-                <Pill tone="teal">{attempt.cefrLevel ?? '—'}</Pill>
-              </span>
-              <strong>{attempt.score ?? 0}%</strong>
-              <Button variant="ghost" onClick={() => navigate(`/professor/aluno/${attempt.id}`)}>
-                Abrir
+          <Surface className="history-table">
+            <div className="section-title">
+              <div>
+                <small>Últimas atividades</small>
+                <h2>Avaliações recentes</h2>
+              </div>
+              <Button
+                variant="ghost"
+                onClick={() => navigate('/professor/painel?view=assessments')}
+              >
+                Ver todas <ListChecks size={16} />
               </Button>
             </div>
-          ))}
-        </div>
-      </Surface>
 
-      {message && <Toast message={message} tone="error" />}
+            <div className="table">
+              <div className="table__head">
+                <span>Aluno</span>
+                <span>Data</span>
+                <span>Nível</span>
+                <span>Nota</span>
+                <span>Ações</span>
+              </div>
+
+              {attempts.slice(0, 5).map((attempt) => (
+                <div className="table__row" key={attempt.id}>
+                  <span>
+                    <b>{attempt.studentName || 'Aluno'}</b>
+                    <small>{attempt.studentEmail || 'Sem e-mail'}</small>
+                  </span>
+                  <span>
+                    {attempt.completedAt
+                      ? new Date(attempt.completedAt).toLocaleDateString('pt-BR')
+                      : '—'}
+                  </span>
+                  <span>
+                    <Pill tone="teal">{attempt.cefrLevel ?? '—'}</Pill>
+                  </span>
+                  <strong>{attempt.score ?? 0}%</strong>
+                  <Button
+                    variant="ghost"
+                    onClick={() => navigate(`/professor/aluno/${attempt.id}`)}
+                  >
+                    Abrir
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </Surface>
+        </>
+      )}
+
+      {view === 'students' && (
+        <>
+          <Surface className="content-toolbar">
+            <label className="search-box grow">
+              <Search size={16} />
+              <input
+                placeholder="Buscar aluno por nome, e-mail ou nível"
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+              />
+            </label>
+            <Pill tone="teal">{students.length} alunos</Pill>
+          </Surface>
+
+          <div className="people-list">
+            {students.map((student) => (
+              <Surface className="person-row" key={student.email}>
+                <div className="person-row__avatar">
+                  <UserRound size={19} />
+                </div>
+                <div className="person-row__identity">
+                  <strong>{student.name}</strong>
+                  <span>{student.email}</span>
+                </div>
+                <div className="person-row__meta">
+                  <span>{student.assessmentCount} avaliações</span>
+                  <b>{student.average}% média</b>
+                  <Pill tone="purple">{student.latest.cefrLevel ?? '—'}</Pill>
+                </div>
+                <Button
+                  variant="secondary"
+                  onClick={() => navigate(`/professor/aluno/${student.latest.id}`)}
+                >
+                  Última avaliação
+                </Button>
+              </Surface>
+            ))}
+
+            {!students.length && (
+              <Surface className="empty">
+                <h3>Nenhum aluno encontrado</h3>
+                <p>Quando um aluno concluir uma avaliação vinculada a você, ele aparecerá aqui.</p>
+              </Surface>
+            )}
+          </div>
+        </>
+      )}
+
+      {view === 'assessments' && (
+        <Surface className="history-table assessment-library">
+          <div className="section-title assessment-library__header">
+            <div>
+              <small>Arquivo pedagógico</small>
+              <h2>Todas as avaliações</h2>
+            </div>
+            <label className="search-box">
+              <Search size={16} />
+              <input
+                placeholder="Buscar aluno, e-mail ou nível"
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+              />
+            </label>
+          </div>
+
+          <div className="table">
+            <div className="table__head">
+              <span>Aluno</span>
+              <span>Data</span>
+              <span>Nível</span>
+              <span>Nota</span>
+              <span>Ações</span>
+            </div>
+
+            {filtered.map((attempt) => (
+              <div className="table__row" key={attempt.id}>
+                <span>
+                  <b>{attempt.studentName || 'Aluno'}</b>
+                  <small>{attempt.studentEmail || 'Sem e-mail'}</small>
+                </span>
+                <span>
+                  {attempt.completedAt
+                    ? new Date(attempt.completedAt).toLocaleDateString('pt-BR')
+                    : '—'}
+                </span>
+                <span>
+                  <Pill tone="teal">{attempt.cefrLevel ?? '—'}</Pill>
+                </span>
+                <strong>{attempt.score ?? 0}%</strong>
+                <Button
+                  variant="ghost"
+                  onClick={() => navigate(`/professor/aluno/${attempt.id}`)}
+                >
+                  Abrir
+                </Button>
+              </div>
+            ))}
+          </div>
+
+          {!filtered.length && (
+            <div className="empty empty--inline">
+              <h3>Nenhuma avaliação encontrada</h3>
+              <p>Ajuste sua busca ou aguarde novas avaliações concluídas.</p>
+            </div>
+          )}
+        </Surface>
+      )}
+
+      {message && <Toast message={message} />}
     </Workspace>
   );
 }
@@ -649,7 +855,11 @@ export function TeacherSettings() {
       .toUpperCase() || 'PR';
 
   return (
-    <Workspace area={teacher.role === 'ADMIN' ? 'admin' : 'teacher'}>
+    <Workspace
+      area={teacher.role === 'ADMIN' ? 'admin' : 'teacher'}
+      backTo={teacher.role === 'ADMIN' ? '/professor/administracao' : '/professor/painel'}
+      backLabel={teacher.role === 'ADMIN' ? 'Administração' : 'Painel'}
+    >
       <div className="workspace-heading">
         <div>
           <small>Configurações</small>
