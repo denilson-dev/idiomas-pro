@@ -369,11 +369,16 @@ export function StudentProfile() {
     if (!token) return;
     api
       .getPreferences(token)
-      .then(({ preferences }) =>
-        setPreferences((current) => ({ ...current, ...preferences })),
-      )
+      .then(({ preferences }) => {
+        setPreferences((current) => ({ ...current, ...preferences }));
+        document.documentElement.classList.toggle('reduce-motion', !!preferences.reducedMotion);
+      })
       .catch(() => undefined);
   }, [token]);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('reduce-motion', !!preferences.reducedMotion);
+  }, [preferences.reducedMotion]);
 
   if (!token || !user) return <Navigate to="/login" replace />;
 
