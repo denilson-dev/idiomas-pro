@@ -49,15 +49,15 @@ export function WelcomePage() {
             <span className="accent-teal">próximo nível</span>
           </h1>
           <p>
-            Uma experiência moderna e acolhedora para descobrir seu nível, entender seu desempenho
-            e transformar resultado em próximo passo.
+            Descubra seu nível de espanhol com uma avaliação clara, acompanhe seu desempenho e
+            entenda qual habilidade praticar em seguida.
           </p>
 
           <div className="feature-row">
             <Surface className="feature-card">
               <ShieldCheck />
-              <b>Resultado na hora</b>
-              <span>Seu nível ao finalizar.</span>
+              <b>Resultado ao finalizar</b>
+              <span>Veja nível e desempenho por habilidade.</span>
             </Surface>
             <Surface className="feature-card">
               <Headphones />
@@ -66,8 +66,8 @@ export function WelcomePage() {
             </Surface>
             <Surface className="feature-card">
               <Sparkles />
-              <b>A1 até C2</b>
-              <span>Leitura clara do nível.</span>
+              <b>Referência A1 a C2</b>
+              <span>Uma leitura simples para orientar seus estudos.</span>
             </Surface>
           </div>
 
@@ -81,7 +81,7 @@ export function WelcomePage() {
           </div>
 
           <Button variant="ghost" className="teacher-link" onClick={() => navigate('/professor')}>
-            <School size={18} /> Área exclusiva do professor
+            <School size={18} /> Acesso da equipe pedagógica
           </Button>
         </div>
 
