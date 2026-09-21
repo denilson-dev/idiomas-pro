@@ -75,6 +75,7 @@ describe.sequential('API integration', () => {
     expect(list.body.teachers).toContainEqual({
       id: teacherId,
       name: 'Prof. Integração',
+      role: 'TEACHER',
     });
   });
 
