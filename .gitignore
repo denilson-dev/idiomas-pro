@@ -10,3 +10,13 @@ coverage
 playwright-report
 test-results
 .e2e-teacher.json
+
+# Python / Data Engineering
+.venv/
+__pycache__/
+*.py[cod]
+data-engineering/.env
+data-engineering/dbt/target/
+data-engineering/dbt/logs/
+data-engineering/dbt/dbt_packages/
+data-engineering/reports/

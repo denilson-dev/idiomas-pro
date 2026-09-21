@@ -1,0 +1,9 @@
+services:
+  metabase:
+    image: metabase/metabase:latest
+    container_name: idiomas-pro-metabase
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    ports:
+      - "3000:3000"

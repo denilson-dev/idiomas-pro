@@ -1,0 +1,111 @@
+name: Data Engineering CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "data-engineering/**"
+      - "prisma/**"
+      - ".github/workflows/data-engineering.yml"
+  pull_request:
+    paths:
+      - "data-engineering/**"
+      - "prisma/**"
+      - ".github/workflows/data-engineering.yml"
+
+env:
+  DATABASE_URL: postgresql://postgres@127.0.0.1:5432/idiomas_pro?schema=public
+  DATA_DATABASE_URL: postgresql://postgres@127.0.0.1:5432/idiomas_pro
+  SOURCE_SCHEMA: synthetic
+  PIPELINE_BATCH_SIZE: 250
+  DB_HOST: 127.0.0.1
+  DB_PORT: 5432
+  DB_USER: postgres
+  DB_PASSWORD: postgres
+  DB_NAME: idiomas_pro
+  DBT_VARS: '{"analytics_source_system": "idiomas_pro:synthetic"}'
+
+jobs:
+  validate-data-platform:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_DB: idiomas_pro
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d idiomas_pro"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install application dependencies
+        run: npm install
+
+      - name: Prepare operational database
+        run: |
+          npm run db:generate
+          npm run db:deploy
+          npm run db:seed
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: data-engineering/requirements-core.txt
+
+      - name: Install data dependencies
+        run: pip install -r data-engineering/requirements-core.txt
+
+      - name: Bootstrap analytics schemas
+        run: python data-engineering/src/bootstrap.py
+
+      - name: Generate small synthetic dataset
+        run: >
+          python data-engineering/src/generate_synthetic_data.py
+          --students 20
+          --teachers 5
+          --questions 36
+          --attempts 100
+          --answers-per-attempt 18
+          --days 90
+
+      - name: Incremental ingestion
+        run: python data-engineering/src/ingest.py
+
+      - name: Verify incremental rerun
+        run: python data-engineering/src/ingest.py
+
+      - name: Build dbt staging
+        run: dbt run --select path:models/staging --vars "$DBT_VARS" --project-dir data-engineering/dbt --profiles-dir data-engineering/dbt
+
+      - name: Update SCD snapshots
+        run: dbt snapshot --vars "$DBT_VARS" --project-dir data-engineering/dbt --profiles-dir data-engineering/dbt
+
+      - name: Build and test warehouse
+        run: dbt build --vars "$DBT_VARS" --project-dir data-engineering/dbt --profiles-dir data-engineering/dbt
+
+      - name: Run persisted data quality checks
+        run: python data-engineering/src/quality.py
+
+      - name: Refresh materialized views
+        run: python data-engineering/src/materialized_views.py
+
+      - name: Build partition demonstration
+        run: python data-engineering/src/partition_demo.py
+
+      - name: Generate EXPLAIN ANALYZE report
+        run: python data-engineering/src/performance_report.py

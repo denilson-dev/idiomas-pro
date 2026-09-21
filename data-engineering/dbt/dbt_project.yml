@@ -1,0 +1,26 @@
+name: idiomas_pro_analytics
+version: "1.0.0"
+config-version: 2
+profile: idiomas_pro_analytics
+model-paths: ["models"]
+snapshot-paths: ["snapshots"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+clean-targets: [target, dbt_packages]
+models:
+  idiomas_pro_analytics:
+    staging:
+      +schema: staging
+      +materialized: view
+    warehouse:
+      +schema: warehouse
+      +materialized: table
+    marts:
+      +schema: marts
+      +materialized: view
+snapshots:
+  idiomas_pro_analytics:
+    +target_schema: warehouse
+
+vars:
+  analytics_source_system: "idiomas_pro:public"

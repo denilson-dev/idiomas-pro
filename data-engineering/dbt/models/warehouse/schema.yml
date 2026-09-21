@@ -1,0 +1,51 @@
+version: 2
+models:
+  - name: dim_student
+    columns:
+      - name: student_key
+        tests: [not_null, unique]
+  - name: dim_teacher
+    columns:
+      - name: teacher_key
+        tests: [not_null, unique]
+      - name: teacher_id
+        tests: [not_null, unique]
+  - name: dim_question
+    columns:
+      - name: question_key
+        tests: [not_null, unique]
+      - name: question_id
+        tests: [not_null, unique]
+  - name: fact_test_attempt
+    columns:
+      - name: attempt_key
+        tests: [not_null, unique]
+      - name: attempt_id
+        tests: [not_null, unique]
+      - name: student_key
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_student')
+              field: student_key
+      - name: teacher_key
+        tests:
+          - relationships:
+              to: ref('dim_teacher')
+              field: teacher_key
+  - name: fact_answer
+    columns:
+      - name: answer_key
+        tests: [not_null, unique]
+      - name: attempt_key
+        tests:
+          - not_null
+          - relationships:
+              to: ref('fact_test_attempt')
+              field: attempt_key
+      - name: question_key
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_question')
+              field: question_key

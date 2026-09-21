@@ -1,0 +1,22 @@
+version: 2
+models:
+  - name: mart_teacher_performance
+    description: Métricas agregadas de avaliações por professor.
+    columns:
+      - name: teacher_key
+        tests: [not_null, unique]
+  - name: mart_student_performance
+    description: Histórico resumido de desempenho por aluno.
+    columns:
+      - name: student_key
+        tests: [not_null, unique]
+  - name: mart_question_analysis
+    description: Taxas de acerto e erro por questão.
+    columns:
+      - name: question_key
+        tests: [not_null, unique]
+  - name: mart_cefr_distribution
+    description: Distribuição das avaliações por nível CEFR.
+    columns:
+      - name: cefr_level
+        tests: [not_null, unique]
