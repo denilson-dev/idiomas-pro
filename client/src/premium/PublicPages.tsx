@@ -20,6 +20,7 @@ import { clearExamDraft } from './examDraft';
 export function WelcomePage() {
   const navigate = useNavigate();
   const setSession = useAppStore((state) => state.setSession);
+  const clearTeacherSession = useAppStore((state) => state.clearTeacherSession);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
 
@@ -27,6 +28,7 @@ export function WelcomePage() {
     try {
       setLoading(true);
       setMessage('');
+      clearTeacherSession();
       const session = await api.createAnonymousSession();
       setSession(session.token, session.user);
       navigate('/language');
@@ -130,6 +132,7 @@ export function AuthPage() {
   const navigate = useNavigate();
   const token = useAppStore((state) => state.token);
   const setSession = useAppStore((state) => state.setSession);
+  const clearTeacherSession = useAppStore((state) => state.clearTeacherSession);
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -148,6 +151,7 @@ export function AuthPage() {
         mode === 'login'
           ? await api.login({ email, password })
           : await api.register({ name, email, password });
+      clearTeacherSession();
       setSession(session.token, session.user);
       navigate('/language');
     } catch (error) {
@@ -160,6 +164,7 @@ export function AuthPage() {
   async function continueAsVisitor() {
     try {
       setLoading(true);
+      clearTeacherSession();
       const session = await api.createAnonymousSession();
       setSession(session.token, session.user);
       navigate('/language');
