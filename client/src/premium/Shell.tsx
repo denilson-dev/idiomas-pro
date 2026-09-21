@@ -183,7 +183,9 @@ export function StudentFlowHeader({
     try {
       if (onExit) {
         await onExit();
-      } else if (token) {
+      }
+
+      if (token) {
         await api.logout(token);
       }
     } catch {
