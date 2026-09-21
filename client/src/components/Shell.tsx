@@ -50,7 +50,7 @@ function NavEntry({item}:{item:NavItem}) {
   const path=parts[0];
   const targetSearch=parts[1] ? '?' + parts[1] : '';
   const active=location.pathname===path && (!targetSearch || location.search===targetSearch);
-  return <Link to={href} className={'nav-item ' + (active?'nav-item--active':'')}><Icon size={18}/><span>{label}</span></Link>;
+  return <Link to={href} aria-label={label} title={label} className={'nav-item ' + (active?'nav-item--active':'')}><Icon size={18}/><span>{label}</span></Link>;
 }
 
 export function Workspace({children,area='student'}:{children:ReactNode,area?:'student'|'teacher'|'admin'}){
