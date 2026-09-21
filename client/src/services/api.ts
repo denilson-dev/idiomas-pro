@@ -3,8 +3,24 @@ const API_URL =
     ? (import.meta.env.VITE_API_URL ?? 'http://localhost:3333/api')
     : '/api';
 
-export type User = { id: string; name: string; email: string; isActive?: boolean };
-export type Teacher = { id: string; name: string; email: string; role: 'TEACHER' | 'ADMIN' };
+export type User = {
+  id: string;
+  name: string;
+  email: string;
+  isActive?: boolean;
+  notificationsEnabled?: boolean;
+};
+
+export type Teacher = {
+  id: string;
+  name: string;
+  email: string;
+  role: 'TEACHER' | 'ADMIN';
+  isActive?: boolean;
+  compactMode?: boolean;
+  rememberFilters?: boolean;
+};
+
 export type TeacherOption = { id: string; name: string };
 
 export type AdminUser = {
@@ -90,6 +106,13 @@ export type StudentTestProfile = {
   language: 'ES';
 };
 
+export type ActiveTest = {
+  attemptId: string;
+  totalQuestions: number;
+  questions: Question[];
+  answers: Record<string, string>;
+};
+
 export type TeacherAttempt = {
   id: string;
   studentName: string | null;
@@ -133,6 +156,27 @@ export type TeacherAttemptDetail = {
   }>;
 };
 
+export type TeacherReports = {
+  scope: 'ALL' | 'TEACHER';
+  metrics: {
+    totalAssessments: number;
+    uniqueStudents: number;
+    averageScore: number;
+    completionRate: number;
+  };
+  levelDistribution: Array<{ level: TestResult['cefrLevel']; count: number }>;
+  categoryAverages: Array<{
+    category: 'GRAMMAR' | 'VOCABULARY' | 'LISTENING';
+    average: number;
+  }>;
+  trend: Array<{
+    key: string;
+    label: string;
+    assessments: number;
+    averageScore: number;
+  }>;
+};
+
 async function readResponseBody(response: Response) {
   const contentType = response.headers.get('content-type') ?? '';
   if (contentType.includes('application/json')) {
@@ -168,7 +212,7 @@ async function request<T>(
     }
 
     throw new Error(
-      `API indisponível (HTTP ${response.status}). Verifique se o backend foi publicado e se a rota /api está acessível.`
+      `API indisponível (HTTP ${response.status}). Verifique se o backend foi publicado e se a rota /api está acessível.`,
     );
   }
 
@@ -179,6 +223,35 @@ async function request<T>(
   return body as T;
 }
 
+async function download(
+  path: string,
+  token: string,
+  filename: string,
+  tokenHeader = 'x-teacher-token',
+) {
+  const response = await fetch(`${API_URL}${path}`, {
+    headers: { [tokenHeader]: token },
+  });
+
+  if (!response.ok) {
+    const body = await readResponseBody(response);
+    if (body && typeof body === 'object' && 'message' in body && typeof body.message === 'string') {
+      throw new Error(body.message);
+    }
+    throw new Error(`Não foi possível gerar o arquivo (HTTP ${response.status}).`);
+  }
+
+  const blob = await response.blob();
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
+  anchor.href = url;
+  anchor.download = filename;
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  URL.revokeObjectURL(url);
+}
+
 export const api = {
   createAnonymousSession: () => request<SessionResponse>('/auth/anonymous', { method: 'POST' }),
   register: (payload: { name: string; email: string; password: string }) =>
@@ -186,32 +259,111 @@ export const api = {
   login: (payload: { email: string; password: string }) =>
     request<SessionResponse>('/auth/login', { method: 'POST', body: JSON.stringify(payload) }),
   logout: (token: string) => request<void>('/auth/logout', { method: 'POST' }, token),
+  getStudentProfile: (token: string) =>
+    request<{ user: User }>('/auth/profile', {}, token),
+  updateStudentProfile: (token: string, payload: { name: string; email: string }) =>
+    request<{ user: User }>('/auth/profile', { method: 'PATCH', body: JSON.stringify(payload) }, token),
+  changeStudentPassword: (
+    token: string,
+    payload: { currentPassword: string; newPassword: string },
+  ) =>
+    request<void>('/auth/password', { method: 'PATCH', body: JSON.stringify(payload) }, token),
+  updateStudentPreferences: (token: string, notificationsEnabled: boolean) =>
+    request<{ preferences: { notificationsEnabled: boolean } }>(
+      '/auth/preferences',
+      { method: 'PATCH', body: JSON.stringify({ notificationsEnabled }) },
+      token,
+    ),
 
   getTeachers: () => request<{ teachers: TeacherOption[] }>('/teachers'),
 
   startTest: (token: string, payload: Omit<StudentTestProfile, 'teacherName'>) =>
-    request<{ attemptId: string; totalQuestions: number; studentName: string; teacher: TeacherOption; questions: Question[] }>(
+    request<{
+      attemptId: string;
+      totalQuestions: number;
+      studentName: string;
+      teacher: TeacherOption;
+      questions: Question[];
+    }>(
       '/test/start',
       { method: 'POST', body: JSON.stringify(payload) },
       token,
     ),
-  submitTest: (token: string, attemptId: string, answers: Array<{ questionId: string; selectedAnswer: string }>) =>
-    request<TestResult>(`/test/${attemptId}/submit`, { method: 'POST', body: JSON.stringify({ answers }) }, token),
-  getResult: (token: string, attemptId: string) => request<TestResult>(`/results/${attemptId}`, {}, token),
-  getHistory: (token: string) => request<{ attempts: TestResult[] }>('/results/history', {}, token),
+  submitTest: (
+    token: string,
+    attemptId: string,
+    answers: Array<{ questionId: string; selectedAnswer: string }>,
+  ) =>
+    request<TestResult>(
+      `/test/${attemptId}/submit`,
+      { method: 'POST', body: JSON.stringify({ answers }) },
+      token,
+    ),
+  getResult: (token: string, attemptId: string) =>
+    request<TestResult>(`/results/${attemptId}`, {}, token),
+  getHistory: (token: string) =>
+    request<{ attempts: TestResult[] }>('/results/history', {}, token),
 
   getTeacherBootstrapStatus: () =>
     request<{ canCreateFirstTeacher: boolean }>('/teacher/auth/bootstrap-status'),
   bootstrapTeacher: (payload: { name: string; email: string; password: string }) =>
-    request<TeacherSessionResponse>('/teacher/auth/bootstrap', { method: 'POST', body: JSON.stringify(payload) }),
+    request<TeacherSessionResponse>(
+      '/teacher/auth/bootstrap',
+      { method: 'POST', body: JSON.stringify(payload) },
+    ),
   teacherLogin: (payload: { email: string; password: string }) =>
-    request<TeacherSessionResponse>('/teacher/auth/login', { method: 'POST', body: JSON.stringify(payload) }),
+    request<TeacherSessionResponse>(
+      '/teacher/auth/login',
+      { method: 'POST', body: JSON.stringify(payload) },
+    ),
   teacherLogout: (token: string) =>
     request<void>('/teacher/auth/logout', { method: 'POST' }, token, 'x-teacher-token'),
+  getTeacherProfile: (token: string) =>
+    request<{ teacher: Teacher }>('/teacher/profile', {}, token, 'x-teacher-token'),
+  updateTeacherProfile: (token: string, payload: { name: string; email: string }) =>
+    request<{ teacher: Teacher }>(
+      '/teacher/profile',
+      { method: 'PATCH', body: JSON.stringify(payload) },
+      token,
+      'x-teacher-token',
+    ),
+  changeTeacherPassword: (
+    token: string,
+    payload: { currentPassword: string; newPassword: string },
+  ) =>
+    request<void>(
+      '/teacher/password',
+      { method: 'PATCH', body: JSON.stringify(payload) },
+      token,
+      'x-teacher-token',
+    ),
+  updateTeacherPreferences: (
+    token: string,
+    payload: { compactMode?: boolean; rememberFilters?: boolean },
+  ) =>
+    request<{ preferences: { compactMode: boolean; rememberFilters: boolean } }>(
+      '/teacher/preferences',
+      { method: 'PATCH', body: JSON.stringify(payload) },
+      token,
+      'x-teacher-token',
+    ),
   getTeacherDashboard: (token: string) =>
     request<TeacherDashboard>('/teacher/dashboard', {}, token, 'x-teacher-token'),
+  getTeacherReports: (token: string) =>
+    request<TeacherReports>('/teacher/reports', {}, token, 'x-teacher-token'),
+  exportTeacherCsv: (token: string) =>
+    download(
+      '/teacher/export.csv',
+      token,
+      `idiomas-pro-${new Date().toISOString().slice(0, 10)}.csv`,
+    ),
   getTeacherAttempt: (token: string, attemptId: string) =>
-    request<TeacherAttemptDetail>(`/teacher/attempts/${attemptId}`, {}, token, 'x-teacher-token'),
+    request<TeacherAttemptDetail>(
+      `/teacher/attempts/${attemptId}`,
+      {},
+      token,
+      'x-teacher-token',
+    ),
   updateTeacherAttempt: (
     token: string,
     attemptId: string,
@@ -240,7 +392,6 @@ export const api = {
 
   getAdminAccounts: (token: string) =>
     request<AdminAccounts>('/teacher/admin/accounts', {}, token, 'x-teacher-token'),
-
   adminCreateUser: (
     token: string,
     payload: { name: string; email: string; password: string; isActive?: boolean },
@@ -269,7 +420,6 @@ export const api = {
       token,
       'x-teacher-token',
     ),
-
   adminCreateTeacher: (
     token: string,
     payload: { name: string; email: string; password: string; isActive?: boolean },
@@ -299,3 +449,5 @@ export const api = {
       'x-teacher-token',
     ),
 };
+
+export { API_URL };
