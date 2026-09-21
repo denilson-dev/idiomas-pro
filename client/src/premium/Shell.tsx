@@ -201,7 +201,7 @@ export function StudentFlowHeader({
   }
 
   return (
-    <header className="topbar product-public-header">
+    <header className="topbar product-public-header product-public-header--flow">
       <div className="product-public-header__side">
         {onBack ? (
           <button type="button" className="text-action" aria-label={backLabel} onClick={() => void onBack()}>
