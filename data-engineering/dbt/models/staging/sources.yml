@@ -1,0 +1,29 @@
+version: 2
+
+sources:
+  - name: raw
+    schema: raw
+    tables:
+      - name: test_attempts
+      - name: attempt_answers
+      - name: questions
+      - name: teachers
+      - name: users
+
+models:
+  - name: stg_test_attempts
+    columns:
+      - name: attempt_id
+        data_tests:
+          - not_null
+          - unique
+      - name: status
+        data_tests:
+          - accepted_values:
+              values: ['IN_PROGRESS', 'COMPLETED']
+      - name: cefr_level
+        data_tests:
+          - accepted_values:
+              values: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
+              config:
+                where: "cefr_level is not null"
