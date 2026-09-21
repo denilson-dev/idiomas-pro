@@ -132,6 +132,7 @@ export function AuthPage() {
   const navigate = useNavigate();
   const token = useAppStore((state) => state.token);
   const setSession = useAppStore((state) => state.setSession);
+  const clearSession = useAppStore((state) => state.clearSession);
   const clearTeacherSession = useAppStore((state) => state.clearTeacherSession);
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [name, setName] = useState('');
@@ -140,7 +141,13 @@ export function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
 
-  if (token) return <Navigate to="/language" replace />;
+  useEffect(() => {
+    if (!token) return;
+
+    const staleToken = token;
+    clearSession();
+    void api.logout(staleToken).catch(() => undefined);
+  }, [token, clearSession]);
 
   async function submit(event: FormEvent) {
     event.preventDefault();
