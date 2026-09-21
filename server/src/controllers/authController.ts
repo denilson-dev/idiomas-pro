@@ -4,6 +4,7 @@ import bcrypt from 'bcryptjs';
 import { z } from 'zod';
 import { prisma } from '../lib/prisma.js';
 import { getSessionFromRequest } from '../lib/session.js';
+import { requireClientId } from '../lib/clientIdentity.js';
 
 const credentialsSchema = z.object({
   email: z.string().email().transform((value) => value.trim().toLowerCase()),
@@ -20,10 +21,16 @@ function sessionExpiry(days = 30) {
   return date;
 }
 
-export async function createAnonymousSession(_req: Request, res: Response) {
+export async function createAnonymousSession(req: Request, res: Response) {
+  const clientId = requireClientId(req);
+  if (!clientId) {
+    return res.status(400).json({ message: 'Identificação segura do navegador ausente.' });
+  }
+
   const session = await prisma.session.create({
     data: {
       token: randomUUID(),
+      clientId,
       isAnonymous: true,
       expiresAt: sessionExpiry(1),
     },
@@ -37,6 +44,11 @@ export async function createAnonymousSession(_req: Request, res: Response) {
 }
 
 export async function register(req: Request, res: Response) {
+  const clientId = requireClientId(req);
+  if (!clientId) {
+    return res.status(400).json({ message: 'Identificação segura do navegador ausente.' });
+  }
+
   const parsed = registerSchema.safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({ message: 'Dados inválidos.', issues: parsed.error.flatten() });
@@ -57,6 +69,7 @@ export async function register(req: Request, res: Response) {
   const session = await prisma.session.create({
     data: {
       token: randomUUID(),
+      clientId,
       userId: user.id,
       isAnonymous: false,
       expiresAt: sessionExpiry(),
@@ -71,6 +84,11 @@ export async function register(req: Request, res: Response) {
 }
 
 export async function login(req: Request, res: Response) {
+  const clientId = requireClientId(req);
+  if (!clientId) {
+    return res.status(400).json({ message: 'Identificação segura do navegador ausente.' });
+  }
+
   const parsed = credentialsSchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ message: 'E-mail ou senha inválidos.' });
 
@@ -110,6 +128,11 @@ export async function me(req: Request, res: Response) {
 
 export async function logout(req: Request, res: Response) {
   const token = req.header('x-session-token');
-  if (token) await prisma.session.deleteMany({ where: { token } });
+  const clientId = requireClientId(req);
+
+  if (token && clientId) {
+    await prisma.session.deleteMany({ where: { token, clientId } });
+  }
+
   return res.status(204).send();
 }
