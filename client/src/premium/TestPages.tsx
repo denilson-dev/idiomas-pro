@@ -228,6 +228,7 @@ export function TestPage() {
                   type="button"
                   key={option}
                   className={`answer ${selected ? 'answer--selected' : ''}`}
+                  aria-pressed={selected}
                   onClick={() => selectAnswer(option)}
                 >
                   <span>{String.fromCharCode(65 + index)}</span>
