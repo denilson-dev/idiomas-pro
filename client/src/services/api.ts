@@ -3,9 +3,7 @@ const configuredApiUrl = import.meta.env.VITE_API_URL?.trim();
 const API_URL =
   import.meta.env.MODE === 'development'
     ? (configuredApiUrl || 'http://localhost:3333/api')
-    : (configuredApiUrl && /^https?:\/\//i.test(configuredApiUrl)
-        ? configuredApiUrl.replace(/\/+$/, '')
-        : 'https://idiomas-pro.onrender.com/api');
+    : 'https://idiomas-pro.onrender.com/api';
 
 export type AccountPreferences = {
   notifications?: boolean;
