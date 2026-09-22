@@ -1,6 +1,8 @@
 const API_URL =
   import.meta.env.VITE_API_URL ??
-  (import.meta.env.MODE === 'development' ? 'http://localhost:3333/api' : '/api');
+  (import.meta.env.MODE === 'development'
+    ? 'http://localhost:3333/api'
+    : 'https://idiomas-pro.onrender.com/api');
 
 export type AccountPreferences = {
   notifications?: boolean;
